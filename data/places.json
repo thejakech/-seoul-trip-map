@@ -1,0 +1,1212 @@
+{
+  "meta": {
+    "generated": "2026-09-11",
+    "source": "migrated from v1 artifact + seoul-itinerary-master.md",
+    "geocoder": "OSM Nominatim"
+  },
+  "districts": {
+    "jongno": {
+      "blurb": "The historic heart of Seoul — capital of the Joseon dynasty since 1394. Palace walls, hanok lanes and the old grid.",
+      "also": [
+        "Gwanghwamun Square",
+        "Keun Kiwajip — soy-marinated crab",
+        "Seochon",
+        "Tongin Market brass-token lunch box"
+      ]
+    },
+    "jung": {
+      "blurb": "Seoul's old downtown — Myeongdong, Namdaemun and City Hall — wrapped around Euljiro, the wholesale district turned hidden bar/cafe scene.",
+      "also": [
+        "Heunginjimun (East Gate)",
+        "Sancheong Sootbul Garden",
+        "N Seoul Tower",
+        "Jangchung-dong jokbal alley"
+      ]
+    },
+    "yongsan": {
+      "blurb": "The international district — Itaewon, Haebangchon and upscale Hannam-dong — plus the National Museum.",
+      "also": [
+        "War Memorial of Korea",
+        "Seoul Central Mosque"
+      ]
+    },
+    "eunpyeong": {
+      "blurb": "The quiet north-western edge, up against Bukhansan.",
+      "also": [
+        "Bukhansan National Park (this side)",
+        "Eunpyeong Hanok Village",
+        "Sokgol Gamjaguk"
+      ]
+    },
+    "seodaemun": {
+      "blurb": "West-central and residential, around Yonsei and Ewha.",
+      "also": [
+        "Seodaemun Prison History Hall",
+        "Independence Park",
+        "Ansan Jarak-gil"
+      ]
+    },
+    "mapo": {
+      "blurb": "The west side's cultural engine — Hongdae, Yeonnam, Hapjeong, Mangwon.",
+      "also": [
+        "Hongdae Free Market (Sat, Mar–Nov)",
+        "Yeonnam-dong",
+        "Hapjeong / Sangsu",
+        "Gyeongui Line Forest Park"
+      ]
+    },
+    "seongdong": {
+      "blurb": "Riverside east Seoul, and the address everyone means when they say Seongsu.",
+      "also": [
+        "Seongsu salt-bread bakery",
+        "Under Stand Avenue",
+        "Café Onion Seongsu (the original)"
+      ]
+    },
+    "dongdaemun": {
+      "blurb": "East of the old gate — wholesale fashion markets and the Gyeongdong medicinal-herb market.",
+      "also": [
+        "Cheongnyangni Market",
+        "Hongneung Forest",
+        "Bae Bong-gi Confectionery"
+      ]
+    },
+    "jungnang": {
+      "blurb": "North-eastern residential district under the Achasan ridge.",
+      "also": [
+        "Mangu Historic Park & Achasan hike",
+        "Yongma Land"
+      ]
+    },
+    "gwangjin": {
+      "blurb": "Riverside east Seoul around Konkuk University — student drinking quarter, lamb-skewer alley, Children's Grand Park.",
+      "also": [
+        "Children's Grand Park",
+        "Ttukseom Hangang Park (Jayang side)",
+        "Common Ground"
+      ]
+    },
+    "gangbuk": {
+      "blurb": "Northern residential district at the foot of Bukhansan.",
+      "also": [
+        "Bukhansan (Ui/Insubong side)",
+        "Perilla-seed kalguksu",
+        "4·19 Revolution National Cemetery"
+      ]
+    },
+    "nowon": {
+      "blurb": "Far north-east, dense residential 'bed town'.",
+      "also": [
+        "Jjimjilbang / sauna",
+        "Gongneung student strip",
+        "Buramsan"
+      ]
+    },
+    "dobong": {
+      "blurb": "Seoul's northern tip against Dobongsan.",
+      "also": [
+        "Dobongsan trailhead",
+        "Small residential markets"
+      ]
+    },
+    "seongbuk": {
+      "blurb": "'North of the fortress' — hillside embassies, small museums, the Hanyang wall trail.",
+      "also": [
+        "Seoul City Wall trail (Naksan→Bukchon)",
+        "Gilsangsa temple",
+        "Korea Furniture Museum"
+      ]
+    },
+    "yeongdeungpo": {
+      "blurb": "South-bank finance district — National Assembly, IFC, Daerim Chinatown — plus Mullae-dong.",
+      "also": [
+        "Daerim Chinatown & market",
+        "The Hyundai Seoul",
+        "Yeouido Hangang Park"
+      ]
+    },
+    "dongjak": {
+      "blurb": "South-central, residential and green — Boramae Park, Noryangjin, the national cemetery.",
+      "also": [
+        "Seoul National Cemetery",
+        "Noryangjin exam-cram alley",
+        "Saetgang Ecological Park"
+      ]
+    },
+    "yangcheon": {
+      "blurb": "South-western residential district — Mokdong's towers and hagwon alley.",
+      "also": [
+        "Mokdong hagwon alley",
+        "Seoul Immigration Office",
+        "Mr. Sundubu"
+      ]
+    },
+    "gwanak": {
+      "blurb": "Southern district built around Seoul National University.",
+      "also": [
+        "SNU campus",
+        "Gwanaksan trails",
+        "Sharosu-gil",
+        "Orimps kimbap"
+      ]
+    },
+    "guro": {
+      "blurb": "South-west — old textile mills reborn as 'G Valley'.",
+      "also": [
+        "G Valley / Guro Digital Complex",
+        "Jokbal spot",
+        "Guro Market"
+      ]
+    },
+    "geumcheon": {
+      "blurb": "Seoul's southern edge — industrial parks, outlet malls, late-night pojangmacha tents.",
+      "also": [
+        "Pojangmacha tents",
+        "Lotte/Marché outlets",
+        "Doksan-dong"
+      ]
+    },
+    "gangseo": {
+      "blurb": "Far west around Gimpo Airport and the Magok tech development.",
+      "also": [
+        "Gimpo Airport — domestic Jeju flights leave from here",
+        "Retro burger + patbingsu shop"
+      ]
+    },
+    "songpa": {
+      "blurb": "South-east — Lotte World Tower, Seokchon Lake, Olympic Park.",
+      "also": [
+        "Lotte World Tower & Seoul Sky",
+        "Seokchon Lake",
+        "Olympic Park",
+        "Songni-dan-gil"
+      ]
+    },
+    "gangdong": {
+      "blurb": "Seoul's south-eastern corner on the Han River.",
+      "also": [
+        "Gwangjin Bridge glass observatory",
+        "Amsa Prehistoric Settlement",
+        "Godeok/Il-ja-san"
+      ]
+    },
+    "gangnam": {
+      "blurb": "The wealthy south — corporate towers, hagwon, clinics, COEX. Skip Gangnam Station; the walkable part is the Sinsa–Garosu-gil–Dosan–Apgujeong spine.",
+      "also": [
+        "Apgujeong Rodeo & Cheongdam flagships",
+        "SongEun art space",
+        "Korean corn-dog trucks"
+      ]
+    },
+    "seocho": {
+      "blurb": "West of Gangnam — the courthouse district, Seoul Arts Center, Banpo's fountain.",
+      "also": [
+        "Hyodo Chicken",
+        "Seoul Arts Center",
+        "Seorae Village (French quarter)"
+      ]
+    }
+  },
+  "neighborhoods": {
+    "ikseondong": {
+      "district": "jongno",
+      "name": "Ikseon-dong",
+      "kr": "익선동"
+    },
+    "bukchon": {
+      "district": "jongno",
+      "name": "Bukchon + Gyeongbokgung",
+      "kr": "북촌·경복궁"
+    },
+    "myeongdong": {
+      "district": "jung",
+      "name": "Myeongdong",
+      "kr": "명동"
+    },
+    "euljiro": {
+      "district": "jung",
+      "name": "Euljiro",
+      "kr": "을지로"
+    },
+    "itaewon": {
+      "district": "yongsan",
+      "name": "Itaewon",
+      "kr": "이태원"
+    },
+    "haebangchon": {
+      "district": "yongsan",
+      "name": "Haebangchon (HBC)",
+      "kr": "해방촌"
+    },
+    "hannam": {
+      "district": "yongsan",
+      "name": "Hannam-dong",
+      "kr": "한남동"
+    },
+    "hongdae": {
+      "district": "mapo",
+      "name": "Hongdae",
+      "kr": "홍대"
+    },
+    "mangwon": {
+      "district": "mapo",
+      "name": "Mangwon",
+      "kr": "망원동"
+    },
+    "seongsu": {
+      "district": "seongdong",
+      "name": "Seongsu-dong",
+      "kr": "성수동"
+    },
+    "mullae": {
+      "district": "yeongdeungpo",
+      "name": "Mullae-dong",
+      "kr": "문래동"
+    },
+    "sinsa": {
+      "district": "gangnam",
+      "name": "Sinsa–Apgujeong",
+      "kr": "신사·압구정"
+    }
+  },
+  "places": [
+    {
+      "id": "cheonggyecheon",
+      "name": "Cheonggyecheon Stream",
+      "name_kr": "청계천",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "view",
+      "lat": 37.5722871,
+      "lng": 127.0367285,
+      "hours": "Always open",
+      "note": "Starts at Cheonggye Plaza by Gwanghwamun and runs about 11 km east. Walk it, put your feet in, watch for the koi. Possible match for a second video source's 'skip' stream — visited in peak summer heat and called 'literally nothing.' Not confirmed as the same stream.",
+      "unverified": true,
+      "geocode_query": "청계천"
+    },
+    {
+      "id": "arario",
+      "name": "Arario Museum in Space",
+      "name_kr": "아라리오뮤지엄 인 스페이스",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "museum",
+      "lat": 37.5776627,
+      "lng": 126.9884644,
+      "hours": "10:00–19:00, closed Mon",
+      "note": "Set in Kim Swoo-geun's 1971 SPACE building beside Changdeokgung — the architecture is the reason to come.",
+      "unverified": false,
+      "geocode_query": "아라리오뮤지엄 인 스페이스"
+    },
+    {
+      "id": "cheongsudang",
+      "name": "Cheongsudang",
+      "name_kr": "청수당",
+      "district": "jongno",
+      "neighborhood": "ikseondong",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "hours": "~11:00–22:00 (check)",
+      "note": "A Japanese-garden teahouse in the Ikseon-dong hanok alleys. Expect a wait at peak hours.",
+      "unverified": false,
+      "geocode_query": "청수당 익선동"
+    },
+    {
+      "id": "naksan",
+      "name": "Naksan Park",
+      "name_kr": "낙산공원",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "park",
+      "lat": 37.5805339,
+      "lng": 127.0076085,
+      "hours": "Open 24h",
+      "note": "Hanyang City Wall trail, lit at night, full city panorama. Runs the Jongno/Seongbuk border.",
+      "unverified": false,
+      "geocode_query": "낙산공원"
+    },
+    {
+      "id": "changdeokgung",
+      "name": "Changdeokgung Palace",
+      "name_kr": "창덕궁",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "landmark",
+      "lat": 37.5823872,
+      "lng": 126.9917013,
+      "hours": "09:00–18:00, closed Mon",
+      "note": "The most intact Joseon palace, laid out to follow the hills rather than a grid. The Huwon 'Secret Garden' is a separate timed guided tour — book ahead.",
+      "unverified": false,
+      "geocode_query": "창덕궁"
+    },
+    {
+      "id": "ssamziegil",
+      "name": "Ssamziegil",
+      "name_kr": "쌈지길",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "shop",
+      "lat": 37.5742559,
+      "lng": 126.9848198,
+      "hours": "~10:30–20:30",
+      "note": "A ramp of ~70 small craft/design studios spiralling around an open courtyard, off Insadong's main street.",
+      "unverified": false,
+      "geocode_query": "쌈지길"
+    },
+    {
+      "id": "jogyesa",
+      "name": "Jogyesa Temple",
+      "name_kr": "조계사",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "temple",
+      "lat": 37.5741432,
+      "lng": 126.981912,
+      "hours": "Daily, main hall ~04:00–21:00",
+      "note": "Head temple of the Jogye order, a block off Insadong.",
+      "unverified": false,
+      "geocode_query": "조계사"
+    },
+    {
+      "id": "iksunbanjoo",
+      "name": "Ikseon Banjoo",
+      "name_kr": "익선반주",
+      "district": "jongno",
+      "neighborhood": "ikseondong",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "Korean small plates with a drink alongside, in the Ikseon-dong hanok alleys.",
+      "unverified": true,
+      "geocode_query": "익선반주"
+    },
+    {
+      "id": "ikseonsalt",
+      "name": "Ikseon-dong saltbread bakery",
+      "name_kr": "익선동 소금빵",
+      "district": "jongno",
+      "neighborhood": "ikseondong",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "Unnamed in source video — 'the best saltbread place.' Several bakeries in the alleys do saltbread; confirm the exact shop.",
+      "unverified": true,
+      "geocode_query": "익선동 소금빵"
+    },
+    {
+      "id": "ikseonvintage",
+      "name": "Cafe Nagwonjang",
+      "name_kr": "낙원장",
+      "district": "jongno",
+      "neighborhood": "ikseondong",
+      "category": "cafe",
+      "lat": 37.5729431,
+      "lng": 126.9898879,
+      "hours": "check Naver",
+      "note": "Four floors of curated mid-century furniture above what looks like an ordinary street-level cafe.",
+      "unverified": false,
+      "geocode_query": "카페 낙원장 익선동"
+    },
+    {
+      "id": "ikseonkbbq",
+      "name": "Jongsamyook",
+      "name_kr": "종삼육",
+      "district": "jongno",
+      "neighborhood": "ikseondong",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "Dinner, outdoor seating year-round",
+      "note": "The K-BBQ half of the Ikseon-dong 'quadrant' pick — a whole section of the alleys is outdoor Korean BBQ, packed year-round.",
+      "unverified": false,
+      "geocode_query": "종삼육 익선동"
+    },
+    {
+      "id": "kkokkio",
+      "name": "Kkokkio Jangjak-gui",
+      "name_kr": "꼬끼오장작구이",
+      "district": "jongno",
+      "neighborhood": "ikseondong",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "The chicken half of the same quadrant — a busy wood-fired rotisserie known for its cheese rotisserie chicken.",
+      "unverified": false,
+      "geocode_query": "꼬끼오장작구이 익선동"
+    },
+    {
+      "id": "achrolism",
+      "name": "Achrolism Anguk",
+      "name_kr": "어크로리즘 안국",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "A design-forward cafe near Anguk Station.",
+      "unverified": true,
+      "geocode_query": "Achrolism 안국"
+    },
+    {
+      "id": "rainreport",
+      "name": "Rain Report",
+      "name_kr": "레인리포트",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "A rain-aesthetic cafe near Anguk — an automated indoor 'rainfall' set piece.",
+      "unverified": true,
+      "geocode_query": "레인리포트 안국"
+    },
+    {
+      "id": "museumhead",
+      "name": "Museumhead",
+      "name_kr": "뮤지엄헤드",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "museum",
+      "lat": 37.5812803,
+      "lng": 126.9869992,
+      "hours": "~12:00–19:00, closed Mon (check)",
+      "note": "A small independent contemporary-art space. Double-check the address — some listings place it near Namsan.",
+      "unverified": true,
+      "geocode_query": "뮤지엄헤드"
+    },
+    {
+      "id": "gyeongbokgung",
+      "name": "Gyeongbokgung Palace",
+      "name_kr": "경복궁",
+      "district": "jongno",
+      "neighborhood": "bukchon",
+      "category": "landmark",
+      "lat": 37.579754,
+      "lng": 126.9766818,
+      "hours": "09:00–18:00, closed Tue",
+      "note": "Pair with Bukchon as a first day. A genuine highlight even for the palace-fatigued.",
+      "unverified": false,
+      "geocode_query": "경복궁"
+    },
+    {
+      "id": "juraoptique",
+      "name": "Jura Optique",
+      "name_kr": "주라 옵티크",
+      "district": "jongno",
+      "neighborhood": "bukchon",
+      "category": "shop",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "Vintage sunglasses shop in the Bukchon commerce street — good deals.",
+      "unverified": true,
+      "geocode_query": "주라옵티크"
+    },
+    {
+      "id": "cafeonion",
+      "name": "Cafe Onion — Bukchon",
+      "name_kr": "카페 어니언 안국",
+      "district": "jongno",
+      "neighborhood": "bukchon",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "hours": "~07:00–22:00 (check)",
+      "note": "The well-known industrial-bakery cafe chain's Bukchon branch.",
+      "unverified": false,
+      "geocode_query": "카페 어니언 안국"
+    },
+    {
+      "id": "gwangjang",
+      "name": "Gwangjang Market",
+      "name_kr": "광장시장",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "market",
+      "lat": 37.5707536,
+      "lng": 126.9998676,
+      "hours": "~09:00–23:00, stalls vary",
+      "note": "Flagged skip by a second video source ('most touristy market in Seoul') — still worth a quick stop for bindaetteok and yukhoe. The 2F vintage-clothing floor is the part most people miss.",
+      "unverified": false,
+      "geocode_query": "광장시장"
+    },
+    {
+      "id": "dongmyo",
+      "name": "Dongmyo Flea Market",
+      "name_kr": "동묘벼룩시장",
+      "district": "jongno",
+      "neighborhood": null,
+      "category": "market",
+      "lat": null,
+      "lng": null,
+      "hours": "Daily; weekends ~10:00–18:00 are the event",
+      "note": "The serious thrift dig — ₩1,000 piles of clothes, plus old cameras, LPs and radios. Come 10am Sat/Sun for the freshest piles.",
+      "unverified": false,
+      "geocode_query": "동묘앞 벼룩시장"
+    },
+    {
+      "id": "ddp",
+      "name": "Dongdaemun Design Plaza",
+      "name_kr": "동대문디자인플라자",
+      "district": "jung",
+      "neighborhood": null,
+      "category": "landmark",
+      "lat": 37.5670686,
+      "lng": 127.009899,
+      "hours": "Plaza 24h, halls ~10:00–20:00",
+      "note": "Zaha Hadid, 2014. The LED-rose field lights up after dark.",
+      "unverified": false,
+      "geocode_query": "동대문디자인플라자"
+    },
+    {
+      "id": "myeongdongmkt",
+      "name": "Myeongdong Night Market",
+      "name_kr": "명동 야시장",
+      "district": "jung",
+      "neighborhood": "myeongdong",
+      "category": "food",
+      "lat": 37.5616406,
+      "lng": 126.9859014,
+      "hours": "Stalls ~16:00–23:00",
+      "note": "Evening street-food carts. Tourist-priced — graze, don't count on it for dinner.",
+      "unverified": false,
+      "geocode_query": "명동 야시장"
+    },
+    {
+      "id": "namdaemun",
+      "name": "Namdaemun Market",
+      "name_kr": "남대문시장",
+      "district": "jung",
+      "neighborhood": null,
+      "category": "market",
+      "lat": 37.5610095,
+      "lng": 126.9784979,
+      "hours": "~08:30–18:00, many shops closed Sun",
+      "note": "Korea's biggest traditional market. The galchi-jorim and oyster-soup alleys are the meal.",
+      "unverified": false,
+      "geocode_query": "남대문시장"
+    },
+    {
+      "id": "oliveyoung",
+      "name": "Olive Young — Myeongdong Town",
+      "name_kr": "올리브영 명동타운",
+      "district": "jung",
+      "neighborhood": "myeongdong",
+      "category": "shop",
+      "lat": null,
+      "lng": null,
+      "hours": "~10:00–22:30",
+      "note": "The flagship K-beauty store; branches sit on nearly every block elsewhere.",
+      "unverified": false,
+      "geocode_query": "올리브영 명동타운점"
+    },
+    {
+      "id": "vands",
+      "name": "Vands Clinic — Myeongdong",
+      "name_kr": "밴즈의원",
+      "district": "jung",
+      "neighborhood": "myeongdong",
+      "category": "landmark",
+      "lat": null,
+      "lng": null,
+      "hours": "By appointment",
+      "note": "Skin/derma clinic — confirm exact name and book ahead for a treatment.",
+      "unverified": true,
+      "geocode_query": "명동 밴즈의원"
+    },
+    {
+      "id": "jaemiro",
+      "name": "Jaemiro Cartoon Street",
+      "name_kr": "재미로",
+      "district": "jung",
+      "neighborhood": "myeongdong",
+      "category": "landmark",
+      "lat": null,
+      "lng": null,
+      "hours": "Open street",
+      "note": "An open-air webtoon-and-cartoon street climbing from Myeongdong toward Namsan.",
+      "unverified": false,
+      "geocode_query": "재미로 만화의거리"
+    },
+    {
+      "id": "purr",
+      "name": "Per",
+      "name_kr": "퍼",
+      "district": "jung",
+      "neighborhood": "euljiro",
+      "category": "night",
+      "lat": 37.5628523,
+      "lng": 126.9926156,
+      "hours": "Evenings, check Naver",
+      "note": "Space-age-themed wine bar in Euljiro — 'one of the cutest little wine bars I've ever been to.'",
+      "unverified": false,
+      "geocode_query": "퍼 을지로"
+    },
+    {
+      "id": "euljirokbbq",
+      "name": "Backdon",
+      "name_kr": "",
+      "district": "jung",
+      "neighborhood": "euljiro",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "Dinner, check Naver",
+      "note": "K-BBQ spot a short walk from Per — 'all the classics plus some crazy sides.'",
+      "unverified": false,
+      "geocode_query": "Backdon 을지로"
+    },
+    {
+      "id": "hwanghak",
+      "name": "Hwanghak-dong Flea Market",
+      "name_kr": "황학동 벼룩시장",
+      "district": "jung",
+      "neighborhood": null,
+      "category": "market",
+      "lat": 37.5695111,
+      "lng": 127.0183352,
+      "hours": "Daily ~08:00–18:00 (weather permitting)",
+      "note": "~1,000 stalls across five alleys of machinery, vinyl, vintage cameras and old electronics. No clothing here — Dongmyo is close by for that.",
+      "unverified": false,
+      "geocode_query": "황학동 벼룩시장"
+    },
+    {
+      "id": "natmuseum",
+      "name": "National Museum of Korea",
+      "name_kr": "국립중앙박물관",
+      "district": "yongsan",
+      "neighborhood": null,
+      "category": "museum",
+      "lat": 37.523953,
+      "lng": 126.9803196,
+      "hours": "10:00–18:00, Wed/Sat to 21:00",
+      "note": "Free general admission and enormous — give it half a day. Don't miss the Room of Quiet Contemplation.",
+      "unverified": false,
+      "geocode_query": "국립중앙박물관"
+    },
+    {
+      "id": "leeum",
+      "name": "Leeum Museum of Art",
+      "name_kr": "리움미술관",
+      "district": "yongsan",
+      "neighborhood": "hannam",
+      "category": "museum",
+      "lat": null,
+      "lng": null,
+      "hours": "10:00–18:00, closed Mon",
+      "note": "Three buildings by Botta, Nouvel and Koolhaas — the architecture is half the visit. Reserve timed entry.",
+      "unverified": false,
+      "geocode_query": "리움미술관"
+    },
+    {
+      "id": "fountain",
+      "name": "Fountain, Itaewon",
+      "name_kr": "파운틴",
+      "district": "yongsan",
+      "neighborhood": "itaewon",
+      "category": "night",
+      "lat": 37.5352088,
+      "lng": 126.9930395,
+      "hours": "Nights",
+      "note": "Bar/club in Itaewon — verify it's still open before building a night around it.",
+      "unverified": true,
+      "geocode_query": "이태원 파운틴"
+    },
+    {
+      "id": "hillseuropa",
+      "name": "Hills and Europa",
+      "name_kr": "힐즈 앤 유로파",
+      "district": "yongsan",
+      "neighborhood": "itaewon",
+      "category": "night",
+      "lat": null,
+      "lng": null,
+      "hours": "Cafe by day, jazz at night (check)",
+      "note": "A jazz bar and cafe in the Itaewon–Hannam belt.",
+      "unverified": true,
+      "geocode_query": "Hills and Europa 이태원"
+    },
+    {
+      "id": "franc",
+      "name": "Franc",
+      "name_kr": "프랑",
+      "district": "yongsan",
+      "neighborhood": "itaewon",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "A French-style restaurant in Itaewon.",
+      "unverified": true,
+      "geocode_query": "프랑 이태원"
+    },
+    {
+      "id": "barou",
+      "name": "Barou",
+      "name_kr": "바로우",
+      "district": "yongsan",
+      "neighborhood": "itaewon",
+      "category": "night",
+      "lat": null,
+      "lng": null,
+      "hours": "Evenings, check Naver",
+      "note": "Bohemian-vibe wine bar in Itaewon — a glass of wine and pasta.",
+      "unverified": true,
+      "geocode_query": "바로우 이태원"
+    },
+    {
+      "id": "itaewonsunset",
+      "name": "Sunset-cocktail bar — Itaewon",
+      "name_kr": "이태원 선셋바",
+      "district": "yongsan",
+      "neighborhood": "itaewon",
+      "category": "night",
+      "lat": null,
+      "lng": null,
+      "hours": "Evenings/sunset, check Naver",
+      "note": "Near a spot 'where everybody watches sunset.' Unnamed in the source video.",
+      "unverified": true,
+      "geocode_query": "이태원 선셋 바"
+    },
+    {
+      "id": "itaewonantique",
+      "name": "Itaewon Antique Furniture Street",
+      "name_kr": "이태원 앤틱가구거리",
+      "district": "yongsan",
+      "neighborhood": "itaewon",
+      "category": "shop",
+      "lat": null,
+      "lng": null,
+      "hours": "Daily 09:00–21:00, closed 2nd/4th Tue",
+      "note": "~1.4km, ~2,400 shops. The Antique & Vintage Festival runs every May and October — October lands inside the trip window.",
+      "unverified": false,
+      "geocode_query": "이태원 앤틱가구거리"
+    },
+    {
+      "id": "hbcmarket",
+      "name": "Haebangchon Market",
+      "name_kr": "해방촌 골목시장",
+      "district": "yongsan",
+      "neighborhood": "haebangchon",
+      "category": "view",
+      "lat": null,
+      "lng": null,
+      "hours": "All day, busiest evenings",
+      "note": "A covered, winding alley of small restaurants — 'an Instagrammy town square.'",
+      "unverified": false,
+      "geocode_query": "해방촌 시장"
+    },
+    {
+      "id": "hbcsamgyeopsal",
+      "name": "Jamsugyo-jip",
+      "name_kr": "잠수교집",
+      "district": "yongsan",
+      "neighborhood": "haebangchon",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "Dinner, check Naver",
+      "note": "Samgyeopsal pick in Haebangchon — very thinly sliced pork.",
+      "unverified": false,
+      "geocode_query": "잠수교집 해방촌"
+    },
+    {
+      "id": "atta",
+      "name": "Atta",
+      "name_kr": "아따",
+      "district": "yongsan",
+      "neighborhood": "hannam",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "Dinner, check Naver",
+      "note": "Favorite Italian restaurant in all of Seoul — pasta, pizza, wine.",
+      "unverified": false,
+      "geocode_query": "아따 한남동"
+    },
+    {
+      "id": "cafe232",
+      "name": "232",
+      "name_kr": "232",
+      "district": "yongsan",
+      "neighborhood": "hannam",
+      "category": "cafe",
+      "lat": 37.53822,
+      "lng": 127.0074,
+      "hours": "check Naver",
+      "note": "The Hannam-dong cafe with 'the best tiramisu I may have ever had.'",
+      "unverified": false,
+      "geocode_query": "232 한남동"
+    },
+    {
+      "id": "cactuscurry",
+      "name": "Cactus Curry Club",
+      "name_kr": "카투스 카레 클럽",
+      "district": "yongsan",
+      "neighborhood": null,
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "Japanese-style tonkatsu, Namsan Mountain area.",
+      "unverified": true,
+      "geocode_query": "Cactus Curry Club 서울"
+    },
+    {
+      "id": "tacodomingo",
+      "name": "Taqueria El Domingo",
+      "name_kr": "타케리아 엘 도밍고",
+      "district": "yongsan",
+      "neighborhood": null,
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "Called 'the best tacos in the city.' Confirm neighborhood — likely the Itaewon/HBC belt.",
+      "unverified": true,
+      "geocode_query": "Taqueria El Domingo 서울"
+    },
+    {
+      "id": "jingwansa",
+      "name": "Jingwansa",
+      "name_kr": "진관사",
+      "district": "eunpyeong",
+      "neighborhood": null,
+      "category": "temple",
+      "lat": 37.6382028,
+      "lng": 126.9465455,
+      "hours": "~sunrise–sunset",
+      "note": "An active temple — keep your voice to a whisper. The teahouse on the grounds does ssanghwacha and red-bean patjuk.",
+      "unverified": false,
+      "geocode_query": "진관사"
+    },
+    {
+      "id": "hongjecheon",
+      "name": "Hongjecheon Waterfall",
+      "name_kr": "홍제천 인공폭포",
+      "district": "seodaemun",
+      "neighborhood": null,
+      "category": "view",
+      "lat": 37.5813046,
+      "lng": 126.9378073,
+      "hours": "Seasonal, ~May–Oct, daytime",
+      "note": "Cafe Popo sits right beside it — its proceeds fund student scholarships.",
+      "unverified": false,
+      "geocode_query": "홍제천 인공폭포"
+    },
+    {
+      "id": "hongdaetteok",
+      "name": "Sosin Isso",
+      "name_kr": "소신있소",
+      "district": "mapo",
+      "neighborhood": "hongdae",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "Braised short rib and glass noodles in a spicy rosé sauce.",
+      "unverified": false,
+      "geocode_query": "소신있소 홍대"
+    },
+    {
+      "id": "mangwonmarket",
+      "name": "Mangwon Market",
+      "name_kr": "망원시장",
+      "district": "mapo",
+      "neighborhood": "mangwon",
+      "category": "market",
+      "lat": 37.5566206,
+      "lng": 126.9060503,
+      "hours": "~07:00–21:00",
+      "note": "Traditional market with good Korean food plus global restaurants around it.",
+      "unverified": false,
+      "geocode_query": "망원시장"
+    },
+    {
+      "id": "seoulforest",
+      "name": "Seoul Forest",
+      "name_kr": "서울숲",
+      "district": "seongdong",
+      "neighborhood": null,
+      "category": "park",
+      "lat": 37.5435916,
+      "lng": 127.0447397,
+      "hours": "Park 24h, deer yard ~10:00–17:00",
+      "note": "Best early morning — deer paddock, wetland boardwalk, a lake that goes full Monet.",
+      "unverified": false,
+      "geocode_query": "서울숲"
+    },
+    {
+      "id": "hausnowhere",
+      "name": "Haus Nowhere Seongsu",
+      "name_kr": "하우스 노웨어 성수",
+      "district": "seongdong",
+      "neighborhood": "seongsu",
+      "category": "shop",
+      "lat": 37.5381376,
+      "lng": 127.0589475,
+      "hours": "~11:00–21:00 (check)",
+      "note": "Gentle Monster's Seongsu concept space — rotating room-scale installations.",
+      "unverified": false,
+      "geocode_query": "하우스 노웨어 성수"
+    },
+    {
+      "id": "margiela",
+      "name": "Maison Margiela Cafe",
+      "name_kr": "메종 마르지엘라 카페",
+      "district": "seongdong",
+      "neighborhood": "seongsu",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "hours": "check",
+      "note": "Believed to be in Seongsu — confirm it still operates.",
+      "unverified": true,
+      "geocode_query": "메종 마르지엘라 카페 성수"
+    },
+    {
+      "id": "pointofview",
+      "name": "Point of View",
+      "name_kr": "포인트 오브 뷰",
+      "district": "seongdong",
+      "neighborhood": "seongsu",
+      "category": "shop",
+      "lat": 37.5435642,
+      "lng": 127.0514036,
+      "hours": "~12:00–20:00, closed Mon (check)",
+      "note": "Stationery treated as art objects.",
+      "unverified": false,
+      "geocode_query": "포인트 오브 뷰 성수"
+    },
+    {
+      "id": "seongsudanish",
+      "name": "Cafe Stakke",
+      "name_kr": "",
+      "district": "seongdong",
+      "neighborhood": "seongsu",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "hours": "check Naver",
+      "note": "A Danish-style cafe — favorite spot on Seongsu's crowded main drag.",
+      "unverified": false,
+      "geocode_query": "Cafe Stakke 성수"
+    },
+    {
+      "id": "ttukseompark",
+      "name": "Ttukseom Hangang Park",
+      "name_kr": "뚝섬한강공원",
+      "district": "seongdong",
+      "neighborhood": null,
+      "category": "park",
+      "lat": 37.5298288,
+      "lng": 127.0681098,
+      "hours": "Open 24h",
+      "note": "Quieter riverside than Yeouido — bike paths, a summer pool.",
+      "unverified": false,
+      "geocode_query": "뚝섬한강공원"
+    },
+    {
+      "id": "gyeongdong",
+      "name": "Gyeongdong Market",
+      "name_kr": "경동시장",
+      "district": "dongdaemun",
+      "neighborhood": null,
+      "category": "market",
+      "lat": 37.5793623,
+      "lng": 127.0388131,
+      "hours": "~09:00–19:00",
+      "note": "A medicinal-herb market that now sells everything. Andongjip is inside.",
+      "unverified": false,
+      "geocode_query": "경동시장"
+    },
+    {
+      "id": "seoulfolk",
+      "name": "Seoul Folk Flea Market",
+      "name_kr": "서울풍물시장",
+      "district": "dongdaemun",
+      "neighborhood": null,
+      "category": "market",
+      "lat": 37.5727118,
+      "lng": 127.0253623,
+      "hours": "10:00–17:00, closed 2nd/4th Tue",
+      "note": "885 shops, mostly indoors, colour-zoned. A 10-minute walk from Dongmyo.",
+      "unverified": false,
+      "geocode_query": "서울풍물시장"
+    },
+    {
+      "id": "kondae",
+      "name": "Konkuk University area",
+      "name_kr": "건대입구",
+      "district": "gwangjin",
+      "neighborhood": null,
+      "category": "view",
+      "lat": null,
+      "lng": null,
+      "hours": "Evening",
+      "note": "Lamb-skewer alley plus Yanbian beer; the Common Ground container mall is a short walk.",
+      "unverified": false,
+      "geocode_query": "건대 양꼬치거리"
+    },
+    {
+      "id": "mullaeduck",
+      "name": "Minaribat Orisanyang",
+      "name_kr": "미나리밭 오리사냥",
+      "district": "yeongdeungpo",
+      "neighborhood": "mullae",
+      "category": "food",
+      "lat": null,
+      "lng": null,
+      "hours": "Dinner, check Naver",
+      "note": "Mullae-dong duck BBQ — 'phenomenal, if you like duck, you got to go.'",
+      "unverified": false,
+      "geocode_query": "미나리밭 오리사냥 문래"
+    },
+    {
+      "id": "mullaebar",
+      "name": "Haebangeum",
+      "name_kr": "해방음",
+      "district": "yeongdeungpo",
+      "neighborhood": "mullae",
+      "category": "night",
+      "lat": null,
+      "lng": null,
+      "hours": "Evenings, check Naver",
+      "note": "Listening bar right after the duck BBQ — 'perfect little date-night vibe.'",
+      "unverified": false,
+      "geocode_query": "해방음 문래"
+    },
+    {
+      "id": "boramae",
+      "name": "Boramae Park",
+      "name_kr": "보라매공원",
+      "district": "dongjak",
+      "neighborhood": null,
+      "category": "park",
+      "lat": 37.4932422,
+      "lng": 126.920474,
+      "hours": "Open 24h",
+      "note": "An old air-force field with planes on display. Haechi House inside sells 'Seoul Playbook 365.'",
+      "unverified": false,
+      "geocode_query": "보라매공원"
+    },
+    {
+      "id": "noryangjin",
+      "name": "Noryangjin Fish Market",
+      "name_kr": "노량진수산시장",
+      "district": "dongjak",
+      "neighborhood": null,
+      "category": "market",
+      "lat": 37.5147164,
+      "lng": 126.9377367,
+      "hours": "24h, auction ~01:00",
+      "note": "Buy fish downstairs, carry it up to a restaurant that cooks it. Bring a family member — it can get pushy.",
+      "unverified": false,
+      "geocode_query": "노량진수산시장"
+    },
+    {
+      "id": "botanicpark",
+      "name": "Seoul Botanic Park",
+      "name_kr": "서울식물원",
+      "district": "gangseo",
+      "neighborhood": null,
+      "category": "park",
+      "lat": 37.5710656,
+      "lng": 126.8346641,
+      "hours": "09:30–18:00, glasshouse closed Mon",
+      "note": "A wetland park built around a domed glasshouse of tropical and Mediterranean plants.",
+      "unverified": false,
+      "geocode_query": "서울식물원"
+    },
+    {
+      "id": "garosugil",
+      "name": "Garosu-gil / Serosu-gil",
+      "name_kr": "가로수길·세로수길",
+      "district": "gangnam",
+      "neighborhood": "sinsa",
+      "category": "view",
+      "lat": 37.5206268,
+      "lng": 127.023175,
+      "hours": "Shops ~11:00–21:00",
+      "note": "Tree-lined concept retail; the parallel back-alley Serosu-gil is where the energy moved.",
+      "unverified": false,
+      "geocode_query": "가로수길"
+    },
+    {
+      "id": "hausdosan",
+      "name": "Haus Dosan",
+      "name_kr": "하우스 도산",
+      "district": "gangnam",
+      "neighborhood": "sinsa",
+      "category": "shop",
+      "lat": 37.5253822,
+      "lng": 127.0355711,
+      "hours": "~11:00–21:00",
+      "note": "Gentle Monster + Tamburins + Nudake at Dosan Park. Pick this OR Haus Nowhere in Seongsu — not both.",
+      "unverified": false,
+      "geocode_query": "하우스 도산"
+    },
+    {
+      "id": "gangnamthrift",
+      "name": "Gangnam vintage",
+      "name_kr": "강남 빈티지",
+      "district": "gangnam",
+      "neighborhood": "sinsa",
+      "category": "shop",
+      "lat": null,
+      "lng": null,
+      "hours": "Varies",
+      "note": "Curated resale — a pricier tier than a Dongmyo dig.",
+      "unverified": true,
+      "geocode_query": "강남 빈티지샵"
+    },
+    {
+      "id": "starfield",
+      "name": "Starfield Library (COEX)",
+      "name_kr": "별마당 도서관",
+      "district": "gangnam",
+      "neighborhood": null,
+      "category": "landmark",
+      "lat": null,
+      "lng": null,
+      "hours": "10:30–22:00",
+      "note": "The famous one — the branch Jake said to skip. Decide before adding to a day.",
+      "unverified": true,
+      "geocode_query": "코엑스 별마당도서관"
+    },
+    {
+      "id": "bongeunsa",
+      "name": "Bongeunsa",
+      "name_kr": "봉은사",
+      "district": "gangnam",
+      "neighborhood": null,
+      "category": "temple",
+      "lat": 37.5141869,
+      "lng": 127.0602411,
+      "hours": "Daily, temple-life program Sun",
+      "note": "Across the road from COEX — a calmer temple option if Jingwansa slips.",
+      "unverified": false,
+      "geocode_query": "봉은사"
+    },
+    {
+      "id": "banpo",
+      "name": "Banpo Moonlight Rainbow Fountain",
+      "name_kr": "반포대교 달빛무지개분수",
+      "district": "seocho",
+      "neighborhood": null,
+      "category": "view",
+      "lat": 37.5155436,
+      "lng": 126.9959424,
+      "hours": "Shows ~12:00 & 19:30–21:00, Apr–Oct",
+      "note": "Watch from Banpo Hangang Park with fried chicken on your lap — Hyodo Chicken is the premium pick nearby.",
+      "unverified": false,
+      "geocode_query": "반포대교 달빛무지개분수"
+    }
+  ]
+}

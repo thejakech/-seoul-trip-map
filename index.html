@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seoul Trip Map</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="map"></div>
+
+  <header class="hud">
+    <div class="brand">
+      <h1>Seoul <span>by District</span></h1>
+      <p class="sub">Jake + sister · Sep–Oct 2026</p>
+    </div>
+    <div class="hud-row">
+      <div class="progress" title="Places checked off">
+        <div class="progress-bar"><span id="progressFill"></span></div>
+        <span id="progressCount">0 / 0</span>
+      </div>
+      <button id="btn3d" class="chip-btn" aria-pressed="false">3D</button>
+      <button id="btnList" class="chip-btn">List view</button>
+    </div>
+    <div class="catbar" id="catbar"></div>
+  </header>
+
+  <aside id="panel" class="panel" aria-live="polite">
+    <button id="panelClose" class="panel-close" aria-label="Close">&times;</button>
+    <div id="panelBody" class="panel-body"></div>
+  </aside>
+
+  <div id="listView" class="list-view" hidden>
+    <div class="list-view-inner">
+      <div class="list-header">
+        <h2>All picks</h2>
+        <button id="listClose" class="chip-btn">Close</button>
+      </div>
+      <div id="listBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
