@@ -94,9 +94,30 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
 .panel.open{transform:none}
 .panel.list-mode{width:min(480px,94vw)}
 .panel.list-mode #panelClose{display:none}
+/* ---- on mobile widths, the panel is a v1-style bottom sheet instead of a right-side
+   drawer: it rises from the bottom, has a draggable grab handle, and snaps between
+   full/half/peek positions (see the sheet drag logic in app.js). ---- */
+@media (max-width:859px){
+  .panel{left:0;right:0;bottom:0;top:auto;width:auto;height:90dvh;transform:translateY(103%);
+    transition:transform .42s cubic-bezier(.4,0,.2,1);border-radius:18px 18px 0 0;
+    border-top:1px solid var(--hairline);border-left:0}
+  .panel.list-mode{width:auto}
+}
+.grab{display:none}
+@media (max-width:859px){
+  .grab{display:block;height:40px;position:sticky;top:0;z-index:4;cursor:grab;touch-action:none;
+    background:var(--surface);border-radius:18px 18px 0 0}
+  .grab::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:44px;height:5px;border-radius:99px;background:var(--ink-faint);opacity:.55;
+    transition:background .15s ease,opacity .15s ease}
+  .grab:active{cursor:grabbing}
+  .grab:active::before,.panel.dragging .grab::before{background:var(--accent);opacity:1}
+}
 .panel-close{position:absolute;top:8px;right:8px;width:30px;height:30px;border:0;background:transparent;
   font-size:20px;color:var(--ink-soft);cursor:pointer;border-radius:8px}
 .panel-close:hover{background:var(--surface-2)}
+/* pushed down below the .grab handle so they don't overlap on the mobile bottom sheet */
+@media (max-width:859px){ .panel-close{top:52px} }
 .panel-body{padding:20px}
 .panel-body h2{margin:0 0 2px;font-size:20px}
 .panel-body .kr{color:var(--ink-soft);font-weight:400;font-size:13px;margin-left:6px}
@@ -163,8 +184,11 @@ details.list-d:hover .list-dname{color:var(--accent)}
 .list-caret{color:var(--ink-faint);font-size:11px;transition:transform .2s ease}
 details.list-d[open] .list-caret{transform:rotate(90deg)}
 .list-dh-hoods{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+/* matches v1's .list-key exactly: font 600 12px, 5px/11px padding, a starred label via
+   ::before (not baked into the text) so it's one screen instead of drifting from v1 sizing */
 .list-key{flex:none;display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--hairline);
-  font:600 11px inherit;padding:3px 9px;border-radius:99px}
+  font:600 12px inherit;padding:5px 11px;border-radius:99px}
+.list-key::before{content:"\2605\00a0";font-size:10px}
 .list-dbody{padding:0 0 4px}
 
 .lr{display:grid;grid-template-columns:24px 40px 1fr;gap:10px;padding:9px 0;border-top:1px dashed var(--hairline);align-items:start}

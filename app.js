@@ -167,7 +167,7 @@ map.on("load", function(){
   }).catch(function(err){
     console.error("Failed to load data:", err);
     document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/districts.geojson, data/places.json and data/seoul-outline.json exist and the site is served over http(s), not file://.</p>";
-    document.getElementById("panel").classList.add("open");
+    openPanelSheet();
   });
   apply3D(); // hide the style's own building-3d layer immediately, before data even loads
 });
@@ -401,7 +401,7 @@ function openDistrict(id){
   }
 
   document.getElementById("panelBody").innerHTML = html;
-  document.getElementById("panel").classList.add("open");
+  openPanelSheet();
   bindVisitCheckboxes();
 }
 
@@ -454,9 +454,70 @@ function updateProgress(){
   document.getElementById("progressFill").style.width = (total? (done/total*100):0) + "%";
 }
 
+/* ---------- draggable bottom sheet (mobile) — ported from v1's sheet/sheetTo/sheetEnd.
+   On mobile the panel is a bottom sheet with 3 snap points (full/half/peek) instead of a
+   right-side drawer; .grab is the drag handle. On wider screens this is a no-op and the
+   panel behaves exactly as the plain slide-in drawer via the "open" class + CSS transition. */
+var MQ = window.matchMedia("(max-width:859px)");
+var panelEl = document.getElementById("panel");
+var sheet = {h:0, snaps:[0,0,0], y:0}, sd = null;
+function sheetSetup(){
+  if (!MQ.matches) return;
+  var h = panelEl.getBoundingClientRect().height || window.innerHeight*0.9;
+  sheet.h = h;
+  sheet.snaps = [0, Math.round(h*0.46), Math.max(0, Math.round(h-118))]; // full · half · peek
+}
+function sheetTo(y, anim){
+  sheet.y = y;
+  panelEl.style.transition = anim === false ? "none" : "";
+  panelEl.style.transform = "translateY(" + y + "px)";
+}
+function openPanelSheet(){
+  panelEl.classList.add("open");
+  if (MQ.matches) { sheetSetup(); sheetTo(sheet.snaps[1], true); }
+  else { panelEl.style.transition = ""; panelEl.style.transform = ""; }
+}
+function closePanelSheet(){
+  panelEl.classList.remove("open");
+  if (MQ.matches) { sheetTo((sheet.h || window.innerHeight) + 60, true); }
+  else { panelEl.style.transition = ""; panelEl.style.transform = ""; }
+}
+function closePanelFully(){
+  closePanelSheet();
+  panelEl.classList.remove("list-mode");
+  listOpen = false;
+}
+panelEl.addEventListener("pointerdown", function(e){
+  if (!MQ.matches || !e.target.closest(".grab")) return;
+  try { panelEl.setPointerCapture(e.pointerId); } catch(_){}
+  sd = {sy:e.clientY, start:sheet.y};
+  panelEl.style.transition = "none";
+  panelEl.classList.add("dragging");
+});
+panelEl.addEventListener("pointermove", function(e){
+  if (!sd) return;
+  if (e.cancelable) e.preventDefault();
+  var y = Math.max(0, Math.min(sheet.h, sd.start + (e.clientY - sd.sy)));
+  sheet.y = y; panelEl.style.transform = "translateY(" + y + "px)";
+});
+function sheetEnd(e){
+  if (!sd) return;
+  try { panelEl.releasePointerCapture(e.pointerId); } catch(_){}
+  panelEl.style.transition = "";
+  panelEl.classList.remove("dragging");
+  var y = sheet.y, sn = sheet.snaps;
+  sd = null;
+  if (y > sn[2] + 70) { closePanelFully(); return; }
+  var best = sn[0], bd = 1e9;
+  sn.forEach(function(s){ var d = Math.abs(s - y); if (d < bd) { bd = d; best = s; } });
+  sheetTo(best, true);
+}
+panelEl.addEventListener("pointerup", sheetEnd);
+panelEl.addEventListener("pointercancel", sheetEnd);
+
 /* ---------- panel close ---------- */
 document.getElementById("panelClose").addEventListener("click", function(){
-  document.getElementById("panel").classList.remove("open");
+  closePanelFully();
 });
 
 /* ---------- collapse/reopen the whole HUD card ---------- */
@@ -472,9 +533,9 @@ document.getElementById("hudReopen").addEventListener("click", function(){
 /* ---------- list view (ported from v1's renderList/listGroup/listRow/wireList) ---------- */
 document.getElementById("btnList").addEventListener("click", function(){
   listOpen = true;
-  var panel = document.getElementById("panel");
-  panel.classList.add("open", "list-mode");
+  document.getElementById("panel").classList.add("list-mode");
   document.getElementById("panelBody").innerHTML = renderList();
+  openPanelSheet();
   wireList();
 });
 
@@ -560,11 +621,11 @@ function renderList(){
 }
 
 function wireList(){
-  var panel = document.getElementById("panel"), panelBody = document.getElementById("panelBody");
+  var panelBody = document.getElementById("panelBody");
   var closeBtn = panelBody.querySelector("[data-close]");
-  if (closeBtn) closeBtn.addEventListener("click", function(){ panel.classList.remove("open","list-mode"); listOpen=false; });
+  if (closeBtn) closeBtn.addEventListener("click", closePanelFully);
   var backBtn = panelBody.querySelector("[data-back]");
-  if (backBtn) backBtn.addEventListener("click", function(){ panel.classList.remove("open","list-mode"); listOpen=false; });
+  if (backBtn) backBtn.addEventListener("click", closePanelFully);
   panelBody.querySelectorAll(".list-jump,.list-openmap").forEach(function(j){
     j.addEventListener("click", function(ev){
       ev.preventDefault(); ev.stopPropagation();
