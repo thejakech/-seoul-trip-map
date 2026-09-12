@@ -4,13 +4,13 @@
   --hairline:#dcdcd4; --accent:#2b5fae; --accent-tint:#dce6f3; --visited:#3b7a66; --focus:#c23e2a;
   --food:#e0707f; --cafe:#d9a24f; --market:#c9ae3a; --museum:#7c8fd0; --park:#5fae82;
   --view:#4fa0c9; --shop:#c072a8; --temple:#3fae9b; --landmark:#d68a55; --night:#9a6bc4;
-  /* ---- map art tokens: pinned to a light-pink v1-style palette ALWAYS — deliberately NOT
+  /* ---- map art tokens: pinned to a deep rose/wine palette ALWAYS — deliberately NOT
      read from the dark-mode block below. This is a branded illustration look (matching a
      specific reference image), not a UI surface that should adapt to viewer preference, so
      it stays constant regardless of system light/dark mode. ---- */
-  --land-a:#FBE4EA; --land-b:#F6C7D2; --land-c:#FDF1F3; --land-d:#F0A9BC; --land-e:#F8D6DD;
-  --seam:#FFFFFF; --sea:#F0BFD2; --sea-ripple:#F6DCE6;
-  --district-label:#6b2f45; --district-label-halo:rgba(255,255,255,.85);
+  --land-a:#5C2A45; --land-b:#4A1F38; --land-c:#6B3452; --land-d:#542840; --land-e:#63304C;
+  --seam:#FFFFFF; --sea:#2A1220; --sea-ripple:#C86E96;
+  --district-label:#F6D5E0; --district-label-halo:rgba(20,8,15,.7);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -32,7 +32,7 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
   background-color:var(--sea);
   /* tighter, gentler ripple than the first pass — smaller tile, lower amplitude, closer
      row spacing, matching v1's dense subtle texture rather than a bold loose wave */
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='14'%3E%3Cpath d='M0 7 Q8.5 4 17 7 T34 7' stroke='%23F6DCE6' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='14'%3E%3Cpath d='M0 7 Q8.5 4 17 7 T34 7' stroke='%23C86E96' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
   background-repeat:repeat}
 #map{position:fixed;inset:0;z-index:1}
 .seoul-watermark{position:absolute;left:16px;bottom:8px;pointer-events:none;user-select:none;

@@ -52,13 +52,8 @@ var DEFAULT_VIEW = {center:[126.9880, 37.5540], zoom:10.4, pitch:0, bearing:0};
 var map = new maplibregl.Map(Object.assign({
   container: "map",
   style: "https://tiles.openfreemap.org/styles/liberty",
-  attributionControl: {compact:true},
-  /* locked in place, like v1's fixed illustration — drag/rotate gestures are disabled so the
-     island never gets dragged out from under the fixed sea background behind it. Zoom (buttons,
-     scroll, pinch) still works; district taps and "Fit map" still move the camera programmatically. */
-  dragPan: false, dragRotate: false, pitchWithRotate: false, touchPitch: false
+  attributionControl: {compact:true}
 }, DEFAULT_VIEW));
-map.touchZoomRotate.disableRotation(); // keep pinch-to-zoom, drop two-finger rotate
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}), "bottom-right");
 map.on("error", function(e){ console.error("MapLibre error:", e && e.error && e.error.message); });
 
