@@ -9,8 +9,12 @@
      specific reference image), not a UI surface that should adapt to viewer preference, so
      it stays constant regardless of system light/dark mode. ---- */
   --land-a:#5C2A45; --land-b:#4A1F38; --land-c:#6B3452; --land-d:#542840; --land-e:#63304C;
-  --seam:#FFFFFF; --sea:#2A1220; --sea-ripple:#C86E96;
+  --seam:#FFFFFF;
   --district-label:#F6D5E0; --district-label-halo:rgba(20,8,15,.7);
+  /* the fixed background behind the map (#seaBackground) — a soft pink gradient, independent
+     of the district land colors above. Only this and .seoul-watermark read these tokens. */
+  --bg-grad-1:#FBE4EA; --bg-grad-2:#F6C7D2; --bg-grad-3:#EFA6BA;
+  --watermark-color:#B65A7C;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -21,23 +25,20 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--surface)}
-/* ---- fixed background behind the map: a non-zooming wave texture + the SEOUL watermark.
+/* ---- fixed background behind the map: a soft pink gradient + the SEOUL watermark.
    #map is clipped (via JS, clip-path recomputed on every pan/zoom) to Seoul's exact
    silhouette, so this shows through everywhere outside it — completely unaffected by camera
-   movement, unlike a geographic fill-pattern which grows/shrinks as you zoom. ---- */
+   movement. This is deliberately independent of the district land colors: touching it never
+   touches the map (fill/border/label colors) itself. ---- */
 /* z-index 0/1, NOT a negative value on seaBackground: a fixed element with z-index:-1 renders
    BEHIND the page's own html/body background paint (since body doesn't establish its own
    stacking context) rather than merely behind #map — a classic negative-z-index pitfall. */
 #seaBackground{position:fixed;inset:0;z-index:0;overflow:hidden;
-  background-color:var(--sea);
-  /* tighter, gentler ripple than the first pass — smaller tile, lower amplitude, closer
-     row spacing, matching v1's dense subtle texture rather than a bold loose wave */
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='14'%3E%3Cpath d='M0 7 Q8.5 4 17 7 T34 7' stroke='%23C86E96' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-  background-repeat:repeat}
+  background-image:linear-gradient(160deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 55%, var(--bg-grad-3) 100%)}
 #map{position:fixed;inset:0;z-index:1}
 .seoul-watermark{position:absolute;left:16px;bottom:8px;pointer-events:none;user-select:none;
   font-weight:800;font-size:min(9vw,84px);line-height:.8;letter-spacing:.01em;
-  color:var(--district-label);opacity:.16;white-space:nowrap}
+  color:var(--watermark-color);opacity:.16;white-space:nowrap}
 
 .hud{position:fixed;top:14px;left:14px;z-index:5;max-width:min(420px,calc(100vw - 28px));
   background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:12px 14px;
@@ -73,10 +74,14 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
    Multi-select ADD model — .on = actively selected (colored border/text, set inline by
    syncCatbar), .off = filter active but this chip isn't part of it (dimmed). ---- */
 .catbar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
-.catchip{display:flex;align-items:center;justify-content:center;gap:4px;background:var(--surface-2);
-  border:1px solid var(--hairline);border-radius:99px;padding:5px 4px;font:500 10.5px inherit;
-  color:var(--ink-soft);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.catchip i{width:7px;height:7px;border-radius:99px;display:inline-block;flex:none}
+/* the label must fully fit inside the pill — no clipping/ellipsis. Small font + a touch of
+   negative letter-spacing gets most labels ("Restaurant", "Viewpoint") on one line at this
+   column width; white-space:normal is a safety net so a long label wraps to two lines
+   inside the bubble instead of ever being cut off. */
+.catchip{display:flex;align-items:center;justify-content:center;gap:3px;background:var(--surface-2);
+  border:1px solid var(--hairline);border-radius:12px;padding:5px 3px;font:500 9px inherit;
+  letter-spacing:-.1px;color:var(--ink-soft);cursor:pointer;white-space:normal;text-align:center;line-height:1.15}
+.catchip i{width:6px;height:6px;border-radius:99px;display:inline-block;flex:none}
 .catchip.off{opacity:.4}
 .catchip.on{font-weight:700;background:var(--surface)}
 .catchip.all{font-weight:600;color:var(--ink)}

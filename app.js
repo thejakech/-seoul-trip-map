@@ -221,6 +221,16 @@ function init(districtsGeo, data){
       "line-opacity": 0.95
     }
   });
+  /* the district-fill tint sits at 0.85 opacity over the whole gu polygon, including the
+     Han river running through it, which mutes the water to a dull pink-gray. Redraw the
+     base style's own water polygons in a vivid blue on top of district-fill (but below the
+     seam lines/labels, inserted just before "district-line") so the river reads clearly
+     through the tint — this doesn't touch the district polygons, borders, or land colors. */
+  map.addLayer({
+    id:"river-boost", type:"fill", source:"openmaptiles", "source-layer":"water",
+    filter:["!=", ["get","brunnel"], "tunnel"],
+    paint:{"fill-color":"#3E8EDE", "fill-opacity":0.9}
+  }, "district-line");
   /* district name labels — MapLibre places one label per polygon feature automatically
      (an interior "pole of inaccessibility" point), no manual centroid math needed */
   map.addLayer({
