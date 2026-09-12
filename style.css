@@ -4,11 +4,16 @@
   --hairline:#dcdcd4; --accent:#2b5fae; --accent-tint:#dce6f3; --visited:#3b7a66; --focus:#c23e2a;
   --food:#e0707f; --cafe:#d9a24f; --market:#c9ae3a; --museum:#7c8fd0; --park:#5fae82;
   --view:#4fa0c9; --shop:#c072a8; --temple:#3fae9b; --landmark:#d68a55; --night:#9a6bc4;
+  /* ---- map art tokens: district land tints, seam borders, the floating-island "sea" ---- */
+  --land-a:#F9DFE5; --land-b:#F4D3DC; --land-c:#FCE7EC; --land-d:#F0CBD7; --land-e:#F7DBE2;
+  --seam:#FFFFFF; --sea:#E6BDCB;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --surface:#15171a; --surface-2:#1e2125; --ink:#e9e7e1; --ink-soft:#a2a8b0; --ink-faint:#6c727a;
     --hairline:#2c3036; --accent:#6ea0e2; --accent-tint:#22314a;
+    --land-a:#3A2E33; --land-b:#362B34; --land-c:#3E3035; --land-d:#382C33; --land-e:#3B2E34;
+    --sea:#241A22;
   }
 }
 *{box-sizing:border-box}
@@ -30,16 +35,26 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
   font:600 12.5px inherit;color:var(--ink);cursor:pointer}
 .chip-btn:hover{border-color:var(--accent)}
 .chip-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ---- category filter chips: shared by the header catbar and the list-view catbar.
+   Multi-select ADD model — .on = actively selected (colored border/text, set inline by
+   syncCatbar), .off = filter active but this chip isn't part of it (dimmed). ---- */
 .catbar{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
 .catchip{display:inline-flex;align-items:center;gap:5px;background:var(--surface-2);border:1px solid var(--hairline);
   border-radius:99px;padding:4px 9px;font:500 11px inherit;color:var(--ink-soft);cursor:pointer}
 .catchip i{width:8px;height:8px;border-radius:99px;display:inline-block}
 .catchip.off{opacity:.4}
+.catchip.on{font-weight:700;background:var(--surface)}
+.catchip.all{font-weight:600;color:var(--ink)}
+.catchip.all.on{border-color:var(--focus);color:var(--focus)}
+.list-catbar{margin:10px 0 4px}
 
 .panel{position:fixed;top:0;right:0;height:100dvh;width:min(400px,92vw);background:var(--surface);
   border-left:1px solid var(--hairline);box-shadow:-8px 0 24px rgba(0,0,0,.18);transform:translateX(105%);
-  transition:transform .3s ease;z-index:6;overflow-y:auto}
+  transition:transform .3s ease,width .2s ease;z-index:6;overflow-y:auto}
 .panel.open{transform:none}
+.panel.list-mode{width:min(480px,94vw)}
+.panel.list-mode #panelClose{display:none}
 .panel-close{position:absolute;top:8px;right:8px;width:30px;height:30px;border:0;background:transparent;
   font-size:20px;color:var(--ink-soft);cursor:pointer;border-radius:8px}
 .panel-close:hover{background:var(--surface-2)}
@@ -60,15 +75,80 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
 .pnote{font-size:12.5px;line-height:1.5;color:var(--ink);margin-top:5px}
 .pflag{display:inline-block;margin-top:5px;font:600 10px ui-monospace,monospace;color:var(--focus);
   border:1px solid var(--focus);border-radius:5px;padding:1px 5px}
+.pc-foot{margin-top:7px;display:flex;flex-wrap:wrap;align-items:center;gap:7px}
 .also{margin-top:16px;padding:10px 12px;background:var(--surface-2);border-radius:9px;font-size:12px;
   line-height:1.7;color:var(--ink-soft)}
 .also b{color:var(--ink)}
 
-.list-view{position:fixed;inset:0;z-index:8;background:var(--surface);overflow-y:auto}
-.list-view-inner{max-width:760px;margin:0 auto;padding:20px}
-.list-header{display:flex;justify-content:space-between;align-items:center}
-details.d-group{border-top:1px solid var(--hairline);padding:10px 0}
-details.d-group summary{cursor:pointer;font-weight:700;font-size:15px}
-.lr{display:grid;grid-template-columns:20px 1fr;gap:8px;padding:6px 0}
+/* ---- shared category-chip glyph used inside place cards/rows ---- */
+.chiptype{display:inline-flex;align-items:center;gap:5px;font:500 11px inherit;color:var(--ink-soft);margin-top:6px}
+.chiptype .cdot{width:8px;height:8px;border-radius:99px;display:inline-block;flex:none}
+.maplink{font:500 11.5px inherit;color:var(--accent);text-decoration:none;border:1px solid var(--hairline);
+  border-radius:6px;padding:3px 8px}
+.maplink:hover{border-color:var(--accent);background:var(--accent-tint)}
+.pill{font:600 11px ui-monospace,monospace;padding:2px 7px;border-radius:99px;border:1px solid var(--hairline);
+  color:var(--ink-soft)}
+.pill.count{color:var(--visited);border-color:var(--visited)}
+.pill.vid{color:var(--ink-faint);border-color:var(--hairline)}
+.verify{display:inline-block;font:600 10px ui-monospace,monospace;color:var(--focus);border:1px solid var(--focus);
+  border-radius:5px;padding:2px 6px}
+.fromvid{display:inline-block;font:500 10px ui-monospace,monospace;color:var(--ink-faint);border:1px dashed var(--hairline);
+  border-radius:5px;padding:2px 6px}
+
+/* ---- list view: "Every place by district" — ported from v1, rendered into #panelBody
+   when .panel.list-mode is active ---- */
+.p-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.p-bar button{background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:7px 13px;
+  font:600 13px inherit;color:var(--ink-soft);cursor:pointer}
+.p-bar button:hover{border-color:var(--accent);color:var(--accent)}
+.p-bar .spacer{flex:1}
+.list-h{margin:2px 0 3px;font-size:19px;font-weight:800}
+.list-sub{margin:0 0 8px;font-size:12.5px;line-height:1.5;color:var(--ink-soft)}
+.list-tools{display:flex;gap:14px;margin:0 0 2px}
+.txtbtn{background:none;border:0;padding:2px 3px;font:600 12px inherit;color:var(--accent);cursor:pointer}
+.txtbtn:hover{text-decoration:underline}
+.eyebrow{font:700 10px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.list-band{margin:16px 0 2px}
+
+details.list-d{border-top:1px solid var(--hairline);padding-bottom:2px}
+details.list-d[open]{padding-bottom:8px}
+.list-dh{padding:12px 2px;cursor:pointer;list-style:none;user-select:none}
+.list-dh::-webkit-details-marker{display:none}
+.list-dh-top{display:flex;align-items:center;gap:7px}
+.list-dname{font:700 14.5px inherit;color:var(--ink);margin-right:auto}
+.list-dname .d-kr{font-weight:400;font-size:12px;color:var(--ink-soft);margin-left:3px}
+.list-dname .pill.count{margin-left:5px;vertical-align:1px}
+details.list-d:hover .list-dname{color:var(--accent)}
+.list-caret{color:var(--ink-faint);font-size:11px;transition:transform .2s ease}
+details.list-d[open] .list-caret{transform:rotate(90deg)}
+.list-dh-hoods{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+.list-key{flex:none;display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--hairline);
+  font:600 11px inherit;padding:3px 9px;border-radius:99px}
+.list-dbody{padding:0 0 4px}
+
+.lr{display:grid;grid-template-columns:24px 40px 1fr;gap:10px;padding:9px 0;border-top:1px dashed var(--hairline);align-items:start}
+.list-dbody > .lr:first-child{border-top:0}
+.lr-chk{display:flex;align-items:flex-start;padding-top:3px}
+.lr-chk input{width:15px;height:15px;accent-color:var(--visited);cursor:pointer}
+.lr-photo{display:block;width:40px;height:40px;border-radius:7px;overflow:hidden;text-decoration:none;flex:none}
+.lr-photo .ph{display:block;width:100%;height:100%;border-radius:7px}
+.lr-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px}
+.lr-name{font:600 13.5px inherit;color:var(--ink)}
+.lr-kr{font-weight:400;font-size:11px;color:var(--ink-soft)}
+.lr-meta{margin-top:3px;font:400 11.5px inherit;color:var(--ink-soft)}
+.lr-links{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.lr.done .lr-name{color:var(--ink-faint);text-decoration:line-through}
+.lr.done .lr-photo{opacity:.5}
+
+.list-also{margin:8px 0 4px;font:400 11.5px/1.55 inherit;color:var(--ink-faint)}
+.list-openmap{margin-top:6px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:7px;
+  padding:6px 11px;font:500 11.5px inherit;color:var(--accent);cursor:pointer}
+.list-openmap:hover{border-color:var(--accent);background:var(--accent-tint)}
+.list-none{margin:8px 0 4px;font:400 11.5px/1.5 inherit;color:var(--ink-faint)}
+
+.list-empty{margin-top:14px;padding-top:10px;border-top:1px solid var(--hairline)}
+.list-erow{margin:6px 0;font:400 11.5px/1.45 inherit;color:var(--ink-soft)}
+.list-jump{background:none;border:0;padding:0;cursor:pointer;font:600 12px inherit;color:var(--accent)}
+.list-jump:hover{text-decoration:underline}
 
 .maplibregl-popup-content{background:var(--surface);color:var(--ink);border-radius:8px}

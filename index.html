@@ -21,6 +21,7 @@
         <span id="progressCount">0 / 0</span>
       </div>
       <button id="btn3d" class="chip-btn" aria-pressed="false">3D</button>
+      <button id="btnDeclutter" class="chip-btn" aria-pressed="false">No streets</button>
       <button id="btnList" class="chip-btn">List view</button>
     </div>
     <div class="catbar" id="catbar"></div>
@@ -30,16 +31,6 @@
     <button id="panelClose" class="panel-close" aria-label="Close">&times;</button>
     <div id="panelBody" class="panel-body"></div>
   </aside>
-
-  <div id="listView" class="list-view" hidden>
-    <div class="list-view-inner">
-      <div class="list-header">
-        <h2>All picks</h2>
-        <button id="listClose" class="chip-btn">Close</button>
-      </div>
-      <div id="listBody"></div>
-    </div>
-  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
   <script src="app.js"></script>
