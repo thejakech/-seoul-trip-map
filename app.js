@@ -48,16 +48,23 @@ function naverUrl(p){ return "https://map.naver.com/p/search/" + encodeURICompon
 function kakaoUrl(p){ return "https://map.kakao.com/?q=" + encodeURIComponent(p.name_kr || p.name); }
 
 /* ---------- map ---------- */
-var map = new maplibregl.Map({
+var DEFAULT_VIEW = {center:[126.9880, 37.5540], zoom:10.4, pitch:0, bearing:0};
+var map = new maplibregl.Map(Object.assign({
   container: "map",
   style: "https://tiles.openfreemap.org/styles/liberty",
-  center: [126.9880, 37.5540],
-  zoom: 10.4,
-  pitch: 0,
-  attributionControl: {compact:true}
-});
+  attributionControl: {compact:true},
+  /* locked in place, like v1's fixed illustration — drag/rotate gestures are disabled so the
+     island never gets dragged out from under the fixed sea background behind it. Zoom (buttons,
+     scroll, pinch) still works; district taps and "Fit map" still move the camera programmatically. */
+  dragPan: false, dragRotate: false, pitchWithRotate: false, touchPitch: false
+}, DEFAULT_VIEW));
+map.touchZoomRotate.disableRotation(); // keep pinch-to-zoom, drop two-finger rotate
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}), "bottom-right");
 map.on("error", function(e){ console.error("MapLibre error:", e && e.error && e.error.message); });
+
+document.getElementById("btnFit").addEventListener("click", function(){
+  map.easeTo(Object.assign({duration:600}, DEFAULT_VIEW));
+});
 
 var is3D = false, isDeclutter = false;
 
@@ -393,6 +400,12 @@ function openDistrict(id){
   bindVisitCheckboxes();
 }
 
+function photoHTML(p){
+  return p.img
+    ? "<img src='"+p.img+"' alt='' loading='lazy'>"
+    : "<span class='ph' style='background:"+catColor(p.category)+"22'></span>";
+}
+
 function placeCardHTML(p){
   var flags = "";
   if (!p.lat) flags += "<span class='pflag' style='color:#9a6bc4;border-color:#9a6bc4'>NO PIN YET</span> ";
@@ -400,6 +413,7 @@ function placeCardHTML(p){
   if (p.sourced_from_video) flags += "<span class='fromvid'>video</span>";
   return "<div class='pcard"+(visited[p.id]?" done":"")+"' data-id='"+p.id+"'>"
     + "<input type='checkbox' class='vischk' data-id='"+p.id+"'"+(visited[p.id]?" checked":"")+">"
+    + "<a class='pc-photo' href='"+naverUrl(p)+"' target='_blank' rel='noopener' aria-label='"+p.name+" on Naver Map'>"+photoHTML(p)+"</a>"
     + "<div>"
     + "<div class='pname'>"+p.name+" <span class='kr'>"+(p.name_kr||"")+"</span></div>"
     + "<span class='chiptype lr-cat'><i class='cdot' style=\"background:"+catColor(p.category)+"\"></i>"+catLabel(p.category)+"</span>"
@@ -440,6 +454,16 @@ document.getElementById("panelClose").addEventListener("click", function(){
   document.getElementById("panel").classList.remove("open");
 });
 
+/* ---------- collapse/reopen the whole HUD card ---------- */
+document.getElementById("hudClose").addEventListener("click", function(){
+  document.getElementById("hud").hidden = true;
+  document.getElementById("hudReopen").hidden = false;
+});
+document.getElementById("hudReopen").addEventListener("click", function(){
+  document.getElementById("hud").hidden = false;
+  document.getElementById("hudReopen").hidden = true;
+});
+
 /* ---------- list view (ported from v1's renderList/listGroup/listRow/wireList) ---------- */
 document.getElementById("btnList").addEventListener("click", function(){
   listOpen = true;
@@ -453,9 +477,7 @@ function listRow(p){
   var done = !!visited[p.id];
   return "<div class='lr"+(done?" done":"")+"' id='card-"+p.id+"'>"
     + "<label class='lr-chk'><input type='checkbox' data-pid='"+p.id+"'"+(done?" checked":"")+"></label>"
-    + "<a class='lr-photo' href='"+naverUrl(p)+"' target='_blank' rel='noopener' aria-label='"+p.name+" on Naver Map'>"
-    +   "<span class='ph' style='background:"+catColor(p.category)+"22'></span>"
-    + "</a>"
+    + "<a class='lr-photo' href='"+naverUrl(p)+"' target='_blank' rel='noopener' aria-label='"+p.name+" on Naver Map'>"+photoHTML(p)+"</a>"
     + "<div class='lr-main'>"
       + "<div class='lr-top'><span class='lr-name'>"+p.name+" <span class='lr-kr'>"+(p.name_kr||"")+"</span></span></div>"
       + "<span class='chiptype lr-cat'><i class='cdot' style=\"background:"+catColor(p.category)+"\"></i>"+catLabel(p.category)+"</span>"

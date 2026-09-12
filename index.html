@@ -13,7 +13,8 @@
   </div>
   <div id="map"></div>
 
-  <header class="hud">
+  <header class="hud" id="hud">
+    <button id="hudClose" class="hud-close" aria-label="Collapse">&times;</button>
     <div class="brand">
       <h1>Seoul <span>by District</span></h1>
       <p class="sub">Jake + sister · Sep–Oct 2026</p>
@@ -25,10 +26,12 @@
       </div>
       <button id="btn3d" class="chip-btn" aria-pressed="false">3D</button>
       <button id="btnDeclutter" class="chip-btn" aria-pressed="false">No streets</button>
-      <button id="btnList" class="chip-btn">List view</button>
+      <button id="btnFit" class="txtbtn">Fit map</button>
+      <button id="btnList" class="txtbtn">List view</button>
     </div>
     <div class="catbar" id="catbar"></div>
   </header>
+  <button id="hudReopen" class="hud-reopen" hidden>Seoul <span>▾</span></button>
 
   <aside id="panel" class="panel" aria-live="polite">
     <button id="panelClose" class="panel-close" aria-label="Close">&times;</button>

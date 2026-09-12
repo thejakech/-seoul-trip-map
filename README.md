@@ -28,7 +28,9 @@ app.js                 map init, filters, district panel, list view, visited-tra
 data/
   districts.geojson    real Seoul gu (district) boundaries, from southkorea/seoul-maps
   places.json           every picked place: schema below
-  seoul-outline.json     Seoul's dissolved, simplified outer boundary — see "floating island" below
+  seoul-outline.json     Seoul's exact outer boundary — see "floating island" below
+assets/
+  photos/               place thumbnails recovered from the v1 artifact — see "Photos" below
 ```
 
 ## `places.json` schema
@@ -138,18 +140,27 @@ background the way v1's own illustration did.
 
 **Current approach:** `#seaBackground` (`index.html`/`style.css`) is a plain, fixed, full-viewport
 `div` sitting *behind* the map — a flat pink background-color plus a repeating wave-pattern
-`background-image` (an inline SVG data URI, no external asset). It never moves, scales, or
-repaints — it's just CSS. `#map`'s inner canvas layer (specifically `.maplibregl-canvas-container`,
+`background-image` (an inline SVG data URI, no external asset — a 34×14px tile with a low-amplitude
+curve, tuned tighter/subtler than the first pass to match v1's dense, quiet ripple rather than a
+bold loose wave). It never moves, scales, or repaints — it's just CSS. `#map`'s inner canvas layer (specifically `.maplibregl-canvas-container`,
 **not** `#map` itself — see note below) gets a CSS `clip-path: polygon(...)` that traces Seoul's
 outline in current screen-pixel coordinates, recomputed on every `move`/`resize` event
 (`updateMapClip()` in `app.js`). So the interactive map is only ever visible inside Seoul's
 silhouette; `#seaBackground` shows through everywhere else, completely unaffected by pan/zoom.
 
 Seoul's outline itself is a **one-time, offline computation**: `data/seoul-outline.json` is the
-union of all 25 district polygons (via Shapely's `unary_union`, then simplified to ~64 points with
-`.simplify()`) — small enough to re-project every frame without any per-frame cost. No turf.js, no
-in-browser geometry library; regenerate it only if `districts.geojson` itself ever changes,
-by re-running the union+simplify against the new file.
+union of all 25 district polygons (via Shapely's `unary_union`) at **essentially full fidelity —
+428 of the raw 430 boundary points**, not a heavily simplified version. No turf.js, no in-browser
+geometry library; regenerate it only if `districts.geojson` itself ever changes, by re-running the
+union against the new file.
+
+⚠️ **Don't simplify this outline more aggressively than that.** An earlier version used a ~64-point
+simplification (fine per-frame cost either way — even 428 points is trivial to re-project every
+frame) and it caused visibly ragged, "bleeding" borders: the simplified clip-path edge didn't
+exactly coincide with the full-fidelity `district-line` boundary rendered just inside it, so at the
+outer edge you'd see slivers of base-map road/label content peeking through the gap between the two
+mismatched outlines. Keeping the clip essentially exact (rather than simplified) is what fixed it —
+this is a case where "cheap enough to not simplify" was also the correct fix, not just a shortcut.
 
 **Why clip `.maplibregl-canvas-container` and not `#map`:** MapLibre's zoom +/− control is also a
 child of `#map`, anchored to a fixed screen corner. Clipping `#map` itself would clip the control
@@ -162,6 +173,30 @@ page's own `html`/`body` background paint (since `body` doesn't establish its ow
 context) rather than merely behind `#map` — so with `z-index:-1` the whole background silently
 disappeared behind the plain page background instead of showing through the map's clipped-away
 areas. `#seaBackground:0` / `#map:1` avoids that pitfall entirely.
+
+## The map doesn't drag — on purpose
+
+`dragPan`/`dragRotate`/`pitchWithRotate`/`touchPitch` are all disabled at construction, and
+`map.touchZoomRotate.disableRotation()` drops two-finger rotate while keeping pinch-to-zoom. The
+camera only ever moves programmatically now — the scroll wheel, pinch, the zoom +/− control,
+clicking a district (`fitBounds`), and **Fit map** (`DEFAULT_VIEW` in `app.js`, resets center/zoom/
+pitch/bearing to the initial load values). This matches v1, which read as a fixed illustration you
+tap into rather than a freely-draggable map, and sidesteps a real interaction bug that free dragging
+would otherwise reintroduce: the fixed `#seaBackground` behind the map has no relationship to
+Seoul's real-world coordinates, so letting the island drift arbitrarily far from center via drag
+would eventually make the "floating island" framing (built around a specific default view) look
+wrong.
+
+## The HUD card
+
+Collapses via the **×** in its corner (`#hudClose`) to a small "Seoul ▾" pill (`#hudReopen`) that
+reopens it, matching v1's own collapse/reopen affordance. **3D** / **No streets** stay pill buttons
+(they're binary on/off toggles); **Fit map** / **List view** are plain text links (`.txtbtn`, blue,
+underline on hover/tap) — matching v1's own visual distinction between a toggle and a navigation
+action, and freeing up room for all four controls to share one row. The category filter bar
+(`.catbar`) is a fixed 5-column CSS grid rather than an organic `flex-wrap` — with exactly 9 chips
+("All types" + 8 categories) that lands as an even 5-over-4 split every time, instead of possibly
+stranding a lone chip on its own row depending on viewport width.
 
 ## District borders, colors, and labels
 
@@ -201,6 +236,25 @@ badge (shown when every place in that district has `sourced_from_video: true`), 
 picked — near these if you pass through" footer for districts with zero placed picks, listing their
 `also` backlog as jump-links. Expand all / Collapse all reset every district row's open state; it's
 not persisted between renders (matches v1 — re-filtering re-renders the whole list fresh).
+
+## Photos
+
+`assets/photos/` holds real place thumbnails recovered from the old v1 artifact — it had every
+photo embedded as inline base64 inside its own JS (a `THUMBS` object mapping place id → data URI,
+which is a large part of why that single HTML file was 9.2MB). These were decoded back out to real
+image files: **all 67 places matched exactly**, ~2.2MB total, individual files 11–93KB — small
+enough to commit as plain files, no LFS or external hosting needed.
+
+Each matching place in `places.json` got an `"img": "assets/photos/<id>.<ext>"` field; `app.js`'s
+`photoHTML()` (shared by the district panel and list view) renders that as a real `<img>` when
+present, falling back to the plain colored swatch (`.ph`) when it's `null`/missing — so a newly
+added place with no photo yet degrades gracefully rather than showing a broken image.
+
+**To add a photo for a new place:** drop an image into `assets/photos/` and set `"img"` on that
+place's entry in `places.json` — no code changes needed. Three extra photos came out of the
+extraction with no matching place (`euljiro`, `hongdaest`, `seongsuarea` — likely intended as
+neighborhood-level header images, not per-place ones); they're sitting in the folder unused if you
+want to wire them into `neighborhoods[hid]` later.
 
 ## Scope
 
