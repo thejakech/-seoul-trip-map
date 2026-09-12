@@ -697,12 +697,12 @@
       "district": "yongsan",
       "neighborhood": "hannam",
       "category": "museum",
-      "lat": null,
-      "lng": null,
+      "lat": 37.5383468,
+      "lng": 126.998989,
       "hours": "10:00–18:00, closed Mon",
       "note": "Three buildings by Botta, Nouvel and Koolhaas — the architecture is half the visit. Reserve timed entry.",
       "unverified": false,
-      "geocode_query": "리움미술관"
+      "geocode_query": "Leeum Museum of Art"
     },
     {
       "id": "fountain",
@@ -814,7 +814,7 @@
       "hours": "Dinner, check Naver",
       "note": "Samgyeopsal pick in Haebangchon — very thinly sliced pork.",
       "unverified": false,
-      "geocode_query": "잠수교집 해방촌"
+      "geocode_query": "잠수교집 서울 (rejected: resolved to wrong district, needs manual Naver/Kakao lookup)"
     },
     {
       "id": "atta",
@@ -828,7 +828,7 @@
       "hours": "Dinner, check Naver",
       "note": "Favorite Italian restaurant in all of Seoul — pasta, pizza, wine.",
       "unverified": false,
-      "geocode_query": "아따 한남동"
+      "geocode_query": "Atta Seoul (rejected: resolved to wrong district, needs manual Naver/Kakao lookup)"
     },
     {
       "id": "cafe232",
@@ -1047,12 +1047,12 @@
       "district": "gwangjin",
       "neighborhood": null,
       "category": "view",
-      "lat": null,
-      "lng": null,
+      "lat": 37.5404436,
+      "lng": 127.0708644,
       "hours": "Evening",
       "note": "Lamb-skewer alley plus Yanbian beer; the Common Ground container mall is a short walk.",
       "unverified": false,
-      "geocode_query": "건대 양꼬치거리"
+      "geocode_query": "건대입구 서울"
     },
     {
       "id": "mullaeduck",
@@ -1159,12 +1159,12 @@
       "district": "gangnam",
       "neighborhood": "sinsa",
       "category": "shop",
-      "lat": null,
-      "lng": null,
+      "lat": 37.4850352,
+      "lng": 127.0458264,
       "hours": "Varies",
       "note": "Curated resale — a pricier tier than a Dongmyo dig.",
       "unverified": true,
-      "geocode_query": "강남 빈티지샵"
+      "geocode_query": "Gangnam vintage"
     },
     {
       "id": "starfield",
@@ -1173,12 +1173,12 @@
       "district": "gangnam",
       "neighborhood": null,
       "category": "landmark",
-      "lat": null,
-      "lng": null,
+      "lat": 37.5101676,
+      "lng": 127.0600884,
       "hours": "10:30–22:00",
       "note": "The famous one — the branch Jake said to skip. Decide before adding to a day.",
       "unverified": true,
-      "geocode_query": "코엑스 별마당도서관"
+      "geocode_query": "별마당 도서관 서울"
     },
     {
       "id": "bongeunsa",
