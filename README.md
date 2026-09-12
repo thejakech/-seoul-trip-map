@@ -137,13 +137,43 @@ in a solid "sea" fill layer, painted above the base map tiles but below this app
 layers. No turf.js, no geometry library — it's pure ring concatenation, computed client-side from the
 already-loaded `districts.geojson`.
 
-## District borders and colors
+## District borders, colors, and labels
 
-Each district is filled with one of five pastel tones (`--land-a`…`--land-e`, keyed by its `tint`
-property in `districts.geojson`) and outlined with a crisp, always-visible seam line (`--seam`,
-white) that thickens and recolors (`--accent`) when a district is selected — so adjacent districts
-read as distinct color blocks even before you click anything, matching v1's cartographic style
-rather than a subtle transit-map outline.
+Each district is filled with one of five tones from a pink/rose family (`--land-a`…`--land-e`,
+keyed by its `tint` property in `districts.geojson` — a genuinely different palette in light vs.
+dark mode, not just a darkened copy of the light one) and outlined with a crisp, always-visible
+seam line (`--seam`, white) that thickens and recolors (`--accent`) when a district is selected —
+so adjacent districts read as distinct color blocks even before you click anything. Each district
+also gets its own name label (`district-label` layer) drawn directly on the map — MapLibre places
+one label per polygon automatically (an interior "pole of inaccessibility" point), no manual
+centroid math needed.
+
+The base style's generic "Seoul 서울특별시" city label is permanently hidden (`PERMANENT_HIDE_IDS`
+in `app.js`) — it used to sit on top of the map at street-level zoom and duplicated what the
+district labels already show.
+
+### A rendering bug this fixed: solid block at high zoom
+
+At very high zoom (deep inside a district, building/street level), the sea-mask's world-spanning
+exterior ring could mis-tessellate against its own city-scale holes and paint a solid block over
+part of the view. Fix: both `sea-mask` and `sea-pattern` now carry `maxzoom: 15` — by that zoom
+you're already well inside a "hole," so the mask has nothing left to show and just stops drawing,
+sidestepping the artifact entirely rather than chasing the exact tessellation edge case.
+
+## Background design — sea texture and the SEOUL watermark
+
+The sea area now carries a subtle wavy-ripple texture (`sea-pattern` layer) instead of a flat
+color — a small seamless tile is drawn on an offscreen `<canvas>` at load time (`buildWaveTile()`
+in `app.js`) and loaded via `map.addImage()`, then used as a `fill-pattern` at low opacity over the
+flat `sea-mask` fill. No external image asset, no build step.
+
+A large, low-opacity "SEOUL" watermark sits in the bottom-left corner of the viewport
+(`.seoul-watermark` in `index.html`/`style.css`). Unlike v1 — where this was drawn inside the same
+SVG canvas as the map and could pan/zoom with it — this is a fixed screen overlay, `pointer-events:
+none`, that stays put regardless of camera movement. That's a deliberate difference: v1's whole map
+was one hand-illustrated canvas; this one is a real geographic map, so a "brand watermark" reads
+more honestly as a viewport-anchored corner element than as something pretending to be part of the
+terrain.
 
 ## "No streets" declutter mode
 

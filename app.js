@@ -101,13 +101,18 @@ var DECLUTTER_HIDE_IDS = [
   "tunnel_service_track","tunnel_service_track_casing","tunnel_street_casing","tunnel_transit_rail",
   "tunnel_transit_rail_hatching","tunnel_trunk_primary","tunnel_trunk_primary_casing",
   "poi_r20","poi_r7","poi_r1","poi_transit",
-  "label_other","label_village","label_town","label_state","label_city","label_city_capital",
+  "label_other","label_village","label_town",
   "label_country_3","label_country_2","label_country_1",
   "aeroway_fill","aeroway_runway","aeroway_taxiway","airport",
   "boundary_2","boundary_3","boundary_disputed",
   "building",
   "waterway_line_label","water_name_point_label","water_name_line_label"
 ];
+/* always hidden, regardless of declutter state — the base style's generic "Seoul 서울특별시"
+   city label sits right on top of the map at street-level zoom and duplicates what our own
+   district-label layer already shows */
+var PERMANENT_HIDE_IDS = ["label_city","label_city_capital","label_state"];
+
 function applyDeclutter(){
   DECLUTTER_HIDE_IDS.forEach(function(id){
     if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", isDeclutter ? "none" : "visible");
@@ -130,6 +135,29 @@ function buildSeaMask(districtsGeo){
 }
 
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+/* a small seamless wavy-ripple tile, drawn on an offscreen canvas and loaded as a MapLibre
+   image so the sea-mask can use it as a fill-pattern instead of a flat color — no external
+   asset, no build step. Two sine strokes with matching phase at x=0/x=size tile cleanly. */
+function buildWaveTile(){
+  var size = 48;
+  var canvas = document.createElement("canvas");
+  canvas.width = size; canvas.height = size;
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, size, size);
+  ctx.strokeStyle = cssVar("--sea-ripple");
+  ctx.lineWidth = 2;
+  ctx.lineCap = "round";
+  [size*0.28, size*0.74].forEach(function(baseY, i){
+    ctx.beginPath();
+    for (var x = 0; x <= size; x++){
+      var y = baseY + Math.sin((x/size)*Math.PI*2 + i*Math.PI) * (size*0.09);
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  });
+  return ctx.getImageData(0, 0, size, size);
+}
 
 map.on("load", function(){
   Promise.all([
@@ -155,6 +183,7 @@ function init(districtsGeo, data){
 
   districtsGeo.features.forEach(function(f){
     var id = f.properties.id;
+    f.properties.label = f.properties.name.replace("-gu","");
     DISTRICT_FEATURE_ID[id] = f.id;
     var meta = data.districts[id] || {};
     DISTRICT[id] = {
@@ -174,9 +203,23 @@ function init(districtsGeo, data){
      read var(--x) themselves, they'd be treated as an invalid literal color string */
   var LAND = [cssVar("--land-a"), cssVar("--land-b"), cssVar("--land-c"), cssVar("--land-d"), cssVar("--land-e")];
   var SEAM = cssVar("--seam"), SEL_EDGE = cssVar("--accent"), SEA = cssVar("--sea");
+  var LABEL_COLOR = cssVar("--district-label"), LABEL_HALO = cssVar("--district-label-halo");
 
   map.addSource("sea-mask", {type:"geojson", data: buildSeaMask(districtsGeo)});
-  map.addLayer({id:"sea-mask", type:"fill", source:"sea-mask", paint:{"fill-color":SEA, "fill-opacity":1}});
+  map.addLayer({
+    id:"sea-mask", type:"fill", source:"sea-mask", paint:{"fill-color":SEA, "fill-opacity":1},
+    /* BUG FIX: at very high zoom (deep inside a district), the huge world-spanning ring in
+       this polygon can mis-tessellate against its own city-scale holes and paint a solid
+       block over part of the view. By this zoom you're well inside a "hole" anyway, so the
+       mask has nothing left to show — just stop drawing it instead of risking the artifact. */
+    maxzoom: 15
+  });
+  if (!map.hasImage("sea-wave")) map.addImage("sea-wave", buildWaveTile());
+  map.addLayer({
+    id:"sea-pattern", type:"fill", source:"sea-mask",
+    paint:{"fill-pattern":"sea-wave", "fill-opacity":0.4},
+    maxzoom: 15
+  });
 
   map.addSource("districts", {type:"geojson", data: districtsGeo});
   map.addLayer({
@@ -193,6 +236,18 @@ function init(districtsGeo, data){
       "line-color": ["case", ["boolean", ["feature-state","selected"], false], SEL_EDGE, SEAM],
       "line-width": ["case", ["boolean", ["feature-state","selected"], false], 2.6, 1.7],
       "line-opacity": 0.95
+    }
+  });
+  /* district name labels — MapLibre places one label per polygon feature automatically
+     (an interior "pole of inaccessibility" point), no manual centroid math needed */
+  map.addLayer({
+    id:"district-label", type:"symbol", source:"districts",
+    layout:{
+      "text-field": ["get","label"], "text-size": 13, "text-font": ["Noto Sans Bold"],
+      "symbol-placement": "point", "text-allow-overlap": false
+    },
+    paint:{
+      "text-color": LABEL_COLOR, "text-halo-color": LABEL_HALO, "text-halo-width": 1.4
     }
   });
 
@@ -261,6 +316,9 @@ function init(districtsGeo, data){
     bar.innerHTML = catbarHTML();
     wireCatbar(bar);
     syncCatbar(bar);
+  });
+  PERMANENT_HIDE_IDS.forEach(function(id){
+    if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
   });
   applyCatFilter();
   applyDeclutter();

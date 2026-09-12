@@ -4,21 +4,28 @@
   --hairline:#dcdcd4; --accent:#2b5fae; --accent-tint:#dce6f3; --visited:#3b7a66; --focus:#c23e2a;
   --food:#e0707f; --cafe:#d9a24f; --market:#c9ae3a; --museum:#7c8fd0; --park:#5fae82;
   --view:#4fa0c9; --shop:#c072a8; --temple:#3fae9b; --landmark:#d68a55; --night:#9a6bc4;
-  /* ---- map art tokens: district land tints, seam borders, the floating-island "sea" ---- */
-  --land-a:#F9DFE5; --land-b:#F4D3DC; --land-c:#FCE7EC; --land-d:#F0CBD7; --land-e:#F7DBE2;
-  --seam:#FFFFFF; --sea:#E6BDCB;
+  /* ---- map art tokens: district land tints (a pink family, more differentiated than a
+     single hue-with-noise), seam borders, the floating-island "sea" ---- */
+  --land-a:#FBE4EA; --land-b:#F6C7D2; --land-c:#FDF1F3; --land-d:#F0A9BC; --land-e:#F8D6DD;
+  --seam:#FFFFFF; --sea:#E6BDCB; --sea-ripple:rgba(255,255,255,.55);
+  --district-label:#6b2f45; --district-label-halo:rgba(255,255,255,.85);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --surface:#15171a; --surface-2:#1e2125; --ink:#e9e7e1; --ink-soft:#a2a8b0; --ink-faint:#6c727a;
     --hairline:#2c3036; --accent:#6ea0e2; --accent-tint:#22314a;
-    --land-a:#3A2E33; --land-b:#362B34; --land-c:#3E3035; --land-d:#382C33; --land-e:#3B2E34;
-    --sea:#241A22;
+    /* deep rose/wine family — genuinely pink-dark, not desaturated brown/gray */
+    --land-a:#5C2A45; --land-b:#4A1F38; --land-c:#6B3452; --land-d:#542840; --land-e:#63304C;
+    --sea:#2A1220; --sea-ripple:rgba(200,110,150,.4);
+    --district-label:#F6D5E0; --district-label-halo:rgba(20,8,15,.7);
   }
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--surface)}
-#map{position:fixed;inset:0}
+#map{position:fixed;inset:0;z-index:0}
+.seoul-watermark{position:fixed;left:16px;bottom:10px;z-index:1;pointer-events:none;user-select:none;
+  font-weight:800;font-size:min(19vw,180px);line-height:.8;letter-spacing:.01em;
+  color:var(--district-label);opacity:.14;white-space:nowrap}
 
 .hud{position:fixed;top:14px;left:14px;z-index:5;max-width:min(420px,calc(100vw - 28px));
   background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:12px 14px;
