@@ -28,6 +28,7 @@ app.js                 map init, filters, district panel, list view, visited-tra
 data/
   districts.geojson    real Seoul gu (district) boundaries, from southkorea/seoul-maps
   places.json           every picked place: schema below
+  seoul-outline.json     Seoul's dissolved, simplified outer boundary — see "floating island" below
 ```
 
 ## `places.json` schema
@@ -126,54 +127,61 @@ Tower, N Seoul Tower, Gyeongbokgung) ever get a **Google Photorealistic 3D Tiles
 of this, that's a separate, opt-in layer — see the trip vault's planning notes for the tradeoffs
 before adding it.
 
-## The "floating island" crop
+## The "floating island" crop (v2 — DOM-level, not a map layer)
 
-The map masks away everything outside Seoul's 25 districts, so Seoul reads as an island on a flat
-sea color at any zoom — ported from v1's hand-illustrated look, but built from real geometry. The
-technique (`buildSeaMask()` in `app.js`): one GeoJSON `Polygon` whose first ring is a world-covering
-rectangle and whose remaining rings are each district's boundary — GeoJSON/MapLibre convention treats
-ring 0 as the exterior and everything after it as a hole, so the district shapes become literal holes
-in a solid "sea" fill layer, painted above the base map tiles but below this app's own district/place
-layers. No turf.js, no geometry library — it's pure ring concatenation, computed client-side from the
-already-loaded `districts.geojson`.
+The first version of this masked Seoul geographically (a giant world-spanning polygon with a hole
+per district, rendered as a real MapLibre fill layer). It worked, but caused two problems once
+actually used: at very high zoom the huge exterior ring could mis-tessellate against its own
+city-scale holes and paint a solid block over part of the view, and its wave-texture pattern was
+geographic — meaning it visibly grew and shrank as you zoomed, instead of reading as a fixed
+background the way v1's own illustration did.
+
+**Current approach:** `#seaBackground` (`index.html`/`style.css`) is a plain, fixed, full-viewport
+`div` sitting *behind* the map — a flat pink background-color plus a repeating wave-pattern
+`background-image` (an inline SVG data URI, no external asset). It never moves, scales, or
+repaints — it's just CSS. `#map`'s inner canvas layer (specifically `.maplibregl-canvas-container`,
+**not** `#map` itself — see note below) gets a CSS `clip-path: polygon(...)` that traces Seoul's
+outline in current screen-pixel coordinates, recomputed on every `move`/`resize` event
+(`updateMapClip()` in `app.js`). So the interactive map is only ever visible inside Seoul's
+silhouette; `#seaBackground` shows through everywhere else, completely unaffected by pan/zoom.
+
+Seoul's outline itself is a **one-time, offline computation**: `data/seoul-outline.json` is the
+union of all 25 district polygons (via Shapely's `unary_union`, then simplified to ~64 points with
+`.simplify()`) — small enough to re-project every frame without any per-frame cost. No turf.js, no
+in-browser geometry library; regenerate it only if `districts.geojson` itself ever changes,
+by re-running the union+simplify against the new file.
+
+**Why clip `.maplibregl-canvas-container` and not `#map`:** MapLibre's zoom +/− control is also a
+child of `#map`, anchored to a fixed screen corner. Clipping `#map` itself would clip the control
+away too, whenever Seoul's silhouette doesn't happen to reach that corner (i.e., most of the time).
+Clipping only the inner canvas layer keeps the control always visible and usable.
+
+**A CSS trap worth knowing about if you touch this:** `#seaBackground` must use `z-index: 0` (or
+higher), never a *negative* z-index. A negative z-index on a fixed element renders it behind the
+page's own `html`/`body` background paint (since `body` doesn't establish its own stacking
+context) rather than merely behind `#map` — so with `z-index:-1` the whole background silently
+disappeared behind the plain page background instead of showing through the map's clipped-away
+areas. `#seaBackground:0` / `#map:1` avoids that pitfall entirely.
 
 ## District borders, colors, and labels
 
 Each district is filled with one of five tones from a pink/rose family (`--land-a`…`--land-e`,
-keyed by its `tint` property in `districts.geojson` — a genuinely different palette in light vs.
-dark mode, not just a darkened copy of the light one) and outlined with a crisp, always-visible
-seam line (`--seam`, white) that thickens and recolors (`--accent`) when a district is selected —
-so adjacent districts read as distinct color blocks even before you click anything. Each district
-also gets its own name label (`district-label` layer) drawn directly on the map — MapLibre places
-one label per polygon automatically (an interior "pole of inaccessibility" point), no manual
-centroid math needed.
+keyed by its `tint` property in `districts.geojson`), outlined with a crisp, always-visible seam
+line (`--seam`, white) that thickens and recolors (`--accent`) when selected, and labeled with its
+own name (`district-label` layer — MapLibre places one label per polygon automatically at an
+interior "pole of inaccessibility" point, no manual centroid math needed).
+
+**The whole map-art palette (land tints, sea, seam, labels) is pinned to this light-pink recipe
+regardless of system light/dark mode** — it's a branded illustration look matching a specific
+reference image, not a UI surface that should adapt to viewer preference, so it's deliberately
+*not* read from the `prefers-color-scheme: dark` block (only the UI chrome — panel/button surfaces —
+still adapts, for readability). An earlier version tried a separate "dark-mode" land palette and it
+came out as muddy desaturated brown/gray rather than a genuine dark pink — pinning to one recipe
+sidesteps re-deriving a second palette that has to look right on its own.
 
 The base style's generic "Seoul 서울특별시" city label is permanently hidden (`PERMANENT_HIDE_IDS`
 in `app.js`) — it used to sit on top of the map at street-level zoom and duplicated what the
 district labels already show.
-
-### A rendering bug this fixed: solid block at high zoom
-
-At very high zoom (deep inside a district, building/street level), the sea-mask's world-spanning
-exterior ring could mis-tessellate against its own city-scale holes and paint a solid block over
-part of the view. Fix: both `sea-mask` and `sea-pattern` now carry `maxzoom: 15` — by that zoom
-you're already well inside a "hole," so the mask has nothing left to show and just stops drawing,
-sidestepping the artifact entirely rather than chasing the exact tessellation edge case.
-
-## Background design — sea texture and the SEOUL watermark
-
-The sea area now carries a subtle wavy-ripple texture (`sea-pattern` layer) instead of a flat
-color — a small seamless tile is drawn on an offscreen `<canvas>` at load time (`buildWaveTile()`
-in `app.js`) and loaded via `map.addImage()`, then used as a `fill-pattern` at low opacity over the
-flat `sea-mask` fill. No external image asset, no build step.
-
-A large, low-opacity "SEOUL" watermark sits in the bottom-left corner of the viewport
-(`.seoul-watermark` in `index.html`/`style.css`). Unlike v1 — where this was drawn inside the same
-SVG canvas as the map and could pan/zoom with it — this is a fixed screen overlay, `pointer-events:
-none`, that stays put regardless of camera movement. That's a deliberate difference: v1's whole map
-was one hand-illustrated canvas; this one is a real geographic map, so a "brand watermark" reads
-more honestly as a viewport-anchored corner element than as something pretending to be part of the
-terrain.
 
 ## "No streets" declutter mode
 

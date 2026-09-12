@@ -79,8 +79,8 @@ document.getElementById("btn3d").addEventListener("click", function(){
 /* ---------- "no streets" declutter toggle ----------
    Hides every base-style road/rail/POI/label/building/admin-boundary layer, leaving only
    background/water/landcover/landuse (still "land") plus this app's own district-fill,
-   district-line, place-points and sea-mask layers. The Han River itself (its fill + line
-   geometry) stays visible as a geographic anchor — only its text label is hidden. */
+   district-line, district-label and place-points layers. The Han River itself (its fill +
+   line geometry) stays visible as a geographic anchor — only its text label is hidden. */
 var DECLUTTER_HIDE_IDS = [
   "bridge_link","bridge_link_casing","bridge_major_rail","bridge_major_rail_hatching",
   "bridge_motorway","bridge_motorway_casing","bridge_motorway_link","bridge_motorway_link_casing",
@@ -125,49 +125,46 @@ document.getElementById("btnDeclutter").addEventListener("click", function(){
   applyDeclutter();
 });
 
-/* ---------- "floating island" mask: one polygon, world rect exterior + a hole per
-   district — MapLibre's fill renderer treats ring 0 as exterior and every later ring as a
-   hole regardless of winding order, so this just works with the districts' raw rings. ---------- */
-function buildSeaMask(districtsGeo){
-  var world = [[-180,-90],[-180,90],[180,90],[180,-90],[-180,-90]];
-  var holes = districtsGeo.features.map(function(f){ return f.geometry.coordinates[0]; });
-  return {type:"Feature", properties:{}, geometry:{type:"Polygon", coordinates:[world].concat(holes)}};
-}
-
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
-/* a small seamless wavy-ripple tile, drawn on an offscreen canvas and loaded as a MapLibre
-   image so the sea-mask can use it as a fill-pattern instead of a flat color — no external
-   asset, no build step. Two sine strokes with matching phase at x=0/x=size tile cleanly. */
-function buildWaveTile(){
-  var size = 48;
-  var canvas = document.createElement("canvas");
-  canvas.width = size; canvas.height = size;
-  var ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, size, size);
-  ctx.strokeStyle = cssVar("--sea-ripple");
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
-  [size*0.28, size*0.74].forEach(function(baseY, i){
-    ctx.beginPath();
-    for (var x = 0; x <= size; x++){
-      var y = baseY + Math.sin((x/size)*Math.PI*2 + i*Math.PI) * (size*0.09);
-      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
+/* ---------- "floating island" crop, take 2 ----------
+   v1's approach (a giant world-polygon with a hole per district, rendered as a real MapLibre
+   fill layer) worked but had two problems the user hit: it mis-tessellated into a solid block
+   at very high zoom, and its wave-pattern texture was geographic — meaning it grew/shrank as
+   you zoomed, instead of reading as a fixed background the way v1's actual illustration did.
+   This replaces it with a DOM-level technique: #seaBackground is a plain, fixed, non-zooming
+   CSS background (texture + the SEOUL watermark) sitting behind #map. #map itself gets a CSS
+   `clip-path` that traces Seoul's outline in current screen pixels, re-computed on every map
+   move/zoom/resize — so the map canvas is only ever visible inside Seoul's silhouette, and
+   #seaBackground shows through everywhere else, completely unaffected by the camera. */
+var seoulOutline = null; // [[lng,lat], ...] — the dissolved, simplified outer boundary of all 25 districts
+function updateMapClip(){
+  if (!seoulOutline) return;
+  /* clip the inner canvas layer, NOT #map itself — #map also contains the zoom +/- control
+     (a fixed screen corner), which would otherwise get clipped away along with everything
+     else whenever Seoul's silhouette doesn't happen to reach that corner */
+  var canvasLayer = document.querySelector("#map .maplibregl-canvas-container") || document.getElementById("map");
+  var pts = seoulOutline.map(function(ll){
+    var p = map.project(ll);
+    return p.x.toFixed(1) + "px " + p.y.toFixed(1) + "px";
   });
-  return ctx.getImageData(0, 0, size, size);
+  canvasLayer.style.clipPath = "polygon(" + pts.join(",") + ")";
 }
 
 map.on("load", function(){
   Promise.all([
     fetch("data/districts.geojson").then(r=>r.json()),
-    fetch("data/places.json").then(r=>r.json())
+    fetch("data/places.json").then(r=>r.json()),
+    fetch("data/seoul-outline.json").then(r=>r.json())
   ]).then(function(results){
+    seoulOutline = results[2].outline;
+    updateMapClip();
+    map.on("move", updateMapClip);
+    map.on("resize", updateMapClip);
     init(results[0], results[1]);
   }).catch(function(err){
     console.error("Failed to load data:", err);
-    document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/districts.geojson and data/places.json exist and the site is served over http(s), not file://.</p>";
+    document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/districts.geojson, data/places.json and data/seoul-outline.json exist and the site is served over http(s), not file://.</p>";
     document.getElementById("panel").classList.add("open");
   });
   apply3D(); // hide the style's own building-3d layer immediately, before data even loads
@@ -202,24 +199,8 @@ function init(districtsGeo, data){
   /* resolve CSS custom properties to literal hex once — MapLibre paint expressions cannot
      read var(--x) themselves, they'd be treated as an invalid literal color string */
   var LAND = [cssVar("--land-a"), cssVar("--land-b"), cssVar("--land-c"), cssVar("--land-d"), cssVar("--land-e")];
-  var SEAM = cssVar("--seam"), SEL_EDGE = cssVar("--accent"), SEA = cssVar("--sea");
+  var SEAM = cssVar("--seam"), SEL_EDGE = cssVar("--accent");
   var LABEL_COLOR = cssVar("--district-label"), LABEL_HALO = cssVar("--district-label-halo");
-
-  map.addSource("sea-mask", {type:"geojson", data: buildSeaMask(districtsGeo)});
-  map.addLayer({
-    id:"sea-mask", type:"fill", source:"sea-mask", paint:{"fill-color":SEA, "fill-opacity":1},
-    /* BUG FIX: at very high zoom (deep inside a district), the huge world-spanning ring in
-       this polygon can mis-tessellate against its own city-scale holes and paint a solid
-       block over part of the view. By this zoom you're well inside a "hole" anyway, so the
-       mask has nothing left to show — just stop drawing it instead of risking the artifact. */
-    maxzoom: 15
-  });
-  if (!map.hasImage("sea-wave")) map.addImage("sea-wave", buildWaveTile());
-  map.addLayer({
-    id:"sea-pattern", type:"fill", source:"sea-mask",
-    paint:{"fill-pattern":"sea-wave", "fill-opacity":0.4},
-    maxzoom: 15
-  });
 
   map.addSource("districts", {type:"geojson", data: districtsGeo});
   map.addLayer({
