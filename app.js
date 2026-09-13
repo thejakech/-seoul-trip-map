@@ -51,7 +51,7 @@ var HOOD_LABEL_POINT = {
 
 /* ---------- persisted state ---------- */
 var LS = {visited:"seoul-map:visited", cats:"seoul-map:cats"};
-var visited = {}, state = {catSel:{}};
+var visited = {}, state = {catSel:{}, allOff:false}; // allOff: the "All types"/"None" toggle — not persisted, always starts showing everything
 try { visited = JSON.parse(localStorage.getItem(LS.visited) || "{}") || {}; } catch(e) {}
 try { state.catSel = JSON.parse(localStorage.getItem(LS.cats) || "{}") || {}; } catch(e) {}
 function saveVisited(){ try{ localStorage.setItem(LS.visited, JSON.stringify(visited)); }catch(e){} }
@@ -95,13 +95,24 @@ map.on("error", function(e){ console.error("MapLibre error:", e && e.error && e.
    own top edge under the HUD instead of leaving clear room below it. */
 var FIT_PADDING = {top:190, bottom:50, left:40, right:40};
 var seoulBounds = null;
+/* Always resets pitch/bearing to flat top-down, not just the bounds: fitBounds() under a
+   tilted camera needs FAR more zoom-out to keep the same geographic extent on screen
+   (perspective foreshortening pushes the far edge back), so leaving 3D's pitch active from
+   a previous tap made "Fit map" land absurdly zoomed-out — and updateMapClip()'s screen-space
+   clip-path (below) only produces a valid shape when flat, so a lingering tilt also produced
+   the diagonal pink bleed-through. Resetting both here means "Fit map" always gets you back to
+   the same clean, flat, correctly-clipped view regardless of what the camera was doing before. */
 function fitSeoul(duration){
   if (!seoulBounds) return;
-  map.fitBounds(seoulBounds, {padding: FIT_PADDING, duration: duration===undefined?600:duration});
+  is3D = false;
+  var btn3d = document.getElementById("btn3d");
+  if (btn3d) btn3d.setAttribute("aria-pressed", "false");
+  map.fitBounds(seoulBounds, {padding: FIT_PADDING, pitch:0, bearing:0, duration: duration===undefined?600:duration});
+  apply3D();
 }
 document.getElementById("btnFit").addEventListener("click", function(){ fitSeoul(600); });
 
-var is3D = false, isDeclutter = false;
+var is3D = false, isDeclutter = true; // declutter (streets/POIs/labels hidden) is the default now
 
 /* the liberty style ships its own fill-extrusion building layer ("building-3d") — it is
    VISIBLE BY DEFAULT (no layout.visibility set), so it must be explicitly hidden on load,
@@ -118,11 +129,13 @@ document.getElementById("btn3d").addEventListener("click", function(){
   apply3D();
 });
 
-/* ---------- "no streets" declutter toggle ----------
-   Hides every base-style road/rail/POI/label/building/admin-boundary layer, leaving only
-   background/water/landcover/landuse (still "land") plus this app's own district-fill,
+/* ---------- "Streets On" declutter toggle ----------
+   Hides every base-style road/rail/POI/label/building/admin-boundary layer BY DEFAULT, leaving
+   only background/water/landcover/landuse (still "land") plus this app's own district-fill,
    district-line, district-label and place-points layers. The Han River itself (its fill +
-   line geometry) stays visible as a geographic anchor — only its text label is hidden. */
+   line geometry) stays visible as a geographic anchor — only its text label is hidden.
+   The button is framed as turning streets ON (default off) rather than off (default on), since
+   the decluttered look is what most people want most of the time here. */
 var DECLUTTER_HIDE_IDS = [
   "bridge_link","bridge_link_casing","bridge_major_rail","bridge_major_rail_hatching",
   "bridge_motorway","bridge_motorway_casing","bridge_motorway_link","bridge_motorway_link_casing",
@@ -155,15 +168,54 @@ var DECLUTTER_HIDE_IDS = [
    district-label layer already shows */
 var PERMANENT_HIDE_IDS = ["label_city","label_city_capital","label_state"];
 
-function applyDeclutter(){
+/* the literal road/highway layers within DECLUTTER_HIDE_IDS — the subset that gets revealed,
+   scoped to just the selected district, even while "Streets On" itself is off (see below). */
+var ROAD_LAYER_IDS = DECLUTTER_HIDE_IDS.filter(function(id){
+  return /^(road_|bridge_|tunnel_|highway-)/.test(id);
+});
+/* each hideable layer's own filter, as shipped in the base style, captured once before we
+   ever touch it — needed so that scoping a layer to one district (below) can AND a "within
+   this district" clause onto its existing filter instead of replacing it outright (replacing
+   it would also undo whatever class-based filter kept e.g. "road_minor" from also drawing
+   motorways, which have their own separate layer/styling). */
+var ORIGINAL_FILTERS = {}, originalFiltersCaptured = false;
+function captureOriginalFilters(){
+  if (originalFiltersCaptured) return;
   DECLUTTER_HIDE_IDS.forEach(function(id){
-    if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", isDeclutter ? "none" : "visible");
+    if (map.getLayer(id)) ORIGINAL_FILTERS[id] = map.getFilter(id) || null;
+  });
+  originalFiltersCaptured = true;
+}
+/* the district GeoJSON Feature currently open in the panel, or null when back at the full
+   Seoul view — set by selectDistrict()/closePanelFully() further down. Roads are revealed
+   within this district's own polygon regardless of the global "Streets On" state, via a
+   MapLibre `within` filter (true only for features fully inside the given polygon). */
+var selectedDistrictFeature = null;
+
+function applyDeclutter(){
+  captureOriginalFilters();
+  DECLUTTER_HIDE_IDS.forEach(function(id){
+    if (!map.getLayer(id)) return;
+    var isRoad = ROAD_LAYER_IDS.indexOf(id) >= 0;
+    if (!isDeclutter){
+      // "Streets On" — everything visible everywhere, exactly as the base style shipped it
+      map.setLayoutProperty(id, "visibility", "visible");
+      map.setFilter(id, ORIGINAL_FILTERS[id]);
+    } else if (isRoad && selectedDistrictFeature){
+      // declutter on, but a district is open — reveal its roads, scoped to that district only
+      map.setLayoutProperty(id, "visibility", "visible");
+      var base = ORIGINAL_FILTERS[id];
+      var within = ["within", selectedDistrictFeature];
+      map.setFilter(id, base ? ["all", base, within] : within);
+    } else {
+      map.setLayoutProperty(id, "visibility", "none");
+    }
   });
   apply3D(); // declutter also forces buildings off regardless of the 3D toggle
 }
 document.getElementById("btnDeclutter").addEventListener("click", function(){
   isDeclutter = !isDeclutter;
-  this.setAttribute("aria-pressed", isDeclutter);
+  this.setAttribute("aria-pressed", String(!isDeclutter)); // pressed = "Streets On" active
   applyDeclutter();
 });
 
@@ -181,11 +233,24 @@ function cssVar(name){ return getComputedStyle(document.documentElement).getProp
    #seaBackground shows through everywhere else, completely unaffected by the camera. */
 var seoulOutline = null; // [[lng,lat], ...] — the dissolved, simplified outer boundary of all 25 districts
 function updateMapClip(){
-  if (!seoulOutline) return;
   /* clip the inner canvas layer, NOT #map itself — #map also contains the zoom +/- control
      (a fixed screen corner), which would otherwise get clipped away along with everything
      else whenever Seoul's silhouette doesn't happen to reach that corner */
   var canvasLayer = document.querySelector("#map .maplibregl-canvas-container") || document.getElementById("map");
+  if (!seoulOutline) return;
+  /* map.project() converts a geo point to a SCREEN-space pixel by projecting it through the
+     current camera — under a flat (pitch:0) top-down view that's a smooth, well-behaved
+     mapping and the outline always comes back as a simple, valid polygon. Under any tilt,
+     though, points near/behind the horizon project to wild or degenerate coordinates, so the
+     resulting "polygon(...)" clip-path can self-intersect (diagonal pink bleed-through) or
+     collapse to almost nothing (the whole canvas turning pink on further zoom). Rather than
+     try to make screen-space clipping correct under perspective, just don't clip while
+     tilted — the full rectangular canvas shows instead, which reads fine in 3D (the
+     buildings/perspective already break the flat "floating island" look anyway). */
+  if (map.getPitch() > 0.5) {
+    canvasLayer.style.clipPath = "none";
+    return;
+  }
   var pts = seoulOutline.map(function(ll){
     var p = map.project(ll);
     return p.x.toFixed(1) + "px " + p.y.toFixed(1) + "px";
@@ -275,30 +340,6 @@ function init(districtsGeo, data, hoodsGeo){
     filter:["!=", ["get","brunnel"], "tunnel"],
     paint:{"fill-color":"#3E8EDE", "fill-opacity":0.9}
   }, "district-line");
-  /* district name labels — on a dedicated Point source built from DISTRICT_LABEL_POINT, NOT
-     placed automatically off the "districts" polygon source. MapLibre's automatic polygon
-     labeling recomputes its anchor per-tile, which produces duplicate labels for any district
-     whose polygon spans more than one tile at the current zoom (see DISTRICT_LABEL_POINT's own
-     comment above) — a precomputed point sidesteps that since a point can't be tile-split. */
-  var districtLabelPts = {
-    type:"FeatureCollection",
-    features: districtsGeo.features.map(function(f){
-      var pt = DISTRICT_LABEL_POINT[f.properties.id] || f.geometry.coordinates[0][0];
-      return {type:"Feature", properties:{label:f.properties.label}, geometry:{type:"Point", coordinates:pt}};
-    })
-  };
-  map.addSource("district-label-pts", {type:"geojson", data: districtLabelPts});
-  map.addLayer({
-    id:"district-label", type:"symbol", source:"district-label-pts",
-    layout:{
-      "text-field": ["get","label"], "text-size": 13, "text-font": ["Noto Sans Bold"],
-      "text-allow-overlap": false
-    },
-    paint:{
-      "text-color": LABEL_COLOR, "text-halo-color": LABEL_HALO, "text-halo-width": 1.4
-    }
-  });
-
   /* ---------- neighborhood zones (v2 — real geography, not v1's hand-drawn circles) ----------
      data/neighborhoods.geojson holds one real polygon per walkable focus-area (administrative-
      dong boundaries, merged/simplified per neighborhood — see that file's own per-feature
@@ -339,25 +380,6 @@ function init(districtsGeo, data, hoodsGeo){
       "line-width": 1.8, "line-dasharray": [2, 1.4], "line-opacity": 0.9
     }
   });
-  /* label on a dedicated Point source (HOOD_LABEL_POINT), same tile-split reasoning as
-     district-label above — ikseondong/bukchon are small enough to rarely cross a tile
-     boundary in practice, but the fix costs nothing to apply uniformly. */
-  var hoodLabelPts = {
-    type:"FeatureCollection",
-    features: hoodsGeo.features.map(function(f){
-      var pt = HOOD_LABEL_POINT[f.properties.id] || f.geometry.coordinates[0][0];
-      return {type:"Feature", properties:{id:f.properties.id, label:f.properties.label}, geometry:{type:"Point", coordinates:pt}};
-    })
-  };
-  map.addSource("hood-label-pts", {type:"geojson", data: hoodLabelPts});
-  map.addLayer({
-    id:"hood-label", type:"symbol", source:"hood-label-pts",
-    layout:{
-      "text-field": ["get","label"], "text-size": 11.5, "text-font": ["Noto Sans Bold"],
-      "text-allow-overlap": false
-    },
-    paint:{"text-color": hoodColorMatch, "text-halo-color": "#ffffff", "text-halo-width": 1.3}
-  });
 
   var pointsGeo = {
     type:"FeatureCollection",
@@ -382,6 +404,57 @@ function init(districtsGeo, data, hoodsGeo){
     }
   });
 
+  /* ---------- district/neighborhood name labels — added LAST, after place-points ----------
+     Layers paint in the order they're added, later on top. These used to be added right after
+     their own fill/line, which put them BELOW place-points — with dozens of place dots
+     clustered in a small hood (Myeongdong, Itaewon...), the cluster could visually bury the
+     hood/district name text underneath it. Adding both label layers after place-points fixes
+     that: names always render on top of the dots, not the other way around. */
+  var districtLabelPts = {
+    type:"FeatureCollection",
+    features: districtsGeo.features.map(function(f){
+      /* MapLibre can place a symbol automatically from a polygon source
+         ("symbol-placement":"point"), but it does that placement PER TILE on the geometry as
+         clipped to that tile — a district polygon spanning more than one tile at a given zoom
+         then gets one label placed independently in each tile fragment, i.e. duplicate labels
+         for the same feature (visible e.g. on Dongdaemun-gu once zoomed in far enough to cross
+         a tile boundary). Using a single precomputed Point per feature, on its own point
+         source, sidesteps tile-splitting entirely: a point is never split into fragments, so
+         it can only ever place one label. */
+      var pt = DISTRICT_LABEL_POINT[f.properties.id] || f.geometry.coordinates[0][0];
+      return {type:"Feature", properties:{label:f.properties.label}, geometry:{type:"Point", coordinates:pt}};
+    })
+  };
+  map.addSource("district-label-pts", {type:"geojson", data: districtLabelPts});
+  map.addLayer({
+    id:"district-label", type:"symbol", source:"district-label-pts",
+    layout:{
+      "text-field": ["get","label"], "text-size": 13, "text-font": ["Noto Sans Bold"],
+      "text-allow-overlap": false
+    },
+    paint:{
+      "text-color": LABEL_COLOR, "text-halo-color": LABEL_HALO, "text-halo-width": 1.4
+    }
+  });
+  /* same tile-split reasoning as district-label above — ikseondong/bukchon are small enough
+     to rarely cross a tile boundary in practice, but the fix costs nothing to apply uniformly. */
+  var hoodLabelPts = {
+    type:"FeatureCollection",
+    features: hoodsGeo.features.map(function(f){
+      var pt = HOOD_LABEL_POINT[f.properties.id] || f.geometry.coordinates[0][0];
+      return {type:"Feature", properties:{id:f.properties.id, label:f.properties.label}, geometry:{type:"Point", coordinates:pt}};
+    })
+  };
+  map.addSource("hood-label-pts", {type:"geojson", data: hoodLabelPts});
+  map.addLayer({
+    id:"hood-label", type:"symbol", source:"hood-label-pts",
+    layout:{
+      "text-field": ["get","label"], "text-size": 11.5, "text-font": ["Noto Sans Bold"],
+      "text-allow-overlap": false
+    },
+    paint:{"text-color": hoodColorMatch, "text-halo-color": "#ffffff", "text-halo-width": 1.3}
+  });
+
   var selectedDistrict = null;
   function setSelected(id){
     if (selectedDistrict) map.setFeatureState({source:"districts", id:DISTRICT_FEATURE_ID[selectedDistrict]}, {selected:false});
@@ -399,6 +472,8 @@ function init(districtsGeo, data, hoodsGeo){
     listOpen = false;
     document.getElementById("panel").classList.remove("list-mode");
     setSelected(id);
+    selectedDistrictFeature = districtsGeo.features.find(function(x){ return x.properties.id === id; }) || null;
+    applyDeclutter(); // reveal this district's own streets even if "Streets On" is off
     openDistrict(id);
     flyToDistrict(id);
   }
@@ -437,7 +512,10 @@ function init(districtsGeo, data, hoodsGeo){
 }
 
 /* ---------- category filter chips: multi-select ADD model — clicking a chip ADDS it to
-   the active filter set; an empty set means "show everything"; "All types" clears it. ---------- */
+   the active filter set; an empty set normally means "show everything". The leading chip is
+   a two-state toggle on top of that: tap "All types" to hide every place-point on the map at
+   once (it relabels itself "None"); tap again ("None") to go back to showing everything and
+   clear any individual category selections too, for a clean binary state. ---------- */
 function catbarHTML(){
   var h = '<button class="catchip all" data-cat="">All types</button>';
   CAT_ORDER.forEach(function(k){
@@ -453,11 +531,12 @@ function syncCatbar(container){
     if (k){
       var sel = !!state.catSel[k];
       ch.classList.toggle("on", sel);
-      ch.classList.toggle("off", active && !sel);
+      ch.classList.toggle("off", (active || state.allOff) && !sel);
       ch.style.borderColor = sel ? CAT[k].color : "";
       ch.style.color = sel ? CAT[k].color : "";
     } else {
-      ch.classList.toggle("on", active);
+      ch.textContent = state.allOff ? "None" : "All types";
+      ch.classList.toggle("on", active || state.allOff);
     }
   });
 }
@@ -467,8 +546,8 @@ function wireCatbar(container){
     ch.addEventListener("click", function(e){
       e.stopPropagation();
       var k = ch.getAttribute("data-cat");
-      if (!k) { state.catSel = {}; }
-      else { state.catSel[k] = !state.catSel[k]; if (!state.catSel[k]) delete state.catSel[k]; }
+      if (!k) { state.allOff = !state.allOff; state.catSel = {}; }
+      else { state.allOff = false; state.catSel[k] = !state.catSel[k]; if (!state.catSel[k]) delete state.catSel[k]; }
       saveCats();
       document.querySelectorAll(".catbar").forEach(syncCatbar);
       applyCatFilter();
@@ -477,6 +556,7 @@ function wireCatbar(container){
   });
 }
 function applyCatFilter(){
+  if (state.allOff){ map.setFilter("place-points", false); return; }
   var active = CAT_ORDER.filter(function(k){ return !!state.catSel[k]; });
   map.setFilter("place-points", active.length ? ["in", ["get","categoryFold"], ["literal", active]] : null);
 }
@@ -607,6 +687,7 @@ function closePanelFully(){
   closePanelSheet();
   panelEl.classList.remove("list-mode");
   listOpen = false;
+  if (selectedDistrictFeature){ selectedDistrictFeature = null; applyDeclutter(); } // drop the district-scoped street reveal
 }
 panelEl.addEventListener("pointerdown", function(e){
   if (!MQ.matches || !e.target.closest(".grab")) return;
