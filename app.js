@@ -254,14 +254,21 @@ function updateMapClip(){
      current camera — under a flat (pitch:0) top-down view that's a smooth, well-behaved
      mapping and the outline always comes back as a simple, valid polygon. Under any tilt,
      though, points near/behind the horizon project to wild or degenerate coordinates, so the
-     resulting "polygon(...)" clip-path can self-intersect (diagonal pink bleed-through) or
-     collapse to almost nothing (the whole canvas turning pink on further zoom). Rather than
-     try to make screen-space clipping correct under perspective, just leave the clip-path
-     exactly as it last was (the most recent valid flat-view shape) while tilted, instead of
-     recomputing it from bad projected coordinates — freezing it beats both extremes: a broken
-     self-intersecting shape, or dropping the clip entirely and exposing the raw basemap tiles
-     (and its non-pink background) outside Seoul's silhouette. */
-  if (map.getPitch() > 0.5) return;
+     resulting "polygon(...)" clip-path can self-intersect, and even just freezing the last
+     flat-view shape (a fix tried here previously) doesn't track camera rotation — as soon as
+     you rotate while tilted, the frozen shape no longer corresponds to the same geographic
+     area, so it clips a mismatched patch and still lets raw basemap show through unevenly.
+     Simplest and most honest: don't try to keep the pink "floating island" illusion in 3D at
+     all — drop the clip (and hide the ring-mask fill below) so the plain map just shows
+     normally while tilted, and restore both the instant you're back to flat. */
+  var pitched = map.getPitch() > 0.5;
+  if (map.getLayer("ring-mask-fill")) {
+    map.setLayoutProperty("ring-mask-fill", "visibility", pitched ? "none" : "visible");
+  }
+  if (pitched) {
+    canvasLayer.style.clipPath = "none";
+    return;
+  }
   var projected = seoulOutline.map(function(ll){ return map.project(ll); });
   var cx = 0, cy = 0;
   projected.forEach(function(p){ cx += p.x; cy += p.y; });
