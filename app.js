@@ -287,6 +287,23 @@ map.on("load", function(){
     seoulBounds = new maplibregl.LngLatBounds();
     seoulOutline.forEach(function(ll){ seoulBounds.extend(ll); });
     fitSeoul(0); // snap straight to the fitted view, no animation, before the user sees anything
+    /* the CSS clip-path (updateMapClip, above) cuts CLIP_MARGIN_PX of screen-space margin
+       beyond Seoul's real outline, so edge labels have room to render without getting cut
+       off mid-word — but nothing else was drawn in that margin, so it showed a ring of plain,
+       untinted basemap between the district colors and the pink background. This layer fills
+       exactly that gap: a real MapLibre polygon-with-a-hole (the hole being Seoul's own
+       outline), painted the same pink as the background gradient, sitting below every other
+       app layer so it only ever shows in that otherwise-empty margin. Being a real geo layer
+       (not a DOM/CSS trick) it also naturally renders correctly under 3D pitch/rotation,
+       unlike the clip-path itself. results[2].ringMaskCoordinates is precomputed offline
+       (see scratch2/build_ring.py in this session's history) as a large, fixed real-world
+       buffer around the outline — much bigger than the margin will ever need at any zoom this
+       app actually uses; the excess is simply clipped away by the CSS clip-path, so oversizing
+       it costs nothing and avoids the margin ever running out of ring to show. */
+    map.addSource("ring-mask", {type:"geojson", data:{
+      type:"Feature", properties:{}, geometry:{type:"Polygon", coordinates: results[2].ringMaskCoordinates}
+    }});
+    map.addLayer({id:"ring-mask-fill", type:"fill", source:"ring-mask", paint:{"fill-color": cssVar("--bg-grad-2")}});
     updateMapClip();
     map.on("move", updateMapClip);
     map.on("resize", updateMapClip);
