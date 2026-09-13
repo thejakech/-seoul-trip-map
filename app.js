@@ -157,22 +157,23 @@ map.on("load", function(){
   Promise.all([
     fetch("data/districts.geojson").then(r=>r.json()),
     fetch("data/places.json").then(r=>r.json()),
-    fetch("data/seoul-outline.json").then(r=>r.json())
+    fetch("data/seoul-outline.json").then(r=>r.json()),
+    fetch("data/neighborhoods.geojson").then(r=>r.json())
   ]).then(function(results){
     seoulOutline = results[2].outline;
     updateMapClip();
     map.on("move", updateMapClip);
     map.on("resize", updateMapClip);
-    init(results[0], results[1]);
+    init(results[0], results[1], results[3]);
   }).catch(function(err){
     console.error("Failed to load data:", err);
-    document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/districts.geojson, data/places.json and data/seoul-outline.json exist and the site is served over http(s), not file://.</p>";
+    document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/districts.geojson, data/places.json, data/seoul-outline.json and data/neighborhoods.geojson exist and the site is served over http(s), not file://.</p>";
     openPanelSheet();
   });
   apply3D(); // hide the style's own building-3d layer immediately, before data even loads
 });
 
-function init(districtsGeo, data){
+function init(districtsGeo, data, hoodsGeo){
   DATA = data;
 
   data.places.forEach(function(p){
@@ -242,6 +243,54 @@ function init(districtsGeo, data){
     paint:{
       "text-color": LABEL_COLOR, "text-halo-color": LABEL_HALO, "text-halo-width": 1.4
     }
+  });
+
+  /* ---------- neighborhood zones (v2 — real geography, not v1's hand-drawn circles) ----------
+     data/neighborhoods.geojson holds one real polygon per walkable focus-area (administrative-
+     dong boundaries, merged/simplified per neighborhood — see that file's own per-feature
+     properties.source; ikseondong alone is hand-traced, since no single administrative dong
+     matches its small real extent — see build notes in that file). Each feature only carries an
+     `id`; color comes from data.neighborhoods[id].color (the same hex the list-view chips and
+     hood-block borders already use) via a runtime match expression, so the color lives in one
+     place (places.json) instead of being duplicated into the geojson.
+     Always-on at a constant opacity, same as district-fill/district-line — not gated behind a
+     zoom threshold, because flyToDistrict()'s fitBounds() lands at a different zoom for every
+     district depending on its own size (a big district like Eunpyeong ends up far more zoomed
+     out than compact Jung-gu), so a fixed zoom cutoff would show zones reliably for some
+     districts and never cross the threshold for others. At the full-Seoul default view each
+     zone is just a small colored patch — the same way place-points are always small 6px dots
+     regardless of zoom — and reads clearly once you've clicked into its district. */
+  var hoodColorMatch = ["match", ["get","id"]];
+  Object.keys(data.neighborhoods).forEach(function(hid){
+    hoodColorMatch.push(hid, data.neighborhoods[hid].color);
+  });
+  hoodColorMatch.push("#999999");
+  /* text-field can only read a feature's own properties, not a separate JS lookup — stamp the
+     real display name onto each feature once, up front, rather than patching it in after
+     addSource (which would need an extra setData + setLayoutProperty round trip). */
+  hoodsGeo.features.forEach(function(f){
+    var h = data.neighborhoods[f.properties.id];
+    f.properties.label = h ? h.name : f.properties.id;
+  });
+  map.addSource("hoods", {type:"geojson", data: hoodsGeo});
+  map.addLayer({
+    id:"hood-fill", type:"fill", source:"hoods",
+    paint:{"fill-color": hoodColorMatch, "fill-opacity": 0.32}
+  });
+  map.addLayer({
+    id:"hood-line", type:"line", source:"hoods",
+    paint:{
+      "line-color": hoodColorMatch,
+      "line-width": 1.8, "line-dasharray": [2, 1.4], "line-opacity": 0.9
+    }
+  });
+  map.addLayer({
+    id:"hood-label", type:"symbol", source:"hoods",
+    layout:{
+      "text-field": ["get","label"], "text-size": 11.5, "text-font": ["Noto Sans Bold"],
+      "symbol-placement": "point", "text-allow-overlap": false
+    },
+    paint:{"text-color": hoodColorMatch, "text-halo-color": "#ffffff", "text-halo-width": 1.3}
   });
 
   var pointsGeo = {
@@ -552,7 +601,6 @@ function listRow(p){
       +   "<a class='maplink' href='"+naverUrl(p)+"' target='_blank' rel='noopener'>Naver</a>"
       +   "<a class='maplink' href='"+kakaoUrl(p)+"' target='_blank' rel='noopener'>Kakao</a>"
       +   (p.unverified ? "<span class='verify'>check name/hours</span>" : "")
-      +   (p.sourced_from_video ? "<span class='fromvid'>video</span>" : "")
       + "</div>"
     + "</div></div>";
 }
@@ -584,7 +632,6 @@ function listGroup(label, ids){
        + "<summary class='list-dh'>"
          + "<div class='list-dh-top'>"
            + "<span class='list-dname'>"+nm+" <span class='d-kr'>"+d.kr+"</span> <span class='pill count' id='lc-"+id+"'>"+c.vis+"/"+c.total+"</span></span>"
-           + (c.picks===0 ? "<span class='pill vid'>video</span>" : "")
            + "<span class='list-caret' aria-hidden='true'>&#9656;</span>"
          + "</div>"
          + (hoods.length ? "<div class='list-dh-hoods'>"+hoods.map(function(hd){ return "<span class='list-key' style='border-color:"+hd.color+";color:"+hd.color+"'>"+hd.n+"</span>"; }).join("")+"</div>" : "")

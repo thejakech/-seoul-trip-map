@@ -29,6 +29,7 @@ data/
   districts.geojson    real Seoul gu (district) boundaries, from southkorea/seoul-maps
   places.json           every picked place: schema below
   seoul-outline.json     Seoul's exact outer boundary — see "floating island" below
+  neighborhoods.geojson  real walkable focus-area boundaries — see "Neighborhood zones" below
 assets/
   photos/               place thumbnails recovered from the v1 artifact — see "Photos" below
 ```
@@ -83,29 +84,32 @@ pastel land colors (`--land-a` … `--land-e` in `style.css`) that district is f
 This lives on the boundary geometry, not in `places.json`, because MapLibre paint expressions can only
 read properties off the source feature they're painting.
 
-## The migration, and its one real gap: **coordinates**
+## The migration, now closed out: **coordinates**
 
 Every place here was migrated out of the old hand-illustrated v1 artifact and
 `Korea-Trip/seoul-itinerary-master.md`, then geocoded against **OSM Nominatim** (free, keyless,
-Seoul-bounded search).
+Seoul-bounded search) — 38 of 67 resolved cleanly that way, 29 did not.
 
-**38 of 67 resolved cleanly (after a relaxed retry pass). 29 did not** — and the miss pattern is informative, not random:
-almost everything that missed is a small, specific cafe/bar/restaurant (Achrolism, Barou, Atta, 232,
-Cafe Nagwonjang, Haus Nowhere, …), while every landmark, palace, temple, market and park resolved on
-the first try. **OpenStreetMap's coverage of small Korean businesses is thin** — this is the same
-underlying reason your own research flagged Google Maps as "functionally crippled in Korea": neither
-Google nor OSM has what Naver Map / Kakao Map have for hyper-local venues. Free/keyless geocoding
-was never going to close that gap; it's a real, expected limitation of this approach, not a bug.
+A follow-up pass used the **Google Maps Scraper (Apify)** to fill in most of the OSM gap (64 of
+67), and fill in hours where Google had them. The last 3 — **Kkokkio Jangjak-gui, Jura Optique,
+Franc** — weren't a coverage gap so much as a name-collision problem: every automated search kept
+matching a *different, wrong* branch or business (a Gangnam/Myeongdong chicken-chain branch
+instead of the Ikseon-dong one it was assumed to be, a Seongsu optics branch instead of the
+Bukchon one it was assumed to be, an unrelated restaurant entirely) rather than turning up nothing.
+**All 67 now have coordinates** — those last 3 came from looking each one up directly on Naver
+Map, which also corrected two of the original assumptions: Kkokkio really is in Yeoksam-dong,
+Gangnam-gu (not paired with Jongsamyook in the Ikseon-dong "quadrant"), and Jura Optique really is
+in Seongsu-dong (not the Bukchon commerce street) — Naver's result for Jura Optique matched what
+Google had already found independently, which is what made that correction trustworthy rather than
+just another guess.
 
-**These 29 show up in the app already** — open a district panel and anything with a **`NO PIN YET`**
-tag has no coordinates, so it's listed but not plotted on the map. To fix one:
+If a *new* place ever needs coordinates:
 
 1. Look the place up on **Naver Map** or **Kakao Map** (both linked from `note` when a query hints at it).
 2. Right-click the pin → copy coordinates, or read them out of the share URL.
 3. Add `"lat"` / `"lng"` to that place's entry in `data/places.json` — no code changes needed, it
-   picks it up on next page load.
-
-That's the actual remaining work on the data side. Everything else (schema, boundaries, app) is done.
+   picks it up on next page load. Anything still missing them shows a **`NO PIN YET`** tag in its
+   district panel.
 
 ## Adding a new place
 
@@ -198,6 +202,23 @@ action, and freeing up room for all four controls to share one row. The category
 ("All types" + 8 categories) that lands as an even 5-over-4 split every time, instead of possibly
 stranding a lone chip on its own row depending on viewport width.
 
+## A CSS trap worth knowing about: `font: ... inherit` is invalid
+
+Every custom-sized bit of text in this app (chips, pills, list rows, panel text — 16 rules in
+total) is set via the `font` shorthand, e.g. `font:600 12px var(--sans)`. An earlier version wrote
+the family part as the literal keyword `inherit` instead (`font:600 12px inherit`), reasoning that
+it should just reuse whatever font-family the page already had. **That's invalid CSS** — `inherit`
+is only valid as the *sole* value of the whole property, not as one component inside a shorthand —
+so the browser silently drops the entire declaration rather than applying part of it. The element
+doesn't inherit the intended size/weight at all; it falls back to raw normal-inheritance/UA
+defaults (a plain `<span>` lands at the browser's default 16px/400, while a `<button>` — which
+doesn't inherit font by default in the UA stylesheet — lands at ~13.3px Arial). This is exactly why
+v2's list-view neighborhood pills (and everything else using this pattern) rendered noticeably
+bigger than v1: v1 used `font:600 12px var(--sans)` throughout, which is valid. The fix is the
+`--sans` custom property at `:root` — reference it in every `font:` shorthand instead of writing
+`inherit`. Worth double-checking with `getComputedStyle(el).font` (not just eyeballing a preview)
+any time you add a new `font:` shorthand rule here.
+
 ## District borders, colors, and labels
 
 Each district is filled with one of five tones from a pink/rose family (`--land-a`…`--land-e`,
@@ -223,8 +244,44 @@ district labels already show.
 The **No streets** button hides every road/rail/highway-label/generic-POI/place-name/building/
 admin-boundary layer from the base style (see `DECLUTTER_HIDE_IDS` in `app.js` — built from the
 actual OpenFreeMap `liberty` layer list, ~79 ids), leaving only background/water/landcover/landuse
-fills plus this app's own district fills/borders and place pins. The Han River's water fill and line
-geometry stay visible as a geographic anchor even in this mode — only its text label disappears.
+fills plus this app's own district fills/borders, neighborhood zones and place pins. The Han
+River's water fill and line geometry stay visible as a geographic anchor even in this mode — only
+its text label disappears.
+
+## Neighborhood zones — real geography, not v1's hand-drawn circles
+
+v1 marked each walkable focus-area (Itaewon, Hannam-dong, Bukchon, …) with a hand-illustrated
+oval/circle — fast to draw, but wildly inaccurate: v1's own "Itaewon" circle sprawled across
+Itaewon core, Haebangchon *and* Hannam-dong all at once, three genuinely distinct areas lumped
+into one blob.
+
+`data/neighborhoods.geojson` replaces that with one real polygon per neighborhood, sourced from
+actual **administrative-dong (행정동) boundaries** (via
+[vuski/admdongkor](https://github.com/vuski/admdongkor), the same public dataset family this kind
+of project would reach for — merged/simplified with shapely where a neighborhood spans more than
+one dong, e.g. `itaewon` = 이태원1동 ∪ 이태원2동, `seongsu` = all four 성수*동 dongs). Every mapping
+was checked against this app's own real pinned coordinates for that neighborhood before being
+committed (a handful of places — `purr`, `hillseuropa`, `cactuscurry`, `hongdaetteok`,
+`gangnamthrift` — sit just outside their neighborhood's real polygon; that's the pre-existing
+neighborhood *assignment* in `places.json` being looser than the real boundary, not a flaw in the
+polygon itself).
+
+**`ikseondong` is the one exception**: no single administrative dong matches its small real
+extent — it's a pocket inside the much larger "종로1·2·3·4가동", which also covers
+Gwanghwamun/Insadong/the whole Jongno arcade. Using that whole dong would wildly overstate this
+neighborhood, so it's hand-traced instead, tight around the real hanok-alley block (Donhwamun-ro /
+Supyo-ro / Ujeongguk-ro) and checked against all 5 of its real pinned places. See that feature's
+own `properties.source` in the geojson.
+
+Each feature only carries an `id` — color comes from `data.neighborhoods[id].color` (`app.js`
+builds a MapLibre `match` expression from it at load time) rather than being duplicated into the
+geojson, so the list-view chips, the panel's `hood-block` borders, and the map zones all read
+color from the same one place. Rendered as `hood-fill`/`hood-line`/`hood-label` — a translucent
+fill, a dashed border, and a small colored label — at a constant opacity like `district-fill`,
+deliberately **not** gated behind a zoom threshold: `flyToDistrict()`'s `fitBounds()` lands at a
+different zoom for every district depending on its own size, so a fixed cutoff would show zones
+reliably for a compact district like Jung-gu and never cross the threshold for a sprawling one
+like Eunpyeong.
 
 ## List view
 

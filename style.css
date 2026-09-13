@@ -1,5 +1,11 @@
 :root{
   color-scheme: light dark;
+  /* used inside `font:` shorthands below (e.g. `font:600 12px var(--sans)`) instead of the
+     CSS-wide keyword "inherit" — inherit is NOT a valid <family-name> inside a font shorthand
+     (only valid as the sole value of the whole property), so `font:600 12px inherit` makes the
+     browser drop the entire declaration as invalid, silently falling back to default browser
+     sizing. var(--sans) sidesteps that trap while still matching the body's own font stack. */
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --surface:#f7f7f3; --surface-2:#ececE4; --ink:#1b1e22; --ink-soft:#5d636b; --ink-faint:#9198a0;
   --hairline:#dcdcd4; --accent:#2b5fae; --accent-tint:#dce6f3; --visited:#3b7a66; --focus:#c23e2a;
   --food:#e0707f; --cafe:#d9a24f; --market:#c9ae3a; --museum:#7c8fd0; --park:#5fae82;
@@ -24,7 +30,7 @@
   }
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--surface)}
+html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);background:var(--surface)}
 /* ---- fixed background behind the map: a soft pink gradient + the SEOUL watermark.
    #map is clipped (via JS, clip-path recomputed on every pan/zoom) to Seoul's exact
    silhouette, so this shows through everywhere outside it — completely unaffected by camera
@@ -47,7 +53,7 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
   font-size:18px;line-height:1;color:var(--ink-soft);cursor:pointer;border-radius:7px}
 .hud-close:hover{background:var(--surface-2);color:var(--ink)}
 .hud-reopen{position:fixed;top:14px;left:14px;z-index:5;background:var(--surface);border:1px solid var(--hairline);
-  border-radius:99px;padding:8px 16px;font:700 13px inherit;color:var(--ink);cursor:pointer;
+  border-radius:99px;padding:8px 16px;font:700 13px var(--sans);color:var(--ink);cursor:pointer;
   box-shadow:0 8px 24px rgba(0,0,0,.18)}
 .hud-reopen span{color:var(--ink-soft);font-weight:500}
 .brand{padding-right:20px}
@@ -60,12 +66,12 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
 .progress-bar span{display:block;height:100%;width:0;background:var(--visited);transition:width .3s}
 #progressCount{font:500 11.5px ui-monospace,monospace;color:var(--ink-soft)}
 .chip-btn{background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:6px 11px;
-  font:600 12.5px inherit;color:var(--ink);cursor:pointer}
+  font:600 12.5px var(--sans);color:var(--ink);cursor:pointer}
 .chip-btn:hover{border-color:var(--accent)}
 .chip-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 /* v1-style plain text links (not pill buttons) for navigation actions, as opposed to the
    3D/No-streets chip-buttons which are binary on/off toggles */
-.txtbtn{background:none;border:0;padding:6px 2px;font:600 13px inherit;color:var(--accent);cursor:pointer}
+.txtbtn{background:none;border:0;padding:6px 2px;font:600 13px var(--sans);color:var(--accent);cursor:pointer}
 .txtbtn:hover,.txtbtn:active,.txtbtn:focus-visible{text-decoration:underline}
 
 /* ---- category filter chips: shared by the header catbar and the list-view catbar.
@@ -79,7 +85,7 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
    column width; white-space:normal is a safety net so a long label wraps to two lines
    inside the bubble instead of ever being cut off. */
 .catchip{display:flex;align-items:center;justify-content:center;gap:3px;background:var(--surface-2);
-  border:1px solid var(--hairline);border-radius:12px;padding:5px 3px;font:500 9px inherit;
+  border:1px solid var(--hairline);border-radius:12px;padding:5px 3px;font:500 9px var(--sans);
   letter-spacing:-.1px;color:var(--ink-soft);cursor:pointer;white-space:normal;text-align:center;line-height:1.15}
 .catchip i{width:6px;height:6px;border-radius:99px;display:inline-block;flex:none}
 .catchip.off{opacity:.4}
@@ -143,9 +149,9 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
 .also b{color:var(--ink)}
 
 /* ---- shared category-chip glyph used inside place cards/rows ---- */
-.chiptype{display:inline-flex;align-items:center;gap:5px;font:500 11px inherit;color:var(--ink-soft);margin-top:6px}
+.chiptype{display:inline-flex;align-items:center;gap:5px;font:500 11px var(--sans);color:var(--ink-soft);margin-top:6px}
 .chiptype .cdot{width:8px;height:8px;border-radius:99px;display:inline-block;flex:none}
-.maplink{font:500 11.5px inherit;color:var(--accent);text-decoration:none;border:1px solid var(--hairline);
+.maplink{font:500 11.5px var(--sans);color:var(--accent);text-decoration:none;border:1px solid var(--hairline);
   border-radius:6px;padding:3px 8px}
 .maplink:hover{border-color:var(--accent);background:var(--accent-tint)}
 .pill{font:600 11px ui-monospace,monospace;padding:2px 7px;border-radius:99px;border:1px solid var(--hairline);
@@ -161,13 +167,13 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
    when .panel.list-mode is active ---- */
 .p-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .p-bar button{background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:7px 13px;
-  font:600 13px inherit;color:var(--ink-soft);cursor:pointer}
+  font:600 13px var(--sans);color:var(--ink-soft);cursor:pointer}
 .p-bar button:hover{border-color:var(--accent);color:var(--accent)}
 .p-bar .spacer{flex:1}
 .list-h{margin:2px 0 3px;font-size:19px;font-weight:800}
 .list-sub{margin:0 0 8px;font-size:12.5px;line-height:1.5;color:var(--ink-soft)}
 .list-tools{display:flex;gap:14px;margin:0 0 2px}
-.txtbtn{background:none;border:0;padding:2px 3px;font:600 12px inherit;color:var(--accent);cursor:pointer}
+.txtbtn{background:none;border:0;padding:2px 3px;font:600 12px var(--sans);color:var(--accent);cursor:pointer}
 .txtbtn:hover{text-decoration:underline}
 .eyebrow{font:700 10px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
 .list-band{margin:16px 0 2px}
@@ -177,7 +183,7 @@ details.list-d[open]{padding-bottom:8px}
 .list-dh{padding:12px 2px;cursor:pointer;list-style:none;user-select:none}
 .list-dh::-webkit-details-marker{display:none}
 .list-dh-top{display:flex;align-items:center;gap:7px}
-.list-dname{font:700 14.5px inherit;color:var(--ink);margin-right:auto}
+.list-dname{font:700 14.5px var(--sans);color:var(--ink);margin-right:auto}
 .list-dname .d-kr{font-weight:400;font-size:12px;color:var(--ink-soft);margin-left:3px}
 .list-dname .pill.count{margin-left:5px;vertical-align:1px}
 details.list-d:hover .list-dname{color:var(--accent)}
@@ -187,7 +193,7 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 /* matches v1's .list-key exactly: font 600 12px, 5px/11px padding, a starred label via
    ::before (not baked into the text) so it's one screen instead of drifting from v1 sizing */
 .list-key{flex:none;display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--hairline);
-  font:600 12px inherit;padding:5px 11px;border-radius:99px}
+  font:600 12px var(--sans);padding:5px 11px;border-radius:99px}
 .list-key::before{content:"\2605\00a0";font-size:10px}
 .list-dbody{padding:0 0 4px}
 
@@ -199,22 +205,22 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 .lr-photo .ph{display:block;width:100%;height:100%;border-radius:7px}
 .lr-photo img,.pc-photo img{display:block;width:100%;height:100%;object-fit:cover;background:var(--surface-2)}
 .lr-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px}
-.lr-name{font:600 13.5px inherit;color:var(--ink)}
+.lr-name{font:600 13.5px var(--sans);color:var(--ink)}
 .lr-kr{font-weight:400;font-size:11px;color:var(--ink-soft)}
-.lr-meta{margin-top:3px;font:400 11.5px inherit;color:var(--ink-soft)}
+.lr-meta{margin-top:3px;font:400 11.5px var(--sans);color:var(--ink-soft)}
 .lr-links{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
 .lr.done .lr-name{color:var(--ink-faint);text-decoration:line-through}
 .lr.done .lr-photo{opacity:.5}
 
-.list-also{margin:8px 0 4px;font:400 11.5px/1.55 inherit;color:var(--ink-faint)}
+.list-also{margin:8px 0 4px;font:400 11.5px/1.55 var(--sans);color:var(--ink-faint)}
 .list-openmap{margin-top:6px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:7px;
-  padding:6px 11px;font:500 11.5px inherit;color:var(--accent);cursor:pointer}
+  padding:6px 11px;font:500 11.5px var(--sans);color:var(--accent);cursor:pointer}
 .list-openmap:hover{border-color:var(--accent);background:var(--accent-tint)}
-.list-none{margin:8px 0 4px;font:400 11.5px/1.5 inherit;color:var(--ink-faint)}
+.list-none{margin:8px 0 4px;font:400 11.5px/1.5 var(--sans);color:var(--ink-faint)}
 
 .list-empty{margin-top:14px;padding-top:10px;border-top:1px solid var(--hairline)}
-.list-erow{margin:6px 0;font:400 11.5px/1.45 inherit;color:var(--ink-soft)}
-.list-jump{background:none;border:0;padding:0;cursor:pointer;font:600 12px inherit;color:var(--accent)}
+.list-erow{margin:6px 0;font:400 11.5px/1.45 var(--sans);color:var(--ink-soft)}
+.list-jump{background:none;border:0;padding:0;cursor:pointer;font:600 12px var(--sans);color:var(--accent)}
 .list-jump:hover{text-decoration:underline}
 
 .maplibregl-popup-content{background:var(--surface);color:var(--ink);border-radius:8px}
