@@ -117,8 +117,8 @@ var is3D = false, isDeclutter = true; // declutter (streets/POIs/labels hidden) 
 /* the liberty style ships its own fill-extrusion building layer ("building-3d") — it is
    VISIBLE BY DEFAULT (no layout.visibility set), so it must be explicitly hidden on load,
    otherwise buildings appear at zoom>=14 before the 3D button is ever pressed. Tied ONLY to
-   is3D now, not also to !isDeclutter — that extra condition dates from when "streets shown"
-   was the default (isDeclutter started false), so it never actually hid anything in practice.
+   is3D, not also to !isDeclutter — that extra condition dates from when "streets shown" was
+   the default (isDeclutter started false), so it never actually hid anything in practice.
    Once declutter flipped to on-by-default, that same condition meant 3D buildings could only
    ever appear after ALSO turning "Streets On" — the 3D button looked broken (still a flat
    view) unless you happened to enable streets too. 3D should just work on its own. */
@@ -236,14 +236,6 @@ function cssVar(name){ return getComputedStyle(document.documentElement).getProp
    move/zoom/resize — so the map canvas is only ever visible inside Seoul's silhouette, and
    #seaBackground shows through everywhere else, completely unaffected by the camera. */
 var seoulOutline = null; // [[lng,lat], ...] — the dissolved, simplified outer boundary of all 25 districts
-/* how far (in screen pixels) the clip boundary is pushed outward from Seoul's literal outline —
-   without this, a district-label anchor sitting near the outer edge (Nowon, Eunpyeong, Gangdong,
-   Songpa...) has its OWN text extend past the true administrative boundary and gets clipped
-   mid-word. A fixed pixel margin (rather than a fixed real-world-meters buffer on the outline
-   data itself) is what actually fixes this at every zoom: at a low zoom the same on-screen label
-   covers far more ground than at a high zoom, so a margin defined in meters would be generous
-   at one zoom and useless at another, while a margin in screen pixels tracks the label size. */
-var CLIP_MARGIN_PX = 55;
 function updateMapClip(){
   /* clip the inner canvas layer, NOT #map itself — #map also contains the zoom +/- control
      (a fixed screen corner), which would otherwise get clipped away along with everything
@@ -254,31 +246,18 @@ function updateMapClip(){
      current camera — under a flat (pitch:0) top-down view that's a smooth, well-behaved
      mapping and the outline always comes back as a simple, valid polygon. Under any tilt,
      though, points near/behind the horizon project to wild or degenerate coordinates, so the
-     resulting "polygon(...)" clip-path can self-intersect, and even just freezing the last
-     flat-view shape (a fix tried here previously) doesn't track camera rotation — as soon as
-     you rotate while tilted, the frozen shape no longer corresponds to the same geographic
-     area, so it clips a mismatched patch and still lets raw basemap show through unevenly.
-     Simplest and most honest: don't try to keep the pink "floating island" illusion in 3D at
-     all — drop the clip (and hide the ring-mask fill below) so the plain map just shows
-     normally while tilted, and restore both the instant you're back to flat. */
-  var pitched = map.getPitch() > 0.5;
-  if (map.getLayer("ring-mask-fill")) {
-    map.setLayoutProperty("ring-mask-fill", "visibility", pitched ? "none" : "visible");
-  }
-  if (pitched) {
+     resulting "polygon(...)" clip-path can self-intersect (diagonal pink bleed-through) or
+     collapse to almost nothing (the whole canvas turning pink on further zoom). Rather than
+     try to make screen-space clipping correct under perspective, just don't clip while
+     tilted — the full rectangular canvas shows instead, which reads fine in 3D (the
+     buildings/perspective already break the flat "floating island" look anyway). */
+  if (map.getPitch() > 0.5) {
     canvasLayer.style.clipPath = "none";
     return;
   }
-  var projected = seoulOutline.map(function(ll){ return map.project(ll); });
-  var cx = 0, cy = 0;
-  projected.forEach(function(p){ cx += p.x; cy += p.y; });
-  cx /= projected.length; cy /= projected.length;
-  var pts = projected.map(function(p){
-    var dx = p.x - cx, dy = p.y - cy;
-    var len = Math.sqrt(dx*dx + dy*dy) || 1;
-    var x = p.x + (dx / len) * CLIP_MARGIN_PX;
-    var y = p.y + (dy / len) * CLIP_MARGIN_PX;
-    return x.toFixed(1) + "px " + y.toFixed(1) + "px";
+  var pts = seoulOutline.map(function(ll){
+    var p = map.project(ll);
+    return p.x.toFixed(1) + "px " + p.y.toFixed(1) + "px";
   });
   canvasLayer.style.clipPath = "polygon(" + pts.join(",") + ")";
 }
@@ -294,23 +273,6 @@ map.on("load", function(){
     seoulBounds = new maplibregl.LngLatBounds();
     seoulOutline.forEach(function(ll){ seoulBounds.extend(ll); });
     fitSeoul(0); // snap straight to the fitted view, no animation, before the user sees anything
-    /* the CSS clip-path (updateMapClip, above) cuts CLIP_MARGIN_PX of screen-space margin
-       beyond Seoul's real outline, so edge labels have room to render without getting cut
-       off mid-word — but nothing else was drawn in that margin, so it showed a ring of plain,
-       untinted basemap between the district colors and the pink background. This layer fills
-       exactly that gap: a real MapLibre polygon-with-a-hole (the hole being Seoul's own
-       outline), painted the same pink as the background gradient, sitting below every other
-       app layer so it only ever shows in that otherwise-empty margin. Being a real geo layer
-       (not a DOM/CSS trick) it also naturally renders correctly under 3D pitch/rotation,
-       unlike the clip-path itself. results[2].ringMaskCoordinates is precomputed offline
-       (see scratch2/build_ring.py in this session's history) as a large, fixed real-world
-       buffer around the outline — much bigger than the margin will ever need at any zoom this
-       app actually uses; the excess is simply clipped away by the CSS clip-path, so oversizing
-       it costs nothing and avoids the margin ever running out of ring to show. */
-    map.addSource("ring-mask", {type:"geojson", data:{
-      type:"Feature", properties:{}, geometry:{type:"Polygon", coordinates: results[2].ringMaskCoordinates}
-    }});
-    map.addLayer({id:"ring-mask-fill", type:"fill", source:"ring-mask", paint:{"fill-color": cssVar("--bg-grad-2")}});
     updateMapClip();
     map.on("move", updateMapClip);
     map.on("resize", updateMapClip);
