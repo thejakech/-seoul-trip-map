@@ -6,7 +6,7 @@
   },
   "districts": {
     "jongno": {
-      "blurb": "The historic heart of Seoul — capital of the Joseon dynasty since 1394. Palace walls, hanok lanes and the old grid.",
+      "blurb": "The historic heart of Seoul — capital of the Joseon dynasty since 1394. Palace walls, hanok lanes and the old grid; central without feeling as touristy as Myeongdong. Two neighbourhoods here get their own zone: Ikseon-dong and Bukchon + Gyeongbokgung.",
       "also": [
         "Gwanghwamun Square",
         "Keun Kiwajip — soy-marinated crab",
@@ -16,7 +16,7 @@
       "side": "buk"
     },
     "jung": {
-      "blurb": "Seoul's old downtown — Myeongdong, Namdaemun and City Hall — wrapped around Euljiro, the wholesale district turned hidden bar/cafe scene.",
+      "blurb": "Seoul's old downtown — Myeongdong, Namdaemun and City Hall — wrapped around Euljiro, the wholesale district that grew a hidden bar-and-cafe scene on its upper floors. Two neighbourhoods here get their own zone: Myeongdong and Euljiro.",
       "also": [
         "Heunginjimun (East Gate)",
         "Sancheong Sootbul Garden",
@@ -26,7 +26,7 @@
       "side": "buk"
     },
     "yongsan": {
-      "blurb": "The international district — Itaewon, Haebangchon and upscale Hannam-dong — plus the National Museum.",
+      "blurb": "The international district — Itaewon, Haebangchon and upscale Hannam-dong — plus the National Museum and the old US base. Hilly, mixed, and home to some of the city's best taste-match pockets. Three neighbourhoods here get their own zone: Itaewon, Haebangchon and Hannam-dong.",
       "also": [
         "War Memorial of Korea",
         "Seoul Central Mosque"
@@ -34,7 +34,7 @@
       "side": "buk"
     },
     "eunpyeong": {
-      "blurb": "The quiet north-western edge, up against Bukhansan.",
+      "blurb": "The quiet north-western edge, up against Bukhansan. A thousand-year-old temple and a modern hanok village.",
       "also": [
         "Bukhansan National Park (this side)",
         "Eunpyeong Hanok Village",
@@ -43,7 +43,7 @@
       "side": "buk"
     },
     "seodaemun": {
-      "blurb": "West-central and residential, around Yonsei and Ewha.",
+      "blurb": "West-central and residential, around Yonsei and Ewha. Independence-movement history and the restored Hongjecheon stream.",
       "also": [
         "Seodaemun Prison History Hall",
         "Independence Park",
@@ -52,7 +52,7 @@
       "side": "buk"
     },
     "mapo": {
-      "blurb": "The west side's cultural engine — Hongdae, Yeonnam, Hapjeong, Mangwon.",
+      "blurb": "The west side's cultural engine — Hongdae, Yeonnam, Hapjeong, Mangwon. Indie music, thrift, cafes and nightlife that never fully stops. Two neighbourhoods here get their own zone: Hongdae and Mangwon.",
       "also": [
         "Hongdae Free Market (Sat, Mar–Nov)",
         "Yeonnam-dong",
@@ -62,7 +62,7 @@
       "side": "buk"
     },
     "seongdong": {
-      "blurb": "Riverside east Seoul, and the address everyone means when they say Seongsu.",
+      "blurb": "Riverside east Seoul, and the address everyone means when they say Seongsu. One neighbourhood here gets its own zone: Seongsu-dong.",
       "also": [
         "Seongsu salt-bread bakery",
         "Under Stand Avenue",
@@ -71,7 +71,7 @@
       "side": "buk"
     },
     "dongdaemun": {
-      "blurb": "East of the old gate — wholesale fashion markets and the Gyeongdong medicinal-herb market.",
+      "blurb": "East of the old gate — wholesale fashion markets and the sprawling Gyeongdong medicinal-herb market. Working, unpolished, real.",
       "also": [
         "Cheongnyangni Market",
         "Hongneung Forest",
@@ -80,7 +80,7 @@
       "side": "buk"
     },
     "jungnang": {
-      "blurb": "North-eastern residential district under the Achasan ridge.",
+      "blurb": "North-eastern residential district under the Achasan ridge. Quiet, green, off the tourist map.",
       "also": [
         "Mangu Historic Park & Achasan hike",
         "Yongma Land"
@@ -88,7 +88,7 @@
       "side": "buk"
     },
     "gwangjin": {
-      "blurb": "Riverside east Seoul around Konkuk University — student drinking quarter, lamb-skewer alley, Children's Grand Park.",
+      "blurb": "Riverside east Seoul around Konkuk University — a dense student drinking quarter with a Chinese-Korean community and a lamb-skewer alley (양꼬치 거리) of self-rotating charcoal skewers, best after dark, plus Children's Grand Park and the Ttukseom waterfront. Not one of the video-covered neighbourhoods, so no zone here yet — flag it if that changes.",
       "also": [
         "Children's Grand Park",
         "Ttukseom Hangang Park (Jayang side)",
@@ -97,7 +97,7 @@
       "side": "buk"
     },
     "gangbuk": {
-      "blurb": "Northern residential district at the foot of Bukhansan.",
+      "blurb": "Northern residential district at the foot of Bukhansan — trailheads, apartment blocks, everyday markets.",
       "also": [
         "Bukhansan (Ui/Insubong side)",
         "Perilla-seed kalguksu",
@@ -106,7 +106,7 @@
       "side": "buk"
     },
     "nowon": {
-      "blurb": "Far north-east, dense residential 'bed town'.",
+      "blurb": "Far north-east, dense residential 'bed town' — universities, family blocks, bathhouses.",
       "also": [
         "Jjimjilbang / sauna",
         "Gongneung student strip",
@@ -115,7 +115,7 @@
       "side": "buk"
     },
     "dobong": {
-      "blurb": "Seoul's northern tip against Dobongsan.",
+      "blurb": "Seoul's northern tip against Dobongsan — almost entirely residential, mountain-ringed, breathable.",
       "also": [
         "Dobongsan trailhead",
         "Small residential markets"
@@ -123,7 +123,7 @@
       "side": "buk"
     },
     "seongbuk": {
-      "blurb": "'North of the fortress' — hillside embassies, small museums, the Hanyang wall trail.",
+      "blurb": "'North of the fortress' — hillside embassies and old money, a cluster of small museums, and the Hanyang city-wall trail over the ridge into Bukchon. The wall walk past Naksan Park is lit and open around the clock.",
       "also": [
         "Seoul City Wall trail (Naksan→Bukchon)",
         "Gilsangsa temple",
@@ -132,7 +132,7 @@
       "side": "buk"
     },
     "yeongdeungpo": {
-      "blurb": "South-bank finance district — National Assembly, IFC, Daerim Chinatown — plus Mullae-dong.",
+      "blurb": "South-bank finance district — the National Assembly, IFC, The Hyundai Seoul, Korea's largest Chinatown in Daerim — plus Mullae-dong, an old-town-grit pocket that doesn't feel duplicative of anywhere else in Seoul. One neighbourhood here gets its own zone: Mullae-dong.",
       "also": [
         "Daerim Chinatown & market",
         "The Hyundai Seoul",
@@ -141,7 +141,7 @@
       "side": "nam"
     },
     "dongjak": {
-      "blurb": "South-central, residential and green — Boramae Park, Noryangjin, the national cemetery.",
+      "blurb": "South-central, residential and green — Boramae Park, the Noryangjin fish market and exam-cram district, the national cemetery.",
       "also": [
         "Seoul National Cemetery",
         "Noryangjin exam-cram alley",
@@ -150,7 +150,7 @@
       "side": "nam"
     },
     "yangcheon": {
-      "blurb": "South-western residential district — Mokdong's towers and hagwon alley.",
+      "blurb": "South-western residential district — Mokdong's towers and its famous wall of after-school academies. Home to the Seoul Immigration Office.",
       "also": [
         "Mokdong hagwon alley",
         "Seoul Immigration Office",
@@ -159,7 +159,7 @@
       "side": "nam"
     },
     "gwanak": {
-      "blurb": "Southern district built around Seoul National University.",
+      "blurb": "Southern district built around Seoul National University and Nakseongdae — student-priced food, hillside lanes, Gwanaksan hiking.",
       "also": [
         "SNU campus",
         "Gwanaksan trails",
@@ -169,7 +169,7 @@
       "side": "nam"
     },
     "guro": {
-      "blurb": "South-west — old textile mills reborn as 'G Valley'.",
+      "blurb": "South-west — old textile mills reborn as 'G Valley', a startup and IT cluster, plus a large multicultural quarter.",
       "also": [
         "G Valley / Guro Digital Complex",
         "Jokbal spot",
@@ -178,7 +178,7 @@
       "side": "nam"
     },
     "geumcheon": {
-      "blurb": "Seoul's southern edge — industrial parks, outlet malls, late-night pojangmacha tents.",
+      "blurb": "Seoul's southern edge — industrial parks, outlet malls, and late-night pojangmacha tents.",
       "also": [
         "Pojangmacha tents",
         "Lotte/Marché outlets",
@@ -187,7 +187,7 @@
       "side": "nam"
     },
     "gangseo": {
-      "blurb": "Far west around Gimpo Airport and the Magok tech development.",
+      "blurb": "Far west around Gimpo Airport — Korea's first airport and the Magok tech development, plus Banghwa wetlands.",
       "also": [
         "Gimpo Airport — domestic Jeju flights leave from here",
         "Retro burger + patbingsu shop"
@@ -195,7 +195,7 @@
       "side": "nam"
     },
     "songpa": {
-      "blurb": "South-east — Lotte World Tower, Seokchon Lake, Olympic Park.",
+      "blurb": "South-east — Lotte World Tower, Seokchon Lake, Olympic Park. Big, new, family-oriented behind the towers.",
       "also": [
         "Lotte World Tower & Seoul Sky",
         "Seokchon Lake",
@@ -205,7 +205,7 @@
       "side": "nam"
     },
     "gangdong": {
-      "blurb": "Seoul's south-eastern corner on the Han River.",
+      "blurb": "Seoul's south-eastern corner on the Han River — the Amsa prehistoric site, riverside parks, and a glass-floored bridge observatory.",
       "also": [
         "Gwangjin Bridge glass observatory",
         "Amsa Prehistoric Settlement",
@@ -214,7 +214,7 @@
       "side": "nam"
     },
     "gangnam": {
-      "blurb": "The wealthy south — corporate towers, hagwon, clinics, COEX. Skip Gangnam Station; the walkable part is the Sinsa–Garosu-gil–Dosan–Apgujeong spine.",
+      "blurb": "The wealthy south — corporate towers, hagwon, clinics, COEX. Skip Gangnam Station; the walkable part is the Sinsa–Garosu-gil–Dosan–Apgujeong spine of concept retail and cafes. A second video source independently lands on the same call: 'don't go out of your way... don't cross the water if you have 4 days.' One neighbourhood here gets its own zone: Sinsa–Apgujeong.",
       "also": [
         "Apgujeong Rodeo & Cheongdam flagships",
         "SongEun art space",
@@ -223,7 +223,7 @@
       "side": "nam"
     },
     "seocho": {
-      "blurb": "West of Gangnam — the courthouse district, Seoul Arts Center, Banpo's fountain.",
+      "blurb": "West of Gangnam — the courthouse district, Seoul Arts Center, and Banpo's Moonlight Rainbow Fountain arcing off the bridge.",
       "also": [
         "Hyodo Chicken",
         "Seoul Arts Center",
@@ -237,73 +237,85 @@
       "district": "jongno",
       "name": "Ikseon-dong",
       "kr": "익선동",
-      "color": "#D98A5C"
+      "color": "#D98A5C",
+      "blurb": "A tight grid of 1920s 'urban hanok' just south of Jongno 3-ga — alleys barely wide enough for two, filled with cafes, dessert bars and small restaurants. Not a preserved showpiece like Bukchon; a lived-in warren you wander into and get lost in. Busiest evenings and weekends. One travel couple's pick for 'one night in Seoul, want the quintessential experience': walk it and eat at the K-BBQ quadrant — a whole section of the alleys is outdoor Korean BBQ, packed year-round even in a snowstorm. Also here: a saltbread bakery branch, and a cafe that looks ordinary at street level but opens into four floors of curated mid-century furniture."
     },
     "bukchon": {
       "district": "jongno",
       "name": "Bukchon + Gyeongbokgung",
       "kr": "북촌·경복궁",
-      "color": "#B08FD1"
+      "color": "#B08FD1",
+      "blurb": "Bukchon Hanok Village and Gyeongbokgung Palace, right next to each other — 'a perfect first day,' 'a perfect sandwich of sightseeing.' People reportedly still live in the hanoks; stay on the public lanes and keep it quiet. Real, enforced restrictions apply on one street (Bukchon-ro 11-gil, no visits 5pm–10am, ₩100,000 fine) plus a chartered-bus ban citywide — none of that blocks a normal daytime walk-through. Best before 8am or after 5pm to skip the crowds. Jura Optique (vintage sunglasses) and Cafe Onion sit in the commerce area just off the hanok alleys. Even after a year of full-time travel and dozens of palaces, one couple called Gyeongbokgung a genuine jaw-dropper — don't let palace fatigue talk you out of it."
     },
     "myeongdong": {
       "district": "jung",
       "name": "Myeongdong",
       "kr": "명동",
-      "color": "#E8768A"
+      "color": "#E8768A",
+      "blurb": "Dead-centre Seoul and the city's shopping engine — global and Korean brands, department stores, a dense run of K-beauty flagships, budget racks and luxury a block apart. A pedestrian core by day; a street-food night market after dark. Two independent travel-video sources land on the same verdict: 'the Times Square of Seoul' — worth a short walk-through (graze the night market, don't plan a real dinner around it), but actively avoid using it as a base. Worst traffic and cab access in the city if you stay here; roughly three-quarters of the crowd on the ground is non-Korean tourists."
     },
     "euljiro": {
       "district": "jung",
       "name": "Euljiro",
       "kr": "을지로",
-      "color": "#5B8FC7"
+      "color": "#5B8FC7",
+      "blurb": "Old tool, lighting and print wholesale district — since ~2016, a dense layer of design bars and cafes hidden on unmarked upper floors of decaying buildings, the aesthetic opposite of Gangnam. One couple's framing: 'paper factories by day, insane eateries and bars by night' — neon-heavy, Blade-Runner-at-night, right off central Myeongdong; don't bother in daytime. Being cleared block by block through 2030 — go while it's there. Pick: Purr, a space-age themed wine bar, with a K-BBQ spot doing the classics plus unusual sides just down the block. ~15 min on foot to Jongno 3-ga and Gwangjang Market."
     },
     "itaewon": {
       "district": "yongsan",
       "name": "Itaewon",
       "kr": "이태원",
-      "color": "#E0A83E"
+      "color": "#E0A83E",
+      "blurb": "Seoul's most international quarter, grown up serving the old US base — global food, nightlife, and Itaewon Antique Furniture Street (~1.4 km, ~2,400 shops, a vintage festival every May and October). Also the site of the 2022 Halloween crowd-crush; a memorial alley is signposted off the main strip. One couple's hot take: go for sleepy daytime Itaewon — coffee, a wander through windy hilly back streets, a wine bar in the evening — rather than just the nightlife. Much of the centre is mid-redevelopment."
     },
     "haebangchon": {
       "district": "yongsan",
       "name": "Haebangchon (HBC)",
       "kr": "해방촌",
-      "color": "#6FAE6F"
+      "color": "#6FAE6F",
+      "blurb": "A travel couple's outright #1 stay pick in all of Seoul: the most diverse neighborhood in the city, hilly enough for surprise skyline views round every corner, a trendy-but-mature vibe (25–35s, not teenage energy). No metro in the neighborhood itself — budget a ~15-min cab to anywhere. Haebangchon Market is a covered alley of small restaurants, an 'Instagrammy town square.' Walking distance to Itaewon and to Leeum in Hannam-dong."
     },
     "hannam": {
       "district": "yongsan",
       "name": "Hannam-dong",
       "kr": "한남동",
-      "color": "#D46F95"
+      "color": "#D46F95",
+      "blurb": "Probably the trendiest neighborhood in Seoul — cute Korean trendy brands, boutique flagships of stores that have satellite locations elsewhere, hilly and pretty. Best in the evening into dinner. One couple's favorite Italian restaurant in all of Seoul (Atta) and what may be the best tiramisu either of them has had (Lillian) are both here. Leeum Museum of Art anchors the neighborhood by day. Their framing: 'Itaewon for nights, Hannam for days.'"
     },
     "hongdae": {
       "district": "mapo",
       "name": "Hongdae",
       "kr": "홍대",
-      "color": "#4FA6A6"
+      "color": "#4FA6A6",
+      "blurb": "The arts-and-party district around Hongik University. The east side is loud and commercial; the west side, past Yanghwa-ro and north of Jandari-ro, is calmer and thick with independent cafes. Saturday brings the Free Market on the playground (noon–6, Mar–Nov). A second video source independently downgrades the main drag — near-duplicate of Myeongdong, 'too famous to skip, but you'll go and not be that impressed' — and agrees Yeonnam-dong next door, underrated and quieter with wine bars, is the better use of the same walk."
     },
     "mangwon": {
       "district": "mapo",
       "name": "Mangwon",
       "kr": "망원동",
-      "color": "#8FB35C"
+      "color": "#8FB35C",
+      "blurb": "A travel couple's #2 stay pick in all of Seoul, right behind Haebangchon — called it the 'platonic ideal' of a Seoul neighborhood. Good traditional Korean food at Mangwon Market plus global restaurants; part of / near the greater Hongdae area. 'I would consider myself very lucky to stay here if I went back to Seoul.'"
     },
     "seongsu": {
       "district": "seongdong",
       "name": "Seongsu-dong",
       "kr": "성수동",
-      "color": "#D9754F"
+      "color": "#D9754F",
+      "blurb": "Seoul's converted-warehouse district — concept stores, flagship pop-ups (Yeonmujang-gil, west and east, from Seongsu Stn Exits 3/4), and the densest run of design cafes in the city. Pop-ups open ~11am–noon, go in the afternoon; weekday beats weekend queues. A second video source corroborates the pattern independently: main drag = 'literally Bedford Ave, Williamsburg,' packed and commercial — wander a couple of side streets and it turns residential, real locals, better food and shops. Their comparison: Seongsu wins on vintage shopping, Hannam-dong wins on food and bars."
     },
     "mullae": {
       "district": "yeongdeungpo",
       "name": "Mullae-dong",
       "kr": "문래동",
-      "color": "#8A7BC7"
+      "color": "#8A7BC7",
+      "blurb": "An old steel-workshop and warehouse district turned artist studios, cafes and small music venues — working metalworkers still share the streets with the galleries. 'Bushwick vibes,' genuinely gritty rather than styled that way. Skip it on a first, 4-day trip; worth it on a longer stay or a repeat visit, especially at night. Zero foreigners seen on one visit; skews late-20s/30s local. Called 'maybe unrivaled' old-town grit among Seoul neighborhoods that otherwise start to blur together — 'by next year this is going to be on everybody's radar.'"
     },
     "sinsa": {
       "district": "gangnam",
       "name": "Sinsa–Apgujeong",
       "kr": "신사·압구정",
-      "color": "#4A8FC0"
+      "color": "#4A8FC0",
+      "blurb": "Not Gangnam Station — that's a transit hub. The part to walk is the Line 3 spine: Sinsa, Garosu-gil and its quieter parallel Serosu-gil, Dosan Park, Apgujeong Rodeo, Cheongdam — flagship concept stores, galleries, and expensive coffee. The Sinbundang Line drops you straight in from Bundang."
     }
   },
   "places": [

@@ -46,7 +46,12 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
   font-weight:800;font-size:min(9vw,84px);line-height:.8;letter-spacing:.01em;
   color:var(--watermark-color);opacity:.16;white-space:nowrap}
 
-.hud{position:fixed;top:14px;left:14px;z-index:5;max-width:min(420px,calc(100vw - 28px));
+/* ---- HUD wrapper: just a positioning shell now. The visible black box is .card;
+   .catbar is its own free-floating sibling row directly below it (see below) — this is
+   what lets the category chips scroll as one swipeable row wider than the card itself,
+   matching v1, instead of being wrapped/constrained inside the card's own padding. ---- */
+.hud{position:fixed;top:14px;left:14px;z-index:5;display:flex;flex-direction:column;gap:9px}
+.card{position:relative;max-width:min(420px,calc(100vw - 28px));
   background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:12px 14px;
   box-shadow:0 8px 24px rgba(0,0,0,.18)}
 .hud-close{position:absolute;top:6px;right:6px;width:26px;height:26px;border:0;background:transparent;
@@ -75,24 +80,24 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
 .txtbtn:hover,.txtbtn:active,.txtbtn:focus-visible{text-decoration:underline}
 
 /* ---- category filter chips: shared by the header catbar and the list-view catbar.
-   A fixed 5-column grid (9 chips total: "All types" + 8 categories) so they land as an even
-   5-over-4 split instead of an organic flex-wrap that can strand a lone chip on its own row.
+   Ported from v1: one non-wrapping row you swipe/scroll horizontally through (scrollbar
+   hidden across browsers) rather than the wrapped grid v2 briefly had — this is what lets
+   the header catbar sit as its own free-floating strip under the card, as wide as the
+   viewport allows, instead of being squeezed into the card's fixed width.
    Multi-select ADD model — .on = actively selected (colored border/text, set inline by
    syncCatbar), .off = filter active but this chip isn't part of it (dimmed). ---- */
-.catbar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
-/* the label must fully fit inside the pill — no clipping/ellipsis. Small font + a touch of
-   negative letter-spacing gets most labels ("Restaurant", "Viewpoint") on one line at this
-   column width; white-space:normal is a safety net so a long label wraps to two lines
-   inside the bubble instead of ever being cut off. */
-.catchip{display:flex;align-items:center;justify-content:center;gap:3px;background:var(--surface-2);
-  border:1px solid var(--hairline);border-radius:12px;padding:5px 3px;font:500 9px var(--sans);
-  letter-spacing:-.1px;color:var(--ink-soft);cursor:pointer;white-space:normal;text-align:center;line-height:1.15}
-.catchip i{width:6px;height:6px;border-radius:99px;display:inline-block;flex:none}
-.catchip.off{opacity:.4}
+.catbar{display:flex;gap:6px;max-width:calc(100vw - 28px);overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.catbar::-webkit-scrollbar{display:none}
+.catchip{flex:none;display:inline-flex;align-items:center;gap:5px;background:var(--surface-2);
+  border:1px solid var(--hairline);border-radius:99px;padding:5px 11px;font:500 11px var(--sans);
+  color:var(--ink-soft);cursor:pointer;white-space:nowrap}
+.catchip i{width:9px;height:9px;border-radius:99px;display:inline-block;flex:none;
+  box-shadow:inset 0 0 0 1px rgba(30,20,25,.16)}
+.catchip.off{opacity:.42}
 .catchip.on{font-weight:700;background:var(--surface)}
 .catchip.all{font-weight:600;color:var(--ink)}
 .catchip.all.on{border-color:var(--focus);color:var(--focus)}
-.list-catbar{margin:10px 0 4px}
+.list-catbar{max-width:none;margin:10px 0 4px}
 
 .panel{position:fixed;top:0;right:0;height:100dvh;width:min(400px,92vw);background:var(--surface);
   border-left:1px solid var(--hairline);box-shadow:-8px 0 24px rgba(0,0,0,.18);transform:translateX(105%);
@@ -129,8 +134,12 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
 .panel-body .kr{color:var(--ink-soft);font-weight:400;font-size:13px;margin-left:6px}
 .panel-body .blurb{font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:8px 0 14px}
 .hood-block{border:2px solid var(--hood-color,var(--hairline));border-radius:10px;padding:10px;margin-top:12px}
-.hood-block h3{margin:0 0 6px;font-size:14.5px}
+.hood-block h3{margin:0;font-size:14.5px}
 .hood-block .kr{font-size:12px}
+/* the neighborhood's own v1 description — a tinted box grouping the heading + blurb together,
+   visually distinct from the place cards listed below it, matching v1's .focusbox */
+.hood-focus{padding:10px 12px;background:var(--surface-2);border-radius:9px;margin-bottom:10px}
+.hood-blurb{margin:6px 0 0;font-size:13px;line-height:1.55;color:var(--ink)}
 .pcard{display:grid;grid-template-columns:20px 44px 1fr;gap:8px;padding:10px 0;border-top:1px dashed var(--hairline)}
 .hood-block .pcard:first-of-type{border-top:none}
 .pcard input{margin-top:3px}

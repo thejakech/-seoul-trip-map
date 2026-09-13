@@ -21,6 +21,34 @@ var ALL_IDS = ["eunpyeong","jongno","jung","yongsan","seongdong","gwangjin","seo
   "dongjak","gwanak","seocho","gangnam","songpa","gangdong","gangseo","yangcheon",
   "guro","geumcheon"];
 
+/* ---------- precomputed label anchor points (pole of inaccessibility, i.e. the point deepest
+   inside each polygon) for every district and neighborhood, computed once offline on each
+   feature's FULL geometry. MapLibre can place a symbol automatically from a polygon source
+   ("symbol-placement":"point"), but it does that placement PER TILE on the geometry as clipped
+   to that tile — a district/neighborhood polygon spanning more than one tile at a given zoom
+   then gets one label placed independently in each tile fragment, i.e. duplicate labels for the
+   same feature (visible e.g. on Dongdaemun-gu once zoomed in far enough to cross a tile
+   boundary). Using a single precomputed Point per feature, on its own point source, sidesteps
+   tile-splitting entirely: a point is never split into fragments, so it can only ever place
+   one label. See scratch2/polylabel.py in this session's history for how these were computed. */
+var DISTRICT_LABEL_POINT = {
+  gangdong:[127.142321,37.546496], songpa:[127.122148,37.502845], gangnam:[127.048727,37.506575],
+  seocho:[127.007961,37.487328], gwanak:[126.945164,37.465969], dongjak:[126.950157,37.503575],
+  yeongdeungpo:[126.909471,37.518793], geumcheon:[126.902506,37.459740], guro:[126.838491,37.486784],
+  gangseo:[126.817328,37.563950], yangcheon:[126.868498,37.515501], mapo:[126.888952,37.566478],
+  seodaemun:[126.940050,37.573118], eunpyeong:[126.932191,37.623586], nowon:[127.073346,37.667114],
+  dobong:[127.035557,37.659089], gangbuk:[127.024302,37.626165], seongbuk:[127.023459,37.593357],
+  jungnang:[127.093106,37.596422], dongdaemun:[127.058601,37.580637], gwangjin:[127.090198,37.543404],
+  seongdong:[127.043227,37.550618], yongsan:[126.977573,37.529947], jung:[127.010169,37.556853],
+  jongno:[126.969264,37.610516]
+};
+var HOOD_LABEL_POINT = {
+  myeongdong:[126.985392,37.561934], euljiro:[126.992914,37.566089], itaewon:[126.991039,37.537206],
+  haebangchon:[126.982660,37.541386], hannam:[127.003162,37.537698], hongdae:[126.919529,37.553053],
+  mangwon:[126.896009,37.553812], seongsu:[127.046092,37.543067], mullae:[126.893899,37.515268],
+  sinsa:[127.029057,37.529339], bukchon:[126.979241,37.586335], ikseondong:[126.989673,37.573175]
+};
+
 /* ---------- persisted state ---------- */
 var LS = {visited:"seoul-map:visited", cats:"seoul-map:cats"};
 var visited = {}, state = {catSel:{}};
@@ -48,18 +76,30 @@ function naverUrl(p){ return "https://map.naver.com/p/search/" + encodeURICompon
 function kakaoUrl(p){ return "https://map.kakao.com/?q=" + encodeURIComponent(p.name_kr || p.name); }
 
 /* ---------- map ---------- */
-var DEFAULT_VIEW = {center:[126.9880, 37.5540], zoom:10.4, pitch:0, bearing:0};
+/* placeholder view for the constructor only — replaced the instant seoul-outline.json
+   loads (see fitSeoul(0) below) by a real fitBounds computed from Seoul's actual outline,
+   so "fitted" always means the same thing (outline + fixed padding) regardless of the
+   viewport's own size/aspect, instead of a single zoom number tuned for one screen that
+   reads as too zoomed-in on any narrower one (e.g. a phone in portrait). */
+var PLACEHOLDER_VIEW = {center:[126.9880, 37.5540], zoom:10.4, pitch:0, bearing:0};
 var map = new maplibregl.Map(Object.assign({
   container: "map",
   style: "https://tiles.openfreemap.org/styles/liberty",
   attributionControl: {compact:true}
-}, DEFAULT_VIEW));
+}, PLACEHOLDER_VIEW));
 map.addControl(new maplibregl.NavigationControl({visualizePitch:true}), "bottom-right");
 map.on("error", function(e){ console.error("MapLibre error:", e && e.error && e.error.message); });
 
-document.getElementById("btnFit").addEventListener("click", function(){
-  map.easeTo(Object.assign({duration:600}, DEFAULT_VIEW));
-});
+/* extra top padding accounts for the HUD card + catbar sitting over the top-left corner —
+   without it, fitBounds treats that space as available map area and crops the outline's
+   own top edge under the HUD instead of leaving clear room below it. */
+var FIT_PADDING = {top:190, bottom:50, left:40, right:40};
+var seoulBounds = null;
+function fitSeoul(duration){
+  if (!seoulBounds) return;
+  map.fitBounds(seoulBounds, {padding: FIT_PADDING, duration: duration===undefined?600:duration});
+}
+document.getElementById("btnFit").addEventListener("click", function(){ fitSeoul(600); });
 
 var is3D = false, isDeclutter = false;
 
@@ -161,6 +201,9 @@ map.on("load", function(){
     fetch("data/neighborhoods.geojson").then(r=>r.json())
   ]).then(function(results){
     seoulOutline = results[2].outline;
+    seoulBounds = new maplibregl.LngLatBounds();
+    seoulOutline.forEach(function(ll){ seoulBounds.extend(ll); });
+    fitSeoul(0); // snap straight to the fitted view, no animation, before the user sees anything
     updateMapClip();
     map.on("move", updateMapClip);
     map.on("resize", updateMapClip);
@@ -232,13 +275,24 @@ function init(districtsGeo, data, hoodsGeo){
     filter:["!=", ["get","brunnel"], "tunnel"],
     paint:{"fill-color":"#3E8EDE", "fill-opacity":0.9}
   }, "district-line");
-  /* district name labels — MapLibre places one label per polygon feature automatically
-     (an interior "pole of inaccessibility" point), no manual centroid math needed */
+  /* district name labels — on a dedicated Point source built from DISTRICT_LABEL_POINT, NOT
+     placed automatically off the "districts" polygon source. MapLibre's automatic polygon
+     labeling recomputes its anchor per-tile, which produces duplicate labels for any district
+     whose polygon spans more than one tile at the current zoom (see DISTRICT_LABEL_POINT's own
+     comment above) — a precomputed point sidesteps that since a point can't be tile-split. */
+  var districtLabelPts = {
+    type:"FeatureCollection",
+    features: districtsGeo.features.map(function(f){
+      var pt = DISTRICT_LABEL_POINT[f.properties.id] || f.geometry.coordinates[0][0];
+      return {type:"Feature", properties:{label:f.properties.label}, geometry:{type:"Point", coordinates:pt}};
+    })
+  };
+  map.addSource("district-label-pts", {type:"geojson", data: districtLabelPts});
   map.addLayer({
-    id:"district-label", type:"symbol", source:"districts",
+    id:"district-label", type:"symbol", source:"district-label-pts",
     layout:{
       "text-field": ["get","label"], "text-size": 13, "text-font": ["Noto Sans Bold"],
-      "symbol-placement": "point", "text-allow-overlap": false
+      "text-allow-overlap": false
     },
     paint:{
       "text-color": LABEL_COLOR, "text-halo-color": LABEL_HALO, "text-halo-width": 1.4
@@ -258,8 +312,9 @@ function init(districtsGeo, data, hoodsGeo){
      district depending on its own size (a big district like Eunpyeong ends up far more zoomed
      out than compact Jung-gu), so a fixed zoom cutoff would show zones reliably for some
      districts and never cross the threshold for others. At the full-Seoul default view each
-     zone is just a small colored patch — the same way place-points are always small 6px dots
-     regardless of zoom — and reads clearly once you've clicked into its district. */
+     zone is just a small colored patch — the same way place-points shrink at low zoom too
+     (see their own circle-radius below) — and reads clearly once you've clicked into its
+     district. */
   var hoodColorMatch = ["match", ["get","id"]];
   Object.keys(data.neighborhoods).forEach(function(hid){
     hoodColorMatch.push(hid, data.neighborhoods[hid].color);
@@ -284,11 +339,22 @@ function init(districtsGeo, data, hoodsGeo){
       "line-width": 1.8, "line-dasharray": [2, 1.4], "line-opacity": 0.9
     }
   });
+  /* label on a dedicated Point source (HOOD_LABEL_POINT), same tile-split reasoning as
+     district-label above — ikseondong/bukchon are small enough to rarely cross a tile
+     boundary in practice, but the fix costs nothing to apply uniformly. */
+  var hoodLabelPts = {
+    type:"FeatureCollection",
+    features: hoodsGeo.features.map(function(f){
+      var pt = HOOD_LABEL_POINT[f.properties.id] || f.geometry.coordinates[0][0];
+      return {type:"Feature", properties:{id:f.properties.id, label:f.properties.label}, geometry:{type:"Point", coordinates:pt}};
+    })
+  };
+  map.addSource("hood-label-pts", {type:"geojson", data: hoodLabelPts});
   map.addLayer({
-    id:"hood-label", type:"symbol", source:"hoods",
+    id:"hood-label", type:"symbol", source:"hood-label-pts",
     layout:{
       "text-field": ["get","label"], "text-size": 11.5, "text-font": ["Noto Sans Bold"],
-      "symbol-placement": "point", "text-allow-overlap": false
+      "text-allow-overlap": false
     },
     paint:{"text-color": hoodColorMatch, "text-halo-color": "#ffffff", "text-halo-width": 1.3}
   });
@@ -304,7 +370,10 @@ function init(districtsGeo, data, hoodsGeo){
   map.addLayer({
     id:"place-points", type:"circle", source:"places",
     paint:{
-      "circle-radius": 6,
+      /* small and unobtrusive at the full-Seoul default view (where dozens can sit within a
+         few pixels of each other), growing back to the old fixed 6px once you've zoomed into
+         a district and they've spread out enough that overlap stops being the concern. */
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 2.5, 11, 4, 14, 6, 17, 8],
       "circle-color": ["match", ["get","categoryFold"],
         "food", CAT.food.color, "cafe", CAT.cafe.color, "market", CAT.market.color,
         "museum", CAT.museum.color, "park", CAT.park.color, "view", CAT.view.color,
@@ -438,7 +507,10 @@ function openDistrict(id){
 
   Object.keys(hoods).forEach(function(hid){
     var hm = HOOD_BY_ID[hid] || {name:hid, kr:"", color:"#999"};
-    html += "<div class='hood-block' style='--hood-color:"+hm.color+"'><h3 style='color:"+hm.color+"'>&#9733; "+hm.name+" <span class='kr'>"+hm.kr+"</span></h3>";
+    html += "<div class='hood-block' style='--hood-color:"+hm.color+"'>";
+    html += "<div class='hood-focus'><h3 style='color:"+hm.color+"'>&#9733; "+hm.name+" <span class='kr'>"+hm.kr+"</span></h3>";
+    if (hm.blurb) html += "<p class='hood-blurb'>"+hm.blurb+"</p>";
+    html += "</div>";
     html += hoods[hid].map(placeCardHTML).join("");
     html += "</div>";
   });
