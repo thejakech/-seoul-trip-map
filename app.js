@@ -48,6 +48,12 @@ var HOOD_LABEL_POINT = {
   mangwon:[126.896009,37.553812], seongsu:[127.046092,37.543067], mullae:[126.893899,37.515268],
   sinsa:[127.029057,37.529339], bukchon:[126.979241,37.586335], ikseondong:[126.989673,37.573175]
 };
+/* 24-12 Wiryeseong-daero 6-gil, Songpa-gu — grandma's place. OSM Nominatim has no exact
+   house-number match for Korean addresses this specific (a known gap for this app — see the
+   README's geocoding section); this is the middle of three street-segment matches it did return
+   for 위례성대로6길 in 방이동, Songpa-gu, so it's within a block or so of the real building, not
+   an exact rooftop pin. Nudge it once you can drop the precise pin from Naver/Kakao Map. */
+var GRANDMA_HOME = [127.116450, 37.513407];
 
 /* ---------- persisted state ---------- */
 var LS = {visited:"seoul-map:visited", cats:"seoul-map:cats"};
@@ -458,6 +464,29 @@ function init(districtsGeo, data, hoodsGeo){
     },
     paint:{"text-color": hoodColorMatch, "text-halo-color": "#ffffff", "text-halo-width": 1.3}
   });
+
+  /* ---------- grandma's place — a single fixed landmark, kept OUTSIDE the places/category
+     system entirely. It isn't a "place to visit and check off" like data.places entries — it's
+     a home-icon reference point that should always show regardless of category filters or the
+     All types/None toggle, and never appear in the list view or a district's place cards.
+     A plain DOM maplibregl.Marker rather than a style symbol layer: MapLibre symbol layers draw
+     text from the style's own SDF glyph set (rasterized from specific font files the "glyphs"
+     endpoint serves), which does not cover emoji — a 🏠 text-field there silently renders
+     nothing. A Marker's element is ordinary HTML, so the browser renders the emoji itself like
+     any other text on the page; it also needs no source/layer/z-order juggling to always end up
+     on top, and MapLibre repositions it on every camera move automatically. */
+  var homeEl = document.createElement("div");
+  homeEl.textContent = "🏠";
+  homeEl.style.fontSize = "28px";
+  homeEl.style.lineHeight = "1";
+  homeEl.style.cursor = "pointer";
+  homeEl.setAttribute("role", "img");
+  homeEl.setAttribute("aria-label", "Grandma's place");
+  new maplibregl.Marker({element: homeEl, anchor:"bottom"})
+    .setLngLat(GRANDMA_HOME)
+    .setPopup(new maplibregl.Popup({closeButton:false, offset:20})
+      .setHTML("<b>🏠 Grandma's place</b><br><span style='color:#888'>24-12 Wiryeseong-daero 6-gil, Songpa</span>"))
+    .addTo(map);
 
   var selectedDistrict = null;
   function setSelected(id){
