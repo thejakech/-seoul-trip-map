@@ -1533,6 +1533,22 @@
       "sourced_from_video": false,
       "geocode_query": "Seoul Hall of Urbanism & Architecture",
       "img": "assets/photos/seoulhallarch.jpg"
+    },
+    {
+      "id": "saeraul",
+      "name": "Cafe Saeraul",
+      "name_kr": "새라울",
+      "district": "seodaemun",
+      "neighborhood": null,
+      "category": "cafe",
+      "lat": 37.5702786,
+      "lng": 126.932153,
+      "hours": "Opens 10:00",
+      "note": "Resolves the long-standing '❓ Saeraul' unknown from the itinerary master list — a hanok-courtyard cafe in Yeonhui-dong, second building on the lot, with a striking bamboo/stone/water courtyard lit at night. Cafe + dessert + cocktails (the reviews-tab drink shown was clearly alcoholic).",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "새라울 Saeraul, Yeonhui-dong, Seodaemun-gu, Seoul",
+      "img": "assets/photos/saeraul.jpg"
     }
   ]
 }
