@@ -887,23 +887,34 @@ function renderList(){
    middle of the panel and gives it a brief highlight so it's unmistakable which card the tap
    landed on. Does nothing if the id has no matching row (e.g. its own category is currently
    filtered out — can't happen from a map tap today since a filtered-out category's pin isn't
-   clickable either, but this keeps the function safe to call from anywhere later). */
+   clickable either, but this keeps the function safe to call from anywhere later).
+
+   ⚠️ On mobile, openPanelSheet() alone only snaps to the "half" position (sheet.snaps[1]) —
+   scrollIntoView's block:"center" centers the row within the WHOLE sheet's scroll area
+   (90dvh), not just the half of it currently on-screen, so the row can land squarely behind
+   the folded-away bottom half and the jump looks like it silently did nothing. Forcing
+   sheet.snaps[0] (fully open) here, on top of whatever openPanelSheet() already did, is what
+   actually guarantees the target row ends up somewhere visible. */
 function revealInList(id){
   listOpen = true;
   document.getElementById("panel").classList.add("list-mode");
   document.getElementById("panelBody").innerHTML = renderList();
   openPanelSheet();
+  if (MQ.matches) sheetTo(sheet.snaps[0], true); // fully open, not the default half-sheet
   wireList();
   var row = document.getElementById("card-" + id);
   if (!row) return;
   var details = row.closest("details.list-d");
   if (details) details.open = true;
-  /* one frame so the just-opened <details> has finished laying out — scrolling immediately,
-     before the browser reflows the newly-revealed content, would measure the wrong position. */
+  /* two frames, not one: the first lets the just-opened <details> finish laying out, the
+     second lets the sheet's own re-snap-to-full (above) settle too — scrolling against either
+     mid-reflow measures the wrong position. */
   requestAnimationFrame(function(){
-    row.scrollIntoView({behavior:"smooth", block:"center"});
-    row.classList.add("flash");
-    setTimeout(function(){ row.classList.remove("flash"); }, 1600);
+    requestAnimationFrame(function(){
+      row.scrollIntoView({behavior:"smooth", block:"center"});
+      row.classList.add("flash");
+      setTimeout(function(){ row.classList.remove("flash"); }, 1600);
+    });
   });
 }
 
