@@ -294,6 +294,32 @@ picked — near these if you pass through" footer for districts with zero placed
 `also` backlog as jump-links. Expand all / Collapse all reset every district row's open state; it's
 not persisted between renders (matches v1 — re-filtering re-renders the whole list fresh).
 
+## Tapping a map pin — bigger hit target + jump-to-list
+
+Two problems, one feature, added together:
+
+**The visible dot is too small to reliably tap.** `place-points`' circle-radius runs 2.5px at
+the full-Seoul zoom up to 8px zoomed into a district — deliberately tiny so dense clusters
+(Ikseon-dong, Itaewon) stay readable rather than a solid blob of overlapping dots. Growing the
+visible circle to fix tappability would un-fix the readability it was tuned for. Instead,
+`place-points-hit` is a second circle layer on the exact same `places` source/coordinates —
+radius 11–17px depending on zoom, `circle-opacity: 0` — and it's *that* layer, not the visible
+one, that `click`/`mouseenter`/`mouseleave` are bound to. The visible dot always sits at the
+center of a much bigger invisible target. `applyCatFilter()` sets the identical filter
+expression on both layers in the same call — skipping the hit layer would leave a filtered-out
+category's (invisible) tap target still live, so tapping empty-looking map space could pop up a
+pin that isn't supposed to be showing.
+
+**Tapping a pin now also opens List view, scrolled to that exact row.** Previously a map tap
+only flew the camera in and dropped a popup — finding that same place in the list meant opening
+the right district's accordion by hand. `revealInList(id)` (called from the `place-points-hit`
+click handler) forces List view open, expands just that place's own district `<details>`
+(everything else stays collapsed), `scrollIntoView`s its row to the middle of the panel, and
+gives it a 1.6s fading highlight (`.lr.flash` in style.css) so it's unmistakable which card the
+tap landed on. One frame's delay (`requestAnimationFrame`) between opening the `<details>` and
+scrolling — scrolling in the same tick would measure the row's position before the browser
+reflows the newly-revealed content, landing short.
+
 ## Photos
 
 `assets/photos/` holds real place thumbnails recovered from the old v1 artifact — it had every

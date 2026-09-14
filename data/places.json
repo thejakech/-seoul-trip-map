@@ -1513,10 +1513,11 @@
       "lat": 37.5256292,
       "lng": 127.035446,
       "hours": "Opens 11:00",
-      "note": "Menswear flagship near Apgujeong Rodeo — pairs with the Sinsa/Dosan Park/Garosu-gil spine.",
+      "note": "Menswear flagship near Apgujeong Rodeo — pairs with the Sinsa/Dosan Park/Garosu-gil spine. The building itself is the draw: a stark black angular pyramid-roofed volume.",
       "unverified": false,
       "sourced_from_video": false,
-      "geocode_query": "JUUN.J Dosan Flagship Store Seoul"
+      "geocode_query": "JUUN.J Dosan Flagship Store Seoul",
+      "img": "assets/photos/juunj.jpg"
     },
     {
       "id": "seoulhallarch",

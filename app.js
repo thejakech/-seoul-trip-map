@@ -413,6 +413,22 @@ function init(districtsGeo, data, hoodsGeo){
       "circle-stroke-width":1.5, "circle-stroke-color":"#fff"
     }
   });
+  /* ---------- invisible, larger tap target for place-points ----------
+     The visible dot above is deliberately tiny at low zoom (2.5px) so dense clusters stay
+     readable, but that's much smaller than a comfortable touch target on a phone. Rather than
+     grow the dot itself (and ruin the map art), this is a second circle layer on the SAME
+     source/coordinates — fully transparent, but with a radius several px larger at every zoom
+     step — and it's this layer, not the visible one, that click/hover are actually bound to
+     below. The visible dot always sits at the center of its own invisible, much-easier-to-hit
+     circle. Must mirror place-points' own category filter (see applyCatFilter) so a hidden
+     dot's tap target doesn't linger as a phantom hit zone. */
+  map.addLayer({
+    id:"place-points-hit", type:"circle", source:"places",
+    paint:{
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 11, 11, 13, 14, 15, 17, 17],
+      "circle-opacity": 0, "circle-stroke-width": 0
+    }
+  });
 
   /* ---------- district/neighborhood name labels — added LAST, after place-points ----------
      Layers paint in the order they're added, later on top. These used to be added right after
@@ -513,7 +529,12 @@ function init(districtsGeo, data, hoodsGeo){
 
   map.on("click", "district-fill", function(e){ selectDistrict(e.features[0].properties.id); });
 
-  map.on("click", "place-points", function(e){
+  /* bound to place-points-hit (the invisible, larger circle), not the visible place-points
+     dot — see that layer's own comment above. Pressing a pin now does three things: flies the
+     map to it, drops the usual popup, AND jumps straight to the List view with that place's
+     row already open and scrolled into view (revealInList, defined near the list-view code
+     below) — no more hunting through the district accordion to find what you just tapped. */
+  map.on("click", "place-points-hit", function(e){
     var id = e.features[0].properties.id;
     var p = placesById[id];
     if (!p) return;
@@ -522,9 +543,10 @@ function init(districtsGeo, data, hoodsGeo){
       .setLngLat([p.lng, p.lat])
       .setHTML("<b>"+p.name+"</b><br><span style='color:#888'>"+catLabel(p.category)+"</span>")
       .addTo(map);
+    revealInList(id);
   });
 
-  ["district-fill","place-points"].forEach(function(l){
+  ["district-fill","place-points-hit"].forEach(function(l){
     map.on("mouseenter", l, function(){ map.getCanvas().style.cursor = "pointer"; });
     map.on("mouseleave", l, function(){ map.getCanvas().style.cursor = ""; });
   });
@@ -589,9 +611,14 @@ function wireCatbar(container){
   });
 }
 function applyCatFilter(){
-  if (state.allOff){ map.setFilter("place-points", false); return; }
+  /* place-points-hit must always carry the exact same filter as the visible place-points dot
+     it sits behind — otherwise a filtered-out category would still leave its (invisible)
+     larger tap target live, and tapping empty-looking map space could reveal a hidden pin. */
+  if (state.allOff){ map.setFilter("place-points", false); map.setFilter("place-points-hit", false); return; }
   var active = CAT_ORDER.filter(function(k){ return !!state.catSel[k]; });
-  map.setFilter("place-points", active.length ? ["in", ["get","categoryFold"], ["literal", active]] : null);
+  var f = active.length ? ["in", ["get","categoryFold"], ["literal", active]] : null;
+  map.setFilter("place-points", f);
+  map.setFilter("place-points-hit", f);
 }
 function visPlaces(id){ return (DISTRICT[id].places || []).filter(function(p){ return catOn(p.category); }); }
 function counts(id){
@@ -851,6 +878,33 @@ function renderList(){
     + "<div class='list-tools'><button class='txtbtn' data-expand='1'>Expand all</button><button class='txtbtn' data-expand='0'>Collapse all</button></div>"
     + "<div class='catbar list-catbar' role='group' aria-label='Filter places by type'>"+catbarHTML()+"</div>"
     + listGroup("North of the Han", buk) + listGroup("South of the Han", nam);
+}
+
+/* ---------- jump from a map pin straight to its row in the List view ----------
+   Called by the place-points-hit click handler above. Forces List view open (re-rendering it
+   fresh, same as a category-filter change already does elsewhere), pops open just that one
+   place's district <details> — everything else stays collapsed — then scrolls its row to the
+   middle of the panel and gives it a brief highlight so it's unmistakable which card the tap
+   landed on. Does nothing if the id has no matching row (e.g. its own category is currently
+   filtered out — can't happen from a map tap today since a filtered-out category's pin isn't
+   clickable either, but this keeps the function safe to call from anywhere later). */
+function revealInList(id){
+  listOpen = true;
+  document.getElementById("panel").classList.add("list-mode");
+  document.getElementById("panelBody").innerHTML = renderList();
+  openPanelSheet();
+  wireList();
+  var row = document.getElementById("card-" + id);
+  if (!row) return;
+  var details = row.closest("details.list-d");
+  if (details) details.open = true;
+  /* one frame so the just-opened <details> has finished laying out — scrolling immediately,
+     before the browser reflows the newly-revealed content, would measure the wrong position. */
+  requestAnimationFrame(function(){
+    row.scrollIntoView({behavior:"smooth", block:"center"});
+    row.classList.add("flash");
+    setTimeout(function(){ row.classList.remove("flash"); }, 1600);
+  });
 }
 
 function wireList(){

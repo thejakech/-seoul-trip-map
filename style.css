@@ -220,6 +220,13 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 .lr-links{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
 .lr.done .lr-name{color:var(--ink-faint);text-decoration:line-through}
 .lr.done .lr-photo{opacity:.5}
+/* briefly highlights a row jumped to from a map-pin tap (revealInList in app.js) — a fading
+   tinted background rather than a border/outline, so it doesn't shift the row's own layout */
+.lr.flash{animation:lr-flash 1.6s ease-out}
+@keyframes lr-flash{
+  0%{background:var(--accent-tint)}
+  100%{background:transparent}
+}
 
 .list-also{margin:8px 0 4px;font:400 11.5px/1.55 var(--sans);color:var(--ink-faint)}
 .list-openmap{margin-top:6px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:7px;
