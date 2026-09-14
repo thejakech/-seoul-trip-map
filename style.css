@@ -101,7 +101,13 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
 
 .panel{position:fixed;top:0;right:0;height:100dvh;width:min(400px,92vw);background:var(--surface);
   border-left:1px solid var(--hairline);box-shadow:-8px 0 24px rgba(0,0,0,.18);transform:translateX(105%);
-  transition:transform .3s ease,width .2s ease;z-index:6;overflow-y:auto}
+  transition:transform .3s ease,width .2s ease;z-index:6;overflow-y:auto;
+  /* promotes this to its own compositing layer proactively rather than only once a
+     transform animation is already running — the mobile sheet's drag/snap logic sets
+     `transform` via inline style constantly, and starting that promotion late is a known
+     source of iOS Safari touch-hit-testing lag on animated sheets (buttons visually present,
+     taps landing on stale pre-transform geometry). */
+  will-change:transform}
 .panel.open{transform:none}
 .panel.list-mode{width:min(480px,94vw)}
 .panel.list-mode #panelClose{display:none}
@@ -193,6 +199,13 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
 .p-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;
   margin:0 -20px 10px;padding:14px 20px 10px;background:var(--surface)}
 @media (max-width:859px){ .p-bar{top:40px} }
+/* the single-place preview card (.preview-mode) is short and never scrolls, so its own p-bar
+   gets none of the sticky/negative-margin treatment above — it's back to a plain header. This
+   also sidesteps position:sticky sitting inside an element (#panel) that's simultaneously being
+   CSS-transform-animated for the sheet's open/close motion, a combination with known touch
+   hit-testing flakiness on iOS Safari (buttons visually present but taps not registering) —
+   real problem in a scrollable sheet, but here it was buying nothing and only adding risk. */
+.panel.preview-mode .p-bar{position:static;margin:0 0 10px;padding:0 0 10px;background:none}
 .p-bar button{background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:7px 13px;
   font:600 13px var(--sans);color:var(--ink-soft);cursor:pointer}
 .p-bar button:hover{border-color:var(--accent);color:var(--accent)}
