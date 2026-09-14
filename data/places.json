@@ -1481,8 +1481,8 @@
       "lat": 37.5557853,
       "lng": 126.9244801,
       "hours": "Opens 12:00",
-      "note": "Used-apparel/vintage store ('Omnipeople · Heavy'), ~410m from Hongik Univ. Station Exit 7. Fits the Hongdae thrift tier alongside Root Hongdae.",
-      "unverified": true,
+      "note": "Used-apparel/vintage store ('Omnipeople · Heavy'), ~410m from Hongik Univ. Station Exit 7. Fits the Hongdae thrift tier alongside Root Hongdae. Address confirmed 2026-09-14 against Jake's own Google Maps listing (348-48 Seogyo-dong matches) — the 335-35 on the KakaoMap screenshot was a different address string, not a wrong pin.",
+      "unverified": false,
       "sourced_from_video": false,
       "geocode_query": "omnipeople Seogyo-dong Seoul",
       "img": "assets/photos/omnipeople.jpg"
