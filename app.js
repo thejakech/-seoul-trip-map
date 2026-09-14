@@ -455,7 +455,19 @@ function init(districtsGeo, data, hoodsGeo){
   map.addLayer({
     id:"district-label", type:"symbol", source:"district-label-pts",
     layout:{
-      "text-field": ["get","label"], "text-size": 13, "text-font": ["Noto Sans Bold"],
+      "text-field": ["get","label"], "text-font": ["Noto Sans Bold"],
+      /* Jongno-gu's own precomputed anchor sits only ~40px (screen space, at the default
+         fitted zoom) from Eunpyeong's — the historic downtown core is geographically pinched
+         between three mountain districts up there, and no point deep enough inside Jongno's
+         polygon to count as a real interior anchor clears much more than that from ALL of its
+         neighbors at once. With a fixed 13px size and text-allow-overlap:false, that collision
+         made MapLibre drop one label outright (Jongno's, in practice) rather than render two
+         overlapping ones — this is likely why it was missing. Shrinking the text at low zoom
+         shrinks the actual collision boxes MapLibre checks, which is the real fix (moving the
+         anchor point can't buy much more separation — the geometry is just tight there); it
+         grows back to the original 13px by the time you've zoomed into a single district and
+         overlap stops being a concern. */
+      "text-size": ["interpolate", ["linear"], ["zoom"], 9, 10.5, 11, 12, 13, 13],
       "text-allow-overlap": false
     },
     paint:{
@@ -520,6 +532,7 @@ function init(districtsGeo, data, hoodsGeo){
   function selectDistrict(id){
     listOpen = false;
     document.getElementById("panel").classList.remove("list-mode");
+    document.getElementById("panel").classList.remove("preview-mode");
     setSelected(id);
     selectedDistrictFeature = districtsGeo.features.find(function(x){ return x.properties.id === id; }) || null;
     applyDeclutter(); // reveal this district's own streets even if "Streets On" is off
@@ -531,9 +544,9 @@ function init(districtsGeo, data, hoodsGeo){
 
   /* bound to place-points-hit (the invisible, larger circle), not the visible place-points
      dot — see that layer's own comment above. Pressing a pin now does three things: flies the
-     map to it, drops the usual popup, AND jumps straight to the List view with that place's
-     row already open and scrolled into view (revealInList, defined near the list-view code
-     below) — no more hunting through the district accordion to find what you just tapped. */
+     map to it, drops the usual popup, AND pops up a small preview card for just that place
+     (previewPlace, defined near the list-view code below) — not the whole district accordion,
+     just a quick peek with a link to go browse further if you want to. */
   map.on("click", "place-points-hit", function(e){
     var id = e.features[0].properties.id;
     var p = placesById[id];
@@ -543,7 +556,7 @@ function init(districtsGeo, data, hoodsGeo){
       .setLngLat([p.lng, p.lat])
       .setHTML("<b>"+p.name+"</b><br><span style='color:#888'>"+catLabel(p.category)+"</span>")
       .addTo(map);
-    revealInList(id);
+    previewPlace(id);
   });
 
   ["district-fill","place-points-hit"].forEach(function(l){
@@ -634,6 +647,7 @@ function counts(id){
 /* ---------- district detail panel ---------- */
 function openDistrict(id){
   document.getElementById("panel").classList.remove("list-mode");
+  document.getElementById("panel").classList.remove("preview-mode");
   var d = DISTRICT[id];
   var placesHere = d.places || [];
   var hoods = {}; var loose = [];
@@ -746,6 +760,7 @@ function closePanelSheet(){
 function closePanelFully(){
   closePanelSheet();
   panelEl.classList.remove("list-mode");
+  panelEl.classList.remove("preview-mode");
   listOpen = false;
   if (selectedDistrictFeature){ selectedDistrictFeature = null; applyDeclutter(); } // drop the district-scoped street reveal
 }
@@ -795,6 +810,7 @@ document.getElementById("hudReopen").addEventListener("click", function(){
 /* ---------- list view (ported from v1's renderList/listGroup/listRow/wireList) ---------- */
 document.getElementById("btnList").addEventListener("click", function(){
   listOpen = true;
+  document.getElementById("panel").classList.remove("preview-mode");
   document.getElementById("panel").classList.add("list-mode");
   document.getElementById("panelBody").innerHTML = renderList();
   openPanelSheet();
@@ -880,24 +896,63 @@ function renderList(){
     + listGroup("North of the Han", buk) + listGroup("South of the Han", nam);
 }
 
-/* ---------- jump from a map pin straight to its row in the List view ----------
-   Called by the place-points-hit click handler above. Forces List view open (re-rendering it
-   fresh, same as a category-filter change already does elsewhere), pops open just that one
-   place's district <details> — everything else stays collapsed — then scrolls its row to the
-   middle of the panel and gives it a brief highlight so it's unmistakable which card the tap
-   landed on. Does nothing if the id has no matching row (e.g. its own category is currently
-   filtered out — can't happen from a map tap today since a filtered-out category's pin isn't
-   clickable either, but this keeps the function safe to call from anywhere later).
+/* ---------- a compact single-place preview when a map pin is tapped ----------
+   This used to jump straight into the full "every place by district" List view, scrolled to
+   and highlighting the tapped place's row. That worked, but landing in the entire
+   multi-district accordion over one tap was overkill and buried the one place you actually
+   care about inside everything else. This instead renders just that place's own row — reusing
+   listRow() so it's pixel-identical to its row in the real list — under the same "‹ Map / ×"
+   bar the list view uses, and, on mobile, sizes the sheet to fit that one row instead of the
+   usual 90dvh sheet (see .panel.preview-mode in style.css), so it reads as a small peek card
+   rather than a full-screen takeover. A "See all in <district>" link inside it still reaches
+   the old full-list-scrolled-and-highlighted behavior (now openFullListAt, below) for anyone
+   who wants to keep browsing from there. */
+function renderPlacePreview(p){
+  var d = DISTRICT[p.district];
+  var dname = d ? d.n.replace("-gu","") : "";
+  return "<div class='p-bar'><button data-back>&lsaquo; Map</button><span class='spacer'></span><button data-close aria-label='Close'>&times;</button></div>"
+    + listRow(p)
+    + (d ? "<button class='txtbtn preview-more' data-gu='"+p.district+"'>See all in "+dname+" &rsaquo;</button>" : "");
+}
+function wirePlacePreview(id){
+  var panelBody = document.getElementById("panelBody");
+  var closeBtn = panelBody.querySelector("[data-close]");
+  if (closeBtn) closeBtn.addEventListener("click", closePanelFully);
+  var backBtn = panelBody.querySelector("[data-back]");
+  if (backBtn) backBtn.addEventListener("click", closePanelFully);
+  panelBody.querySelectorAll("input[type=checkbox]").forEach(function(cb){ cb.addEventListener("change", onToggle); });
+  var more = panelBody.querySelector(".preview-more");
+  if (more) more.addEventListener("click", function(){ openFullListAt(id); });
+}
+/* Called by the place-points-hit click handler above — the default response to tapping a pin. */
+function previewPlace(id){
+  var p = placesById[id];
+  if (!p) return;
+  listOpen = false; // this is a single-card peek, not the full list — keep that flag accurate
+  var panel = document.getElementById("panel");
+  panel.classList.add("list-mode");    // reuses list-mode's width + hides the floating
+  panel.classList.add("preview-mode"); //  #panelClose, since our own p-bar supplies both
+  document.getElementById("panelBody").innerHTML = renderPlacePreview(p);
+  openPanelSheet();
+  if (MQ.matches){
+    /* .preview-mode shrinks the sheet element itself to fit its (short) content instead of
+       the usual 90dvh — re-measure against THAT height, then snap fully open rather than the
+       default half-sheet, since "half" of an already-short card would hide most of it. */
+    sheetSetup();
+    sheetTo(0, true);
+  }
+  wirePlacePreview(id);
+}
 
-   ⚠️ On mobile, openPanelSheet() alone only snaps to the "half" position (sheet.snaps[1]) —
-   scrollIntoView's block:"center" centers the row within the WHOLE sheet's scroll area
-   (90dvh), not just the half of it currently on-screen, so the row can land squarely behind
-   the folded-away bottom half and the jump looks like it silently did nothing. Forcing
-   sheet.snaps[0] (fully open) here, on top of whatever openPanelSheet() already did, is what
-   actually guarantees the target row ends up somewhere visible. */
-function revealInList(id){
+/* ---------- the previous behavior, kept as an escape hatch ----------
+   Opens the full "every place by district" List view with the given place's district
+   <details> expanded and its row scrolled into view + briefly highlighted — reached from the
+   "See all in <district>" link inside previewPlace()'s card rather than fired on every tap. */
+function openFullListAt(id){
   listOpen = true;
-  document.getElementById("panel").classList.add("list-mode");
+  var panel = document.getElementById("panel");
+  panel.classList.remove("preview-mode");
+  panel.classList.add("list-mode");
   document.getElementById("panelBody").innerHTML = renderList();
   openPanelSheet();
   if (MQ.matches) sheetTo(sheet.snaps[0], true); // fully open, not the default half-sheet

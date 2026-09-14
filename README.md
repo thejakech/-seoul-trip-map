@@ -235,6 +235,21 @@ still adapts, for readability). An earlier version tried a separate "dark-mode" 
 came out as muddy desaturated brown/gray rather than a genuine dark pink — pinning to one recipe
 sidesteps re-deriving a second palette that has to look right on its own.
 
+**Jongno-gu's label went missing at the default zoom — this was a text-collision bug, not a
+missing feature.** Jongno's precomputed anchor point sits deep in the historic downtown core,
+which is geographically pinched between three mountain districts (Eunpyeong, Gangbuk, Seongbuk);
+at the full-Seoul fitted zoom, its anchor lands only ~40 screen-px from Eunpyeong's, and with a
+fixed 13px `text-size` + `text-allow-overlap:false`, that's enough for their text boxes to
+overlap — MapLibre drops one label outright rather than render two on top of each other, and
+Jongno's lost that fight. No point deep enough inside Jongno's actual polygon to count as a real
+interior anchor clears much more separation from *all* its neighbors at once (checked with a
+grid search over the polygon in Shapely — the achievable minimum-distance-to-nearest-neighbor
+tops out around 40–45px no matter where the anchor sits up there), so nudging the anchor
+wouldn't have fixed it. Making `text-size` zoom-dependent — `["interpolate",["linear"],["zoom"],
+9,10.5, 11,12, 13,13]` instead of a flat `13` — shrinks the actual collision boxes at the
+crowded low zoom where this matters, and grows back to the original size by the time you've
+zoomed into one district and overlap stops being a concern.
+
 The base style's generic "Seoul 서울특별시" city label is permanently hidden (`PERMANENT_HIDE_IDS`
 in `app.js`) — it used to sit on top of the map at street-level zoom and duplicated what the
 district labels already show.
@@ -310,15 +325,30 @@ expression on both layers in the same call — skipping the hit layer would leav
 category's (invisible) tap target still live, so tapping empty-looking map space could pop up a
 pin that isn't supposed to be showing.
 
-**Tapping a pin now also opens List view, scrolled to that exact row.** Previously a map tap
-only flew the camera in and dropped a popup — finding that same place in the list meant opening
-the right district's accordion by hand. `revealInList(id)` (called from the `place-points-hit`
-click handler) forces List view open, expands just that place's own district `<details>`
-(everything else stays collapsed), `scrollIntoView`s its row to the middle of the panel, and
-gives it a 1.6s fading highlight (`.lr.flash` in style.css) so it's unmistakable which card the
-tap landed on. One frame's delay (`requestAnimationFrame`) between opening the `<details>` and
-scrolling — scrolling in the same tick would measure the row's position before the browser
-reflows the newly-revealed content, landing short.
+**Tapping a pin now also pops up a small preview card for that place.** Previously a map tap
+only flew the camera in and dropped a popup; an earlier version of this feature then jumped
+straight into the full "every place by district" List view, scrolled to that place's row — that
+technically worked but felt like overkill for a single tap, and buried the one place you
+actually care about inside the whole accordion. `previewPlace(id)` (called from the
+`place-points-hit` click handler) instead renders just that place's own row (via `listRow()`,
+so it looks identical to its row in the real list) under the same "‹ Map / ×" bar the List view
+uses, and — on mobile — sizes the sheet to that one row's actual height (`.panel.preview-mode`
+in style.css, overriding the usual 90dvh) rather than the standard half-open bottom sheet, so it
+reads as a small peek card at the bottom of the screen instead of a near-full-screen takeover. A
+"See all in `<district>`" link inside the card calls `openFullListAt(id)` — the previous
+behavior, kept as an escape hatch: opens the full List view, expands just that place's district
+`<details>`, `scrollIntoView`s its row to the middle of the panel, and gives it a 1.6s fading
+highlight (`.lr.flash`). Two animation frames (`requestAnimationFrame`, nested) separate opening
+the `<details>` from scrolling — scrolling in the same tick would measure the row's position
+before the browser reflows the newly-revealed content, landing short.
+
+⚠️ **On mobile, forcing the sheet open matters more than it sounds.** `openPanelSheet()` alone
+only snaps to the "half" position. `scrollIntoView`'s `block:"center"` centers a target within
+the *whole* scrollable sheet, not just whatever fraction of it is currently on-screen — so
+without an explicit `sheetTo(0)` (or, for the short preview card, a fresh `sheetSetup()` against
+its own shrunk height before that same `sheetTo(0)`), a scrolled-to row can land squarely behind
+the folded-away rest of the sheet and the jump looks like it silently did nothing. This was an
+actual bug in an earlier version of this feature, not a hypothetical.
 
 ## Photos
 

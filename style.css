@@ -113,6 +113,13 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
     transition:transform .42s cubic-bezier(.4,0,.2,1);border-radius:18px 18px 0 0;
     border-top:1px solid var(--hairline);border-left:0}
   .panel.list-mode{width:auto}
+  /* the single-place preview card (previewPlace() in app.js) — a short sheet sized to its
+     own (short) content instead of the standard 90dvh, so tapping a map pin reads as a small
+     peek at the bottom of the screen rather than a near-full-screen sheet with mostly empty
+     space under one row. app.js re-measures against this height (sheetSetup) and snaps fully
+     open (sheetTo(0)) rather than the default half-sheet, since "half" of an already-short
+     card would hide most of it below the fold. */
+  .panel.preview-mode{height:auto;max-height:70dvh}
 }
 .grab{display:none}
 @media (max-width:859px){
@@ -174,7 +181,18 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
 
 /* ---- list view: "Every place by district" — ported from v1, rendered into #panelBody
    when .panel.list-mode is active ---- */
-.p-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+/* sticky, not part of the normal scroll flow — on a long list (or a single district's full
+   place roster) this used to scroll away with everything else, taking the only way back to
+   the map or to close the panel along with it. Negative side margins + matching padding
+   stretch it back out to the panel's full width (canceling .panel-body's own 20px side
+   padding) so the sticky background covers edge-to-edge instead of leaving the gutters
+   see-through underneath it.
+   top:40px on mobile, not 0 — .grab (the drag handle) is ALSO position:sticky top:0 in the
+   same scroll container (#panel); stacking two sticky elements at the same top offset makes
+   them overlap instead of stacking, so this sticks just below the grab handle's own height. */
+.p-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;
+  margin:0 -20px 10px;padding:14px 20px 10px;background:var(--surface)}
+@media (max-width:859px){ .p-bar{top:40px} }
 .p-bar button{background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:7px 13px;
   font:600 13px var(--sans);color:var(--ink-soft);cursor:pointer}
 .p-bar button:hover{border-color:var(--accent);color:var(--accent)}
@@ -220,13 +238,18 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 .lr-links{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
 .lr.done .lr-name{color:var(--ink-faint);text-decoration:line-through}
 .lr.done .lr-photo{opacity:.5}
-/* briefly highlights a row jumped to from a map-pin tap (revealInList in app.js) — a fading
-   tinted background rather than a border/outline, so it doesn't shift the row's own layout */
+/* briefly highlights a row jumped to from the single-place preview's "See all in <district>"
+   link (openFullListAt in app.js) — a fading tinted background rather than a border/outline,
+   so it doesn't shift the row's own layout */
 .lr.flash{animation:lr-flash 1.6s ease-out}
 @keyframes lr-flash{
   0%{background:var(--accent-tint)}
   100%{background:transparent}
 }
+/* the single-place preview's link out to the full list (renderPlacePreview in app.js) —
+   block-level and its own top margin so it reads as a footer action under the one row, not
+   crowded right against its links */
+.preview-more{display:block;width:100%;text-align:left;margin:8px 0 2px;padding:6px 2px}
 
 .list-also{margin:8px 0 4px;font:400 11.5px/1.55 var(--sans);color:var(--ink-faint)}
 .list-openmap{margin-top:6px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:7px;
