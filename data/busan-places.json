@@ -340,6 +340,21 @@
       "sourced_from_video": false,
       "geocode_query": "Working Holiday cafe Haeundae Busan",
       "img": "assets/busan/photos/workingholiday.jpg"
+    },
+    {
+      "id": "hwangnyeongsan",
+      "name": "Hwangnyeongsan (night viewpoint)",
+      "name_kr": "황령산",
+      "district": "nam",
+      "category": "view",
+      "lat": 35.1573354,
+      "lng": 129.0819088,
+      "hours": "Open 24h (observatory deck hours vary)",
+      "note": "Mountain peak with a night-view observatory over Busan's skyline and Gwangan Bridge — Jake's pick for a nighttime lookout.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "황령산 전망대",
+      "img": null
     }
   ]
 }
