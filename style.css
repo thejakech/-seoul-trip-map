@@ -46,6 +46,21 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
   font-weight:800;font-size:min(9vw,84px);line-height:.8;letter-spacing:.01em;
   color:var(--watermark-color);opacity:.16;white-space:nowrap}
 
+/* ---- region switcher (Seoul / Jeju / Busan) — top-right pill tabs, matching v1's own
+   .citytabs. Plain <a> links between separate pages (jeju.html, index.html, busan.html)
+   rather than a client-side tab swap — the three regions use different enough rendering
+   (real MapLibre tiles vs a static illustrated image) that keeping them as separate pages
+   sharing this one stylesheet is far lower-risk than merging them into one script, at the
+   cost of a full page load when switching. A region not built yet renders .disabled. ---- */
+.regiontabs{position:fixed;top:14px;right:14px;z-index:9;display:flex;gap:3px;
+  background:var(--surface);border:1px solid var(--hairline);border-radius:99px;padding:4px;
+  box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.regiontabs a{display:block;padding:7px 15px;border-radius:99px;font:700 13px var(--sans);
+  color:var(--ink-soft);text-decoration:none;cursor:pointer}
+.regiontabs a.on{background:var(--ink);color:var(--surface)}
+.regiontabs a.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+@media (max-width:859px){ .regiontabs{padding:3px} .regiontabs a{padding:6px 11px;font-size:12px} }
+
 /* ---- HUD wrapper: just a positioning shell now. The visible black box is .card;
    .catbar is its own free-floating sibling row directly below it (see below) — this is
    what lets the category chips scroll as one swipeable row wider than the card itself,
@@ -276,3 +291,30 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 .list-jump:hover{text-decoration:underline}
 
 .maplibregl-popup-content{background:var(--surface);color:var(--ink);border-radius:8px}
+
+/* ==================================================================
+   Jeju — static illustrated island (jeju.js), no map engine at all
+   ================================================================== */
+/* fills #map (fixed, full-viewport, same id/positioning Seoul's MapLibre canvas uses) with
+   the illustrated island art, centered and contain-fit — the water-tile texture underneath
+   repeats to fill any letterboxed edge instead of a flat color, so panning past the art's own
+   edge (there is none here — this never pans) still reads as "more of the same ocean." */
+#jejuStage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;background-image:url(assets/jeju/jeju-water-tile.png);
+  background-repeat:repeat;background-position:center;cursor:default}
+#jejuImg{max-width:100%;max-height:100%;display:block;pointer-events:none;user-select:none}
+#jejuPins{position:absolute;inset:0;pointer-events:none}
+#jejuPins .jpin{pointer-events:auto}
+/* pins are plain absolutely-positioned buttons, laid out in JS (layoutJejuPins in jeju.js)
+   against the <img>'s own rendered (object-fit:contain) box, not the wider container — a
+   letterboxed edge must never host a pin, only the art itself does. */
+.jpin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;
+  align-items:center;gap:3px;background:none;border:0;padding:0;cursor:pointer;z-index:2}
+.jpin-dot{width:14px;height:14px;border-radius:99px;border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.jpin.is-landmark .jpin-dot{width:0;height:0;border:0;box-shadow:none} /* the art already draws the icon — only an invisible hit area is needed, sized via .jpin-hit */
+.jpin-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:99px}
+.jpin-lbl{font:700 11px var(--sans);color:var(--lbl-ink,#17392A);white-space:nowrap;
+  background:rgba(255,255,255,.82);padding:2px 6px;border-radius:99px;
+  box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.jpin:hover .jpin-lbl{background:#fff}

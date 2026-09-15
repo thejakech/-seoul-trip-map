@@ -3,19 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Seoul Trip Map</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+<title>Jeju Trip Map</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="seaBackground" aria-hidden="true">
-    <div class="seoul-watermark">SEOUL</div>
+  <div id="seaBackground" aria-hidden="true"></div>
+
+  <div id="map">
+    <div id="jejuStage">
+      <img id="jejuImg" src="assets/jeju/jeju-bg.png" width="1342" height="1172" alt="Illustrated map of Jeju Island">
+      <div id="jejuPins"></div>
+    </div>
   </div>
-  <div id="map"></div>
 
   <nav class="regiontabs" aria-label="Choose a region">
-    <a href="index.html" class="on">Seoul</a>
-    <a href="jeju.html">Jeju</a>
+    <a href="index.html">Seoul</a>
+    <a href="jeju.html" class="on">Jeju</a>
     <a href="#" class="disabled" aria-disabled="true">Busan</a>
   </nav>
 
@@ -23,24 +26,20 @@
     <div class="card" id="hudCard">
       <button id="hudClose" class="hud-close" aria-label="Collapse">&times;</button>
       <div class="brand">
-        <h1>Seoul <span>by District</span></h1>
-        <p class="sub">Jake + sister · Sep–Oct 2026</p>
+        <h1>Jeju <span>Island</span></h1>
+        <p class="sub">Jake + sister · Oct 2026</p>
       </div>
       <div class="hud-row">
         <div class="progress" title="Places checked off">
           <div class="progress-bar"><span id="progressFill"></span></div>
           <span id="progressCount">0 / 0</span>
         </div>
-        <button id="btn3d" class="chip-btn" aria-pressed="false">3D</button>
-        <button id="btnDeclutter" class="chip-btn" aria-pressed="false">Streets On</button>
-        <button id="btnFit" class="txtbtn">Fit map</button>
         <button id="btnList" class="txtbtn">List view</button>
       </div>
     </div>
-    <!-- detached from the card, own free-floating swipeable row — matches v1 (see style.css .catbar) -->
     <div class="catbar" id="catbar"></div>
   </header>
-  <button id="hudReopen" class="hud-reopen" hidden>Seoul <span>▾</span></button>
+  <button id="hudReopen" class="hud-reopen" hidden>Jeju <span>▾</span></button>
 
   <aside id="panel" class="panel" aria-live="polite">
     <div class="grab"></div>
@@ -48,7 +47,6 @@
     <div id="panelBody" class="panel-body"></div>
   </aside>
 
-  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
-  <script src="app.js"></script>
+  <script src="jeju.js"></script>
 </body>
 </html>

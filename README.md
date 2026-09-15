@@ -22,16 +22,21 @@ No build step, no secrets, nothing else to configure.
 ## Files
 
 ```
-index.html            page shell, loads MapLibre + app.js
-style.css
-app.js                 map init, filters, district panel, list view, visited-tracking
+index.html            Seoul page shell, loads MapLibre + app.js
+jeju.html              Jeju page shell, loads jeju.js — no MapLibre, see "Jeju" below
+style.css              shared by every region
+app.js                 Seoul: map init, filters, district panel, list view, visited-tracking
+jeju.js                Jeju: static-image pins, filters, list view, visited-tracking
 data/
   districts.geojson    real Seoul gu (district) boundaries, from southkorea/seoul-maps
-  places.json           every picked place: schema below
+  places.json           every picked Seoul place: schema below
   seoul-outline.json     Seoul's exact outer boundary — see "floating island" below
   neighborhoods.geojson  real walkable focus-area boundaries — see "Neighborhood zones" below
+  jeju-places.json       every picked Jeju place — see "Jeju" below for its (simpler) schema
 assets/
-  photos/               place thumbnails recovered from the v1 artifact — see "Photos" below
+  photos/               Seoul place thumbnails recovered from the v1 artifact — see "Photos" below
+  jeju/                 Jeju's island art + water-tile texture + place thumbnails, also
+                        recovered from v1 — see "Jeju" below
 ```
 
 ## `places.json` schema
@@ -371,5 +376,54 @@ want to wire them into `neighborhoods[hid]` later.
 
 ## Scope
 
-Seoul only for now. Jeju and Busan are out of scope for this build — v1's illustrated versions of
-those still exist as a separate Claude Artifact if needed for reference.
+Seoul (`index.html`), Jeju (`jeju.html`), Busan (planned, not built yet). A top-right region
+switcher (`.regiontabs` — plain links between pages, not a client-side tab swap) sits on every
+page; a region with no page yet renders `.disabled`.
+
+## Jeju — a static illustrated island, not a real map (`jeju.html` / `jeju.js`)
+
+Deliberately the simplest thing in this repo. No MapLibre, no tiles, no pan/zoom camera, no
+district system — v1's own design note for this region was *"one island, not a set of
+districts,"* and that's exactly what got kept. The art (`assets/jeju/jeju-bg.png`, 1342×1172)
+is shown at a fixed "fit the viewport" size via plain `object-fit:contain`; every place is an
+absolutely-positioned `<button class="jpin">` at a `%`-position on that image
+(`data/jeju-places.json`'s `xPct`/`yPct`), computed against the image's own *rendered* rect —
+`imageRect()` in `jeju.js` — not the wider container, so a letterboxed edge never hosts a pin.
+`layoutJejuPins()`/`imageRect()` re-run on resize; there's no camera state to persist, unlike
+Seoul's `fitSeoul()`.
+
+**Everything — art, water-tile texture, and all 20 place thumbnails — was recovered from the v1
+artifact**, the same decode-a-`data:`-URI-back-to-a-real-file move already used once for
+Seoul's own v1→v2 photo migration (see "Photos" above). `JEJU_BG`, `JEJU_WATER_TILE`, and
+`JEJU_THUMBS` were all embedded as base64 inside v1's single giant HTML file; a one-off Python
+script (not kept in this repo) located each `data:image/...;base64,...` literal by variable
+name and wrote it back out to `assets/jeju/`. All 20 of `JEJU_LOCATIONS`' places had a matching
+thumbnail — nothing needed re-sourcing.
+
+**Two kinds of pin, matching v1's own distinction:** 12 "landmark" pins (`dot:false`) are just an
+invisible hit-circle sized to roughly cover the icon the art already drew (`hitRadius`, an
+image-space size that scales with the art via `imageRect().scale` rather than staying a fixed
+screen size) — v1's reasoning holds here too: "tap anywhere on Hallasan," not one exact pixel.
+8 "dot" pins (small cafés) get an actual small visible marker, since nothing is pre-drawn for
+those in the art.
+
+**One place (`jeongbang`, Jeongbang Falls) is `"unverified": true`** — v1 flagged it `guess:true`,
+meaning the artwork has a second waterfall icon near Cheonjiyeon with no confirmed identity;
+carried the flag forward rather than resolving a guess I have no better basis for than v1 did.
+
+**Categories were assigned during migration, not carried from v1** — v1's Jeju never had a
+category/color system at all (just the landmark/dot split above). Each of the 20 places got
+mapped onto the *same 8-category taxonomy* `app.js` already uses (food/cafe/market/museum/park/
+view/shop/night), so the category filter chips and colors behave identically to Seoul's.
+
+**`jeju.js` duplicates a handful of small pieces from `app.js`** (the CAT taxonomy, `photoHTML`,
+`naverUrl`/`kakaoUrl`, the panel/sheet drag mechanics, list-row rendering) rather than importing
+a shared module. This is deliberate for now, not an oversight: Jeju is the first non-Seoul
+region built, and it isn't clear yet which pieces are truly generic versus Seoul-specific until
+Busan (a *second* real-MapLibre region, unlike Jeju) exists to compare against. Refactor into a
+real `shared.js` once there are three regions' worth of evidence, not two guesses — re-doing a
+premature abstraction is cheaper than un-doing one that turned out wrong. `visited`/category-filter
+state uses its own `localStorage` keys (`jeju-map:*`, vs. Seoul's `seoul-map:*`) so the two
+regions' checklists and filters never collide, even though right now nothing could actually run
+both at once (separate pages, separate JS realms) — the separate keys are about the *data*
+outliving that, not a live collision risk today.
