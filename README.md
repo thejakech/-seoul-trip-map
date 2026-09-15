@@ -23,12 +23,12 @@ No build step, no secrets, nothing else to configure.
 
 ```
 index.html            Seoul page shell, loads MapLibre + app.js
-jeju.html              Jeju page shell, loads jeju.js — no MapLibre, see "Jeju" below
+jeju.html              Jeju page shell, loads MapLibre + jeju.js — real map, no districts, see "Jeju" below
 busan.html             Busan page shell, loads MapLibre + busan.js; its own <style> block
                        overrides the shared purple-vs-pink palette tokens — see "Busan" below
 style.css              shared by every region
 app.js                 Seoul: map init, filters, district panel, list view, visited-tracking
-jeju.js                Jeju: static-image pins, filters, list view, visited-tracking
+jeju.js                Jeju: map init (no districts), filters, list view, visited-tracking
 busan.js               Busan: map init (real districts, no hoods), filters, list view
 data/
   districts.geojson    real Seoul gu (district) boundaries, from southkorea/seoul-maps
@@ -39,10 +39,11 @@ data/
   busan-districts.geojson  real Busan gu/gun boundaries — see "Busan" below for how these
                            were built (unioned from real administrative-dong data, not traced)
   busan-places.json       every picked Busan place + all 16 district blurbs — see "Busan" below
+  busan-outline.json      Busan's real coastline, kept as 2 rings (mainland + Yeongdo) — the
+                          floating-island crop's source geometry, see "Busan" below
 assets/
   photos/               Seoul place thumbnails recovered from the v1 artifact — see "Photos" below
-  jeju/                 Jeju's island art + water-tile texture + place thumbnails, also
-                        recovered from v1 — see "Jeju" below
+  jeju/photos/           Jeju place thumbnails, recovered from v1 — see "Jeju" below
   busan/photos/          Busan place thumbnails, from Korea-Trip/busan-pics/ — see "Busan" below
 ```
 
@@ -202,6 +203,25 @@ would otherwise reintroduce: the fixed `#seaBackground` behind the map has no re
 Seoul's real-world coordinates, so letting the island drift arbitrarily far from center via drag
 would eventually make the "floating island" framing (built around a specific default view) look
 wrong.
+
+## Region tabs and the HUD card live in separate rows
+
+`.regiontabs` (Seoul/Jeju/Busan) is pinned top-right; the HUD card is pinned top-left — on a wide
+viewport there's no conflict. Below the `859px` breakpoint, `.regiontabs` stretches into its own
+full-width centered row instead (see "The HUD card" section's own note on why), and the HUD/its
+collapsed-pill twin get pushed down to `top:62px` so the two rows never overlap.
+
+⚠️ **That push-down rule has to be declared *after* the base `.hud`/`.hud-reopen` rules in
+`style.css`, not before them.** An earlier version put the `@media (max-width:859px){ .hud,
+.hud-reopen{top:62px} }` override in the same block as `.regiontabs`'s own mobile rules, which sits
+*above* `.hud{...top:14px...}`/`.hud-reopen{...top:14px...}` in the file. Both rules have identical
+selector specificity (one plain class each), so CSS's cascade tiebreaker is purely "whichever rule
+appears later in the file wins" — regardless of whether the earlier rule's media query matches. The
+base `top:14px` rule, being declared later, silently won at every viewport width, and the override
+never took visible effect at all (confirmed by testing at a real narrow viewport — the HUD sat at
+`top:14px` under the tabs whether the media query "matched" or not). The fix is just reordering:
+the mobile override now lives in its own `@media` block placed immediately after the base
+`.hud`/`.hud-reopen` declarations, so it's later in the cascade and actually wins under 859px.
 
 ## The HUD card
 
@@ -410,18 +430,28 @@ this repo.
 - **No neighborhoods/hoods layer.** v1's own Busan build was explicitly "base map only for
   now" and never had one either — nothing here has walkable focus-areas researched the way
   Seoul's Ikseon-dong/Itaewon/etc. do yet.
-- **No "floating island" clip-path crop.** Seoul's `#seaBackground` + clip-path trick needs a
-  single clean outer ring (`seoul-outline.json`); the union of Busan's 16 districts is a real
-  `MultiPolygon` with genuine open-water gaps between disconnected pieces (Yeongdo is a true
-  island; Gangseo is a river delta) — a single CSS `clip-path: polygon(...)` can't represent
-  that, and a proper multi-shape SVG `clipPath` felt like too much machinery for a purely
-  decorative crop on this pass. The map just shows real base tiles beyond the district fills
-  instead of being masked to a silhouette — worth revisiting later with an SVG clipPath if the
-  cropped look is wanted, not a limitation of the underlying data.
 - **No north/south list-view split.** Seoul's "North of the Han" / "South of the Han" grouping
   is specific to that river actually bisecting the city in a way locals navigate by; Busan has
   no equivalent natural two-way split, so its list view is one flat list in v1's own
   `BUSAN_LAYOUT` district order instead.
+
+**The "floating island" crop is a purple gradient now, not skipped.** Seoul's version needs only
+a single CSS `clip-path: polygon(...)` because `seoul-outline.json` is one clean ring. Busan's real
+coastline doesn't work that way: the union of all 16 districts is a genuine `MultiPolygon` —
+Yeongdo is a true island, separated from the mainland by real open water, plus a few sub-pixel
+simplification slivers — so a single-ring `clip-path` can't represent it. `data/busan-outline.json`
+keeps the two rings big enough to matter (mainland + Yeongdo; the slivers were dropped when the
+file was built via Shapely's `unary_union` over `busan-districts.geojson`, then filtering pieces
+under `0.0005` in area). The crop itself uses an SVG `<clipPath>` (defined empty in `busan.html`,
+populated in JS) instead of a CSS `clip-path: polygon()`, since an SVG clipPath can hold multiple
+`<polygon>` children — one per ring — where the CSS property only takes one. `setupBusanClip()`
+creates one `<polygon>` per ring on load; `updateMapClip()` recomputes each ring's own
+screen-space points via `map.project()` on every `move`/`resize`, same idea as Seoul's single
+`clip-path` recompute, just looped per-ring, and sets `clip-path: url(#busanClipPath)` on
+`.maplibregl-canvas-container` (same target element Seoul's version clips, for the same
+zoom-control reason described in Seoul's own "floating island" section above). Skipped, same as
+Seoul's, whenever the camera is pitched (`map.getPitch() > 0.5`) — perspective projection breaks
+the flat-polygon assumption a screen-space clip depends on.
 
 **Own `localStorage` keys** (`busan-map:*`), same reasoning as Jeju's — three regions' worth of
 visited-checklist and category-filter state, never colliding, even though today nothing could
@@ -452,50 +482,63 @@ Seoul (`index.html`), Jeju (`jeju.html`), Busan (`busan.html`) — all three bui
 region switcher (`.regiontabs` — plain links between pages, not a client-side tab swap) sits on
 every page.
 
-## Jeju — a static illustrated island, not a real map (`jeju.html` / `jeju.js`)
+## Jeju — a real map, deliberately the simplest of the three (`jeju.html` / `jeju.js`)
 
-Deliberately the simplest thing in this repo. No MapLibre, no tiles, no pan/zoom camera, no
-district system — v1's own design note for this region was *"one island, not a set of
-districts,"* and that's exactly what got kept. The art (`assets/jeju/jeju-bg.png`, 1342×1172)
-is shown at a fixed "fit the viewport" size via plain `object-fit:contain`; every place is an
-absolutely-positioned `<button class="jpin">` at a `%`-position on that image
-(`data/jeju-places.json`'s `xPct`/`yPct`), computed against the image's own *rendered* rect —
-`imageRect()` in `jeju.js` — not the wider container, so a letterboxed edge never hosts a pin.
-`layoutJejuPins()`/`imageRect()` re-run on resize; there's no camera state to persist, unlike
-Seoul's `fitSeoul()`.
+**v2 (current):** a real MapLibre map, same engine as Seoul's/Busan's, but with everything that
+exists to manage a district system stripped out — no district-fill/line/label layers, no 3D
+toggle, no "Streets On" declutter, no floating-island crop. v1's own design note for this region
+was *"one island, not a set of districts,"* and Jeju genuinely never needed splitting the way
+Seoul's 25 gu or Busan's 16 gu/gun do — it's one flat list of 20 places. `PLACEHOLDER_VIEW` is
+just a rough centroid/zoom used before the real camera takes over: `jejuBounds` is computed from
+the 20 places' own `lat`/`lng` on load (there's no `jeju-outline.json` — a real coastline file
+felt like overkill for a page with no district fills to crop against) and **Fit map** re-runs that
+same `fitBounds()`. Place pins are the same `place-points` + invisible `place-points-hit` circle
+layers Seoul/Busan use, same category colors, same tap → preview-card flow.
 
-**Everything — art, water-tile texture, and all 20 place thumbnails — was recovered from the v1
-artifact**, the same decode-a-`data:`-URI-back-to-a-real-file move already used once for
-Seoul's own v1→v2 photo migration (see "Photos" above). `JEJU_BG`, `JEJU_WATER_TILE`, and
-`JEJU_THUMBS` were all embedded as base64 inside v1's single giant HTML file; a one-off Python
-script (not kept in this repo) located each `data:image/...;base64,...` literal by variable
-name and wrote it back out to `assets/jeju/`. All 20 of `JEJU_LOCATIONS`' places had a matching
-thumbnail — nothing needed re-sourcing.
+**v1 of this rebuild was a static illustrated image, not a real map** — `assets/jeju/jeju-bg.png`
+shown at a fixed "fit the viewport" size via `object-fit:contain`, with every place an
+absolutely-positioned `<button class="jpin">` at a `%`-position computed against the image's own
+rendered rect. That math broke down badly at phone aspect ratios the art never anticipated — the
+image would end up tiny and letterboxed, and on a real phone it read as "stretched and almost
+unviewable." A real map has no equivalent failure mode: MapLibre's canvas simply fills its
+container at any viewport size, which is the actual reason this got rebuilt rather than patched.
+`assets/jeju/jeju-bg.png` and `jeju-water-tile.png` are gone from the repo now; the place photos in
+`assets/jeju/photos/` carried straight over unchanged (all 20, still center-cropped 300×300 —
+see "Photos" above), since those never depended on which map engine renders the pins.
 
-**Two kinds of pin, matching v1's own distinction:** 12 "landmark" pins (`dot:false`) are just an
-invisible hit-circle sized to roughly cover the icon the art already drew (`hitRadius`, an
-image-space size that scales with the art via `imageRect().scale` rather than staying a fixed
-screen size) — v1's reasoning holds here too: "tap anywhere on Hallasan," not one exact pixel.
-8 "dot" pins (small cafés) get an actual small visible marker, since nothing is pre-drawn for
-those in the art.
+**No custom color theme, unlike Busan's purple override.** Busan's `<style>` block in `busan.html`
+recolors a *district-fill layer* to a purple palette; Jeju has no district-fill layer to recolor
+(nothing here paints polygons), so there's nothing for a theme override to target — the page just
+uses the real OpenFreeMap `liberty` style's own colors plus this app's default (blue) UI-chrome
+accent, same as Seoul's chrome.
+
+**Every place was re-geocoded to real coordinates**, not carried over from v1's illustrated pixel
+positions — `jeju-places.json`'s 20 places (migrated from v1's `JEJU_LOCATIONS`) were each looked
+up via the Google Maps Scraper (Apify), the same workflow used for every other region's places.
+The old `xPct`/`yPct`/`hitRadius`/`dot` fields (all specific to positioning a pin against the
+static art) are gone from the schema; every place now carries real `lat`/`lng` instead.
 
 **One place (`jeongbang`, Jeongbang Falls) is `"unverified": true`** — v1 flagged it `guess:true`,
-meaning the artwork has a second waterfall icon near Cheonjiyeon with no confirmed identity;
-carried the flag forward rather than resolving a guess I have no better basis for than v1 did.
+meaning the artwork had a second waterfall icon near Cheonjiyeon with no confirmed identity;
+carried the flag forward rather than resolving a guess with no better basis than v1's own.
 
-**Categories were assigned during migration, not carried from v1** — v1's Jeju never had a
-category/color system at all (just the landmark/dot split above). Each of the 20 places got
-mapped onto the *same 8-category taxonomy* `app.js` already uses (food/cafe/market/museum/park/
-view/shop/night), so the category filter chips and colors behave identically to Seoul's.
+**Categories were assigned during the original migration, not carried from v1** — v1's Jeju never
+had a category/color system at all (just its own landmark/dot pin distinction, which no longer
+applies now that pins are plain map circles). Each of the 20 places was mapped onto the *same
+8-category taxonomy* `app.js`/`busan.js` already use, so the filter chips and colors behave
+identically across all three regions. The list view still splits on the closest surviving
+distinction — everything that isn't `cafe` vs. everything that is — as a stand-in for v1's old
+landmark/small-spot split, since there's no district to group by instead.
 
-**`jeju.js` duplicates a handful of small pieces from `app.js`** (the CAT taxonomy, `photoHTML`,
-`naverUrl`/`kakaoUrl`, the panel/sheet drag mechanics, list-row rendering) rather than importing
-a shared module. This is deliberate for now, not an oversight: Jeju is the first non-Seoul
-region built, and it isn't clear yet which pieces are truly generic versus Seoul-specific until
-Busan (a *second* real-MapLibre region, unlike Jeju) exists to compare against. Refactor into a
-real `shared.js` once there are three regions' worth of evidence, not two guesses — re-doing a
-premature abstraction is cheaper than un-doing one that turned out wrong. `visited`/category-filter
-state uses its own `localStorage` keys (`jeju-map:*`, vs. Seoul's `seoul-map:*`) so the two
-regions' checklists and filters never collide, even though right now nothing could actually run
-both at once (separate pages, separate JS realms) — the separate keys are about the *data*
-outliving that, not a live collision risk today.
+**`jeju.js` duplicates a handful of small pieces from `app.js`/`busan.js`** (the CAT taxonomy,
+`photoHTML`, `naverUrl`/`kakaoUrl`, the panel/sheet drag mechanics, list-row rendering) rather than
+importing a shared module. Now that all three regions exist and share this same pattern almost
+verbatim, a real `shared.js` is a much easier call to make than it was with only Jeju built — but
+it's still not done here, on purpose: pulling three already-working, already-tested files apart
+into a shared module is its own risk of introducing a regression across every region at once, for
+a purely organizational win. Worth doing as its own deliberate pass, not a drive-by while rebuilding
+Jeju's map engine. `visited`/category-filter state uses its own `localStorage` keys (`jeju-map:*`,
+vs. Seoul's `seoul-map:*` and Busan's `busan-map:*`) so the three regions' checklists and filters
+never collide, even though nothing can actually run more than one region at once today (separate
+pages, separate JS realms) — the separate keys are about the *data* outliving that, not a live
+collision risk today.

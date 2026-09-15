@@ -173,22 +173,67 @@ document.getElementById("btnDeclutter").addEventListener("click", function(){
 
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
+/* ---------- "floating island" crop — same idea as Seoul's, generalized to N rings ----------
+   Seoul's own version clips a single CSS clip-path polygon() to one outer ring, which is all
+   a single Polygon needs. Busan's real coastline doesn't fit that: Yeongdo is a genuine island,
+   separated from the mainland by real open water, so the union of all 16 districts is a
+   MultiPolygon — busan-outline.json keeps the two rings big enough to matter (the mainland and
+   Yeongdo; three sub-pixel simplification slivers were dropped when that file was built). CSS
+   clip-path: polygon() only takes one ring, so this uses an SVG <clipPath> instead (defined,
+   empty, in busan.html) — one <polygon> child per ring, referenced via clip-path:url(#id) on
+   the same canvas-container element Seoul's version targets. Each polygon's own screen-space
+   points get recomputed on every map move/resize, exactly like Seoul's single polygon() does. */
+var busanOutlines = null; // [[[lng,lat], ...], ...] — one array of points per kept ring
+var clipPolygonEls = [];
+function setupBusanClip(outlines){
+  busanOutlines = outlines;
+  var svgNS = "http://www.w3.org/2000/svg";
+  var clipPathEl = document.getElementById("busanClipPath");
+  outlines.forEach(function(){
+    var poly = document.createElementNS(svgNS, "polygon");
+    clipPathEl.appendChild(poly);
+    clipPolygonEls.push(poly);
+  });
+}
+function updateMapClip(){
+  var canvasLayer = document.querySelector("#map .maplibregl-canvas-container") || document.getElementById("map");
+  if (!busanOutlines) return;
+  /* same reasoning as Seoul's version: under any camera tilt, map.project() on points near/
+     behind the horizon returns wild coordinates, so don't attempt to clip while pitched —
+     show the full rectangular canvas instead (3D already breaks the flat "floating island"
+     look on its own). */
+  if (map.getPitch() > 0.5) {
+    canvasLayer.style.clipPath = "none";
+    return;
+  }
+  busanOutlines.forEach(function(ring, i){
+    var pts = ring.map(function(ll){
+      var p = map.project(ll);
+      return p.x.toFixed(1) + "," + p.y.toFixed(1);
+    });
+    clipPolygonEls[i].setAttribute("points", pts.join(" "));
+  });
+  canvasLayer.style.clipPath = "url(#busanClipPath)";
+}
+
 map.on("load", function(){
   Promise.all([
     fetch("data/busan-districts.geojson").then(r=>r.json()),
-    fetch("data/busan-places.json").then(r=>r.json())
+    fetch("data/busan-places.json").then(r=>r.json()),
+    fetch("data/busan-outline.json").then(r=>r.json())
   ]).then(function(results){
-    var districtsGeo = results[0], data = results[1];
+    var districtsGeo = results[0], data = results[1], outlineData = results[2];
     busanBounds = new maplibregl.LngLatBounds();
-    districtsGeo.features.forEach(function(f){
-      var coords = f.geometry.type === "MultiPolygon" ? f.geometry.coordinates.flat(2) : f.geometry.coordinates.flat(1);
-      coords.forEach(function(c){ busanBounds.extend(c); });
-    });
+    outlineData.outlines.forEach(function(ring){ ring.forEach(function(c){ busanBounds.extend(c); }); });
     fitBusan(0);
+    setupBusanClip(outlineData.outlines);
+    updateMapClip();
+    map.on("move", updateMapClip);
+    map.on("resize", updateMapClip);
     init(districtsGeo, data);
   }).catch(function(err){
     console.error("Failed to load data:", err);
-    document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/busan-districts.geojson and data/busan-places.json exist and the site is served over http(s), not file://.</p>";
+    document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/busan-districts.geojson, data/busan-places.json and data/busan-outline.json exist and the site is served over http(s), not file://.</p>";
     openPanelSheet();
   });
   apply3D();

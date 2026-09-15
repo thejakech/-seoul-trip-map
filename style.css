@@ -59,7 +59,17 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
   color:var(--ink-soft);text-decoration:none;cursor:pointer}
 .regiontabs a.on{background:var(--ink);color:var(--surface)}
 .regiontabs a.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
-@media (max-width:859px){ .regiontabs{padding:3px} .regiontabs a{padding:6px 11px;font-size:12px} }
+/* On narrow viewports the HUD card's own max-width (calc(100vw - 28px), just below) leaves
+   almost no horizontal room next to the region tabs — the two fixed-position elements'
+   bounding boxes overlap at the same top:14px, and the tabs (z-index:9) end up rendered
+   right on top of the card's corner. Below the breakpoint, stretch the tabs into their own
+   full-width row (left+right instead of just right) and centered, then push the HUD card
+   and its collapsed-pill twin down below that row entirely — two clearly separate rows
+   instead of one messy stacked corner. */
+@media (max-width:859px){
+  .regiontabs{padding:3px;left:14px;right:14px;justify-content:center}
+  .regiontabs a{padding:6px 11px;font-size:12px}
+}
 
 /* ---- HUD wrapper: just a positioning shell now. The visible black box is .card;
    .catbar is its own free-floating sibling row directly below it (see below) — this is
@@ -76,6 +86,13 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
   border-radius:99px;padding:8px 16px;font:700 13px var(--sans);color:var(--ink);cursor:pointer;
   box-shadow:0 8px 24px rgba(0,0,0,.18)}
 .hud-reopen span{color:var(--ink-soft);font-weight:500}
+/* pushed down below the now-separate .regiontabs row on narrow viewports (see that rule's
+   own comment above) — placed AFTER the base .hud/.hud-reopen top:14px rules on purpose:
+   same selector specificity, so an override declared earlier in the file loses the cascade
+   to a plain unconditional rule declared later, regardless of the media query matching. */
+@media (max-width:859px){
+  .hud, .hud-reopen{top:62px}
+}
 .brand{padding-right:20px}
 .brand h1{margin:0;font-size:17px;font-weight:800}
 .brand h1 span{font-weight:500;color:var(--ink-soft)}
@@ -291,30 +308,3 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 .list-jump:hover{text-decoration:underline}
 
 .maplibregl-popup-content{background:var(--surface);color:var(--ink);border-radius:8px}
-
-/* ==================================================================
-   Jeju — static illustrated island (jeju.js), no map engine at all
-   ================================================================== */
-/* fills #map (fixed, full-viewport, same id/positioning Seoul's MapLibre canvas uses) with
-   the illustrated island art, centered and contain-fit — the water-tile texture underneath
-   repeats to fill any letterboxed edge instead of a flat color, so panning past the art's own
-   edge (there is none here — this never pans) still reads as "more of the same ocean." */
-#jejuStage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  overflow:hidden;background-image:url(assets/jeju/jeju-water-tile.png);
-  background-repeat:repeat;background-position:center;cursor:default}
-#jejuImg{max-width:100%;max-height:100%;display:block;pointer-events:none;user-select:none}
-#jejuPins{position:absolute;inset:0;pointer-events:none}
-#jejuPins .jpin{pointer-events:auto}
-/* pins are plain absolutely-positioned buttons, laid out in JS (layoutJejuPins in jeju.js)
-   against the <img>'s own rendered (object-fit:contain) box, not the wider container — a
-   letterboxed edge must never host a pin, only the art itself does. */
-.jpin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;
-  align-items:center;gap:3px;background:none;border:0;padding:0;cursor:pointer;z-index:2}
-.jpin-dot{width:14px;height:14px;border-radius:99px;border:2px solid #fff;
-  box-shadow:0 1px 4px rgba(0,0,0,.35)}
-.jpin.is-landmark .jpin-dot{width:0;height:0;border:0;box-shadow:none} /* the art already draws the icon — only an invisible hit area is needed, sized via .jpin-hit */
-.jpin-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:99px}
-.jpin-lbl{font:700 11px var(--sans);color:var(--lbl-ink,#17392A);white-space:nowrap;
-  background:rgba(255,255,255,.82);padding:2px 6px;border-radius:99px;
-  box-shadow:0 1px 3px rgba(0,0,0,.18)}
-.jpin:hover .jpin-lbl{background:#fff}

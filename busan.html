@@ -25,6 +25,14 @@
     <div class="seoul-watermark">BUSAN</div>
   </div>
   <div id="map"></div>
+  <!-- Busan's real coastline is a genuine MultiPolygon — Yeongdo is a true island, separated
+       by real open water from the mainland — so the "floating island" crop needs more than
+       one shape, unlike Seoul's single clip-path polygon(). An SVG <clipPath> can hold several
+       <polygon> children (one per outline ring); busan.js recomputes each one's own screen-
+       space points on every map move, same idea as Seoul's clip-path recompute, just per-ring. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <clipPath id="busanClipPath" clipPathUnits="userSpaceOnUse"></clipPath>
+  </svg>
 
   <nav class="regiontabs" aria-label="Choose a region">
     <a href="index.html">Seoul</a>

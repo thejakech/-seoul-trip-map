@@ -1,24 +1,32 @@
 "use strict";
 
 /* ================================================================================
-   Jeju — a static illustrated island, not a real map. No MapLibre, no tiles, no
-   pan/zoom camera: the art (assets/jeju/jeju-bg.png, recovered from the v1 artifact's
-   embedded JEJU_BG) is shown at a fixed "fit the viewport" size, and every place is a
-   plain absolutely-positioned pin at a percentage position on that image — v1's own
-   design note for this region was "one island, not a set of districts," and that's
-   exactly what this keeps: no hand-traced polygons, no district system, nothing Seoul
-   or Busan-scale here on purpose.
+   Jeju — a real MapLibre map, same engine as Seoul's/Busan's, but deliberately the
+   simplest of the three:
 
-   This file intentionally duplicates a handful of small, already-proven pieces from
-   Seoul's app.js (CAT taxonomy, photoHTML, naverUrl/kakaoUrl, the panel/sheet drag
-   mechanics, list-row rendering) rather than importing a shared module — Jeju is the
-   first non-Seoul region built, and until Busan exists too (the next one, and a real
-   MapLibre region like Seoul), it isn't clear yet which parts are truly generic vs.
-   Seoul-specific. Refactor into a real shared.js once there are three regions to
-   compare, not two guesses. See the repo README for this rationale in more detail.
+   - No district system. v1's own design note for this region was "one island, not
+     a set of districts," and Jeju was never worth splitting up the way Seoul's 25
+     gu or Busan's 16 gu/gun are — it's a single flat list of 20 places.
+   - No 3D toggle, no "Streets On" declutter, no floating-island crop. Those all
+     exist to manage a district-fill layer or a complex multi-piece coastline —
+     Jeju has neither, so there's nothing for them to do. Just real tiles + pins.
+   - No custom color theme. The purple-for-Busan / pink-for-Seoul palette overrides
+     exist to recolor a district-fill layer that this page doesn't have; without one,
+     there's no fill to recolor, so this page just uses style.css's own defaults.
+
+   This replaces an earlier build that showed a single static illustrated image
+   (assets/jeju/jeju-bg.png) with pins placed at %-positions computed from the
+   image's own object-fit:contain rect. That math broke down at phone aspect
+   ratios the art didn't anticipate — the image would end up tiny and letterboxed,
+   making the whole map nearly unusable on mobile. A real map has no such problem:
+   MapLibre's canvas simply fills its container at any viewport size.
+
+   Still duplicates the same small proven pieces as app.js/busan.js (CAT taxonomy,
+   photoHTML, naverUrl/kakaoUrl, panel/sheet drag mechanics, list-row rendering) —
+   see busan.js's own comment for why this hasn't been pulled into a shared module.
    ================================================================================ */
 
-/* ---------- category taxonomy (identical set to Seoul's, same colors) ---------- */
+/* ---------- category taxonomy (identical set to Seoul's/Busan's) ---------- */
 var CAT = {
   food:{label:"Restaurant", color:"#F1A0AC"}, cafe:{label:"Cafe", color:"#F0C58C"},
   market:{label:"Market", color:"#ECD37E"}, museum:{label:"Museum", color:"#ABB8E4"},
@@ -30,7 +38,7 @@ function foldCat(t){ return (t==="temple"||t==="landmark"||t==="area") ? "view" 
 function catColor(t){ return CAT[foldCat(t)].color; }
 function catLabel(t){ return CAT[foldCat(t)].label; }
 
-/* ---------- persisted state — own localStorage keys, never shared with Seoul's ---------- */
+/* ---------- persisted state — own localStorage keys, never shared with Seoul's/Busan's ---- */
 var LS = {visited:"jeju-map:visited", cats:"jeju-map:cats"};
 var visited = {}, state = {catSel:{}, allOff:false};
 try { visited = JSON.parse(localStorage.getItem(LS.visited) || "{}") || {}; } catch(e) {}
@@ -40,7 +48,7 @@ function saveCats(){ try{ localStorage.setItem(LS.cats, JSON.stringify(state.cat
 function catFilterActive(){ for (var k in state.catSel) if (state.catSel[k]) return true; return false; }
 function catOn(t){ return !catFilterActive() || !!state.catSel[foldCat(t)]; }
 
-/* ---------- data ---------- */
+/* ---------- data (populated after fetch) ---------- */
 var DATA = null, placesById = {}, listOpen = false;
 
 /* Naver/Kakao search links prefer the place's own curated query (q) over its name — v1's
@@ -55,7 +63,97 @@ function photoHTML(p){
     : "<span class='ph' style='background:"+catColor(p.category)+"22'></span>";
 }
 
-/* ---------- category filter chips (identical pattern to Seoul's) ---------- */
+/* ---------- map ---------- */
+/* Rough centroid/zoom for the whole island — used only as the initial camera before the
+   real fitBounds (computed from the 20 places' own lat/lng, below) takes over on load. */
+var PLACEHOLDER_VIEW = {center:[126.53, 33.38], zoom:9.6, pitch:0, bearing:0};
+var map = new maplibregl.Map(Object.assign({
+  container: "map",
+  style: "https://tiles.openfreemap.org/styles/liberty",
+  attributionControl: {compact:true}
+}, PLACEHOLDER_VIEW));
+map.addControl(new maplibregl.NavigationControl({visualizePitch:false}), "bottom-right");
+map.on("error", function(e){ console.error("MapLibre error:", e && e.error && e.error.message); });
+
+var FIT_PADDING = {top:190, bottom:50, left:40, right:40};
+var jejuBounds = null;
+function fitJeju(duration){
+  if (!jejuBounds) return;
+  map.fitBounds(jejuBounds, {padding: FIT_PADDING, pitch:0, bearing:0, duration: duration===undefined?600:duration});
+}
+document.getElementById("btnFit").addEventListener("click", function(){ fitJeju(600); });
+
+map.on("load", function(){
+  fetch("data/jeju-places.json").then(function(r){ return r.json(); }).then(function(data){
+    init(data);
+  }).catch(function(err){
+    console.error("Failed to load Jeju data:", err);
+    document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/jeju-places.json exists and the site is served over http(s), not file://.</p>";
+    openPanelSheet();
+  });
+});
+
+function init(data){
+  DATA = data;
+  data.places.forEach(function(p){ placesById[p.id] = p; });
+
+  jejuBounds = new maplibregl.LngLatBounds();
+  data.places.forEach(function(p){ if (p.lat && p.lng) jejuBounds.extend([p.lng, p.lat]); });
+  fitJeju(0);
+
+  var pointsGeo = {
+    type:"FeatureCollection",
+    features: data.places.filter(function(p){ return p.lat && p.lng; }).map(function(p){
+      return {type:"Feature", properties:{id:p.id, category:p.category, categoryFold:foldCat(p.category)},
+              geometry:{type:"Point", coordinates:[p.lng, p.lat]}};
+    })
+  };
+  map.addSource("places", {type:"geojson", data: pointsGeo});
+  map.addLayer({
+    id:"place-points", type:"circle", source:"places",
+    paint:{
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 2.5, 11, 4, 14, 6, 17, 8],
+      "circle-color": ["match", ["get","categoryFold"],
+        "food", CAT.food.color, "cafe", CAT.cafe.color, "market", CAT.market.color,
+        "museum", CAT.museum.color, "park", CAT.park.color, "view", CAT.view.color,
+        "shop", CAT.shop.color, "night", CAT.night.color, "#999"],
+      "circle-stroke-width":1.5, "circle-stroke-color":"#fff"
+    }
+  });
+  /* invisible, larger tap target — same rationale as app.js/busan.js: the visible dot
+     stays tiny at low zoom on purpose, so taps need a bigger target underneath it. */
+  map.addLayer({
+    id:"place-points-hit", type:"circle", source:"places",
+    paint:{
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 11, 11, 13, 14, 15, 17, 17],
+      "circle-opacity": 0, "circle-stroke-width": 0
+    }
+  });
+
+  map.on("click", "place-points-hit", function(e){
+    var id = e.features[0].properties.id;
+    var p = placesById[id];
+    if (!p) return;
+    map.flyTo({center:[p.lng, p.lat], zoom: Math.max(map.getZoom(), 12.5), duration:700});
+    new maplibregl.Popup({closeButton:false, offset:12})
+      .setLngLat([p.lng, p.lat])
+      .setHTML("<b>"+p.name+"</b><br><span style='color:#888'>"+catLabel(p.category)+"</span>")
+      .addTo(map);
+    previewPlace(id);
+  });
+  map.on("mouseenter", "place-points-hit", function(){ map.getCanvas().style.cursor = "pointer"; });
+  map.on("mouseleave", "place-points-hit", function(){ map.getCanvas().style.cursor = ""; });
+
+  applyCatFilter();
+  document.querySelectorAll(".catbar").forEach(function(bar){
+    bar.innerHTML = catbarHTML();
+    wireCatbar(bar);
+    syncCatbar(bar);
+  });
+  updateProgress();
+}
+
+/* ---------- category filter chips (identical pattern to Seoul's/Busan's) ---------- */
 function catbarHTML(){
   var h = '<button class="catchip all" data-cat="">All types</button>';
   CAT_ORDER.forEach(function(k){
@@ -96,72 +194,15 @@ function wireCatbar(container){
   });
 }
 function applyCatFilter(){
-  document.querySelectorAll(".jpin").forEach(function(el){
-    var id = el.getAttribute("data-id"), p = placesById[id];
-    if (!p) return;
-    var show = !state.allOff && catOn(p.category);
-    el.hidden = !show;
-  });
+  if (!map.getLayer("place-points")) return;
+  if (state.allOff){ map.setFilter("place-points", false); map.setFilter("place-points-hit", false); return; }
+  var active = CAT_ORDER.filter(function(k){ return !!state.catSel[k]; });
+  var f = active.length ? ["in", ["get","categoryFold"], ["literal", active]] : null;
+  map.setFilter("place-points", f);
+  map.setFilter("place-points-hit", f);
 }
 
-/* ---------- the island art + pins ---------- */
-var stage = document.getElementById("jejuStage");
-var pinLayer = document.getElementById("jejuPins");
-
-/* computes the rendered rect of #jejuImg within its container under object-fit:contain —
-   pins are positioned against THIS rect (in stage-relative px), not the wider container,
-   so a letterboxed edge (a wide/tall viewport that doesn't match the art's own aspect
-   ratio) never ends up hosting a pin. */
-function imageRect(){
-  var cw = stage.clientWidth, ch = stage.clientHeight;
-  var iw = DATA.meta.bg.w, ih = DATA.meta.bg.h;
-  var scale = Math.min(cw / iw, ch / ih);
-  var rw = iw * scale, rh = ih * scale;
-  return {ox: (cw - rw) / 2, oy: (ch - rh) / 2, rw: rw, rh: rh, scale: scale};
-}
-
-function buildPins(){
-  pinLayer.innerHTML = "";
-  DATA.places.forEach(function(p){
-    var btn = document.createElement("button");
-    btn.className = "jpin" + (p.dot ? "" : " is-landmark");
-    btn.setAttribute("data-id", p.id);
-    btn.setAttribute("aria-label", p.name);
-    var hit = document.createElement("span");
-    hit.className = "jpin-hit";
-    var hitPx = (p.hitRadius || 40) * 2;
-    hit.style.width = hitPx + "px"; hit.style.height = hitPx + "px";
-    var dot = document.createElement("span");
-    dot.className = "jpin-dot";
-    dot.style.background = catColor(p.category);
-    var lbl = document.createElement("span");
-    lbl.className = "jpin-lbl";
-    lbl.textContent = p.name;
-    btn.appendChild(hit); btn.appendChild(dot); btn.appendChild(lbl);
-    btn.addEventListener("click", function(){ previewPlace(p.id); });
-    pinLayer.appendChild(btn);
-  });
-  layoutPins();
-}
-function layoutPins(){
-  var r = imageRect();
-  DATA.places.forEach(function(p){
-    var el = pinLayer.querySelector('[data-id="'+p.id+'"]');
-    if (!el) return;
-    /* hit-radius (an image-space size, like v1's own m.r) scales with the art itself
-       rather than staying a fixed screen size, so "tap anywhere on Hallasan" keeps
-       covering roughly the same fraction of the icon at any viewport size. */
-    var hit = el.querySelector(".jpin-hit");
-    var hitPx = (p.hitRadius || 40) * 2 * r.scale;
-    hit.style.width = hitPx + "px"; hit.style.height = hitPx + "px";
-    el.style.left = (r.ox + (p.xPct / 100) * r.rw) + "px";
-    el.style.top = (r.oy + (p.yPct / 100) * r.rh) + "px";
-  });
-}
-window.addEventListener("resize", layoutPins);
-
-/* ---------- a single place row (mirrors Seoul's listRow — same markup/classes, no
-   district field to carry) ---------- */
+/* ---------- a single place row (mirrors Seoul's/Busan's listRow) ---------- */
 function listRow(p){
   var done = !!visited[p.id];
   return "<div class='lr"+(done?" done":"")+"' id='card-"+p.id+"'>"
@@ -196,14 +237,14 @@ function updateProgress(){
   document.getElementById("progressFill").style.width = (total ? (done/total*100) : 0) + "%";
 }
 
-/* ---------- flat list view — no districts to group by, so this splits only on the same
-   landmark/dot distinction the source data itself uses (v1's big-icon vs. small-cafe-dot
-   pins), rather than reinventing a grouping scheme for 20 places that don't need one. ---- */
+/* ---------- flat list view — no districts to group by, so this splits only on the
+   category the source data already carries (park/view landmarks vs. cafes), rather
+   than reinventing a grouping scheme for 20 places that don't need one. ---------- */
 function renderList(){
   var filt = catFilterActive();
   var vis = DATA.places.filter(function(p){ return catOn(p.category); });
-  var landmarks = vis.filter(function(p){ return !p.dot; });
-  var cafes = vis.filter(function(p){ return p.dot; });
+  var landmarks = vis.filter(function(p){ return p.category !== "cafe"; });
+  var cafes = vis.filter(function(p){ return p.category === "cafe"; });
   var html = "<div class='p-bar'><button data-back>&lsaquo; Map</button><span class='spacer'></span><button data-close aria-label='Close'>&times;</button></div>"
     + "<h2 class='list-h'>Every Jeju pick</h2>"
     + "<p class='list-sub'>"+(filt ? "<strong>"+vis.length+"</strong> of "+DATA.places.length+" places match — tap a chip again or \"All types\" to clear." : DATA.places.length+" places. Tick places off as you go.")+"</p>"
@@ -238,8 +279,7 @@ document.getElementById("btnList").addEventListener("click", function(){
   wireList();
 });
 
-/* ---------- single-place preview card (mirrors Seoul's previewPlace/renderPlacePreview —
-   same "See all" escape hatch, just pointed at the one flat list instead of a district). */
+/* ---------- single-place preview card (mirrors Seoul's/Busan's previewPlace) ---------- */
 function renderPlacePreview(p){
   return "<div class='p-bar'><button data-back>&lsaquo; Map</button><span class='spacer'></span><button data-close aria-label='Close'>&times;</button></div>"
     + listRow(p)
@@ -253,12 +293,16 @@ function wirePlacePreview(){
   if (backBtn) backBtn.addEventListener("click", closePanelFully);
   panelBody.querySelectorAll("input[type=checkbox]").forEach(function(cb){ cb.addEventListener("change", onToggle); });
   var more = panelBody.querySelector(".preview-more");
-  if (more) more.addEventListener("click", function(){
-    listOpen = true;
-    document.getElementById("panel").classList.remove("preview-mode");
-    document.getElementById("panelBody").innerHTML = renderList();
-    wireList();
-  });
+  if (more) more.addEventListener("click", function(){ openFullList(); });
+}
+function openFullList(){
+  listOpen = true;
+  var panel = document.getElementById("panel");
+  panel.classList.remove("preview-mode");
+  panel.classList.add("list-mode");
+  document.getElementById("panelBody").innerHTML = renderList();
+  openPanelSheet();
+  wireList();
 }
 function previewPlace(id){
   var p = placesById[id];
@@ -273,8 +317,8 @@ function previewPlace(id){
   wirePlacePreview();
 }
 
-/* ---------- draggable bottom sheet (mobile) — identical mechanics to Seoul's app.js;
-   see that file's own comments for the full rationale (3 snap points, why .p-bar isn't
+/* ---------- draggable bottom sheet (mobile) — identical mechanics to app.js/busan.js;
+   see app.js's own comments for the full rationale (3 snap points, why .p-bar isn't
    sticky in .preview-mode, etc.) ---------- */
 var MQ = window.matchMedia("(max-width:859px)");
 var panelEl = document.getElementById("panel");
@@ -343,22 +387,4 @@ document.getElementById("hudClose").addEventListener("click", function(){
 document.getElementById("hudReopen").addEventListener("click", function(){
   document.getElementById("hud").hidden = false;
   document.getElementById("hudReopen").hidden = true;
-});
-
-/* ---------- boot ---------- */
-fetch("data/jeju-places.json").then(function(r){ return r.json(); }).then(function(data){
-  DATA = data;
-  data.places.forEach(function(p){ placesById[p.id] = p; });
-  buildPins();
-  applyCatFilter();
-  document.querySelectorAll(".catbar").forEach(function(bar){
-    bar.innerHTML = catbarHTML();
-    wireCatbar(bar);
-    syncCatbar(bar);
-  });
-  updateProgress();
-}).catch(function(err){
-  console.error("Failed to load Jeju data:", err);
-  document.getElementById("panelBody").innerHTML = "<p>Failed to load map data — check that data/jeju-places.json exists and the site is served over http(s), not file://.</p>";
-  document.getElementById("panel").classList.add("open");
 });

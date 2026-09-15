@@ -1,17 +1,7 @@
 {
   "meta": {
-    "generated": "2026-09-14",
-    "source": "migrated from v1 artifact (JEJU_LOCATIONS) — Korea-Trip/jeju-island.md has the fuller research behind these picks",
-    "bg": {
-      "src": "assets/jeju/jeju-bg.png",
-      "w": 1342,
-      "h": 1172
-    },
-    "waterTile": {
-      "src": "assets/jeju/jeju-water-tile.png",
-      "w": 800,
-      "h": 444
-    }
+    "generated": "2026-09-15",
+    "source": "migrated from v1 artifact (JEJU_LOCATIONS); re-geocoded to real coordinates via Google Maps Scraper (Apify) when the illustrated single-image build was replaced with a real MapLibre map"
   },
   "places": [
     {
@@ -19,280 +9,240 @@
       "name": "Hallasan",
       "name_kr": "한라산",
       "category": "park",
-      "xPct": 48.1,
-      "yPct": 41.8,
-      "hitRadius": 100,
-      "dot": false,
       "note": "South Korea's tallest peak and a dormant volcano — the crater lake sits right at the summit, and the whole island fans out from it.",
       "q": "Hallasan National Park",
       "unverified": false,
-      "img": "assets/jeju/photos/hallasan.jpg"
+      "img": "assets/jeju/photos/hallasan.jpg",
+      "lat": 33.3606281,
+      "lng": 126.5358345
     },
     {
       "id": "youngduam",
       "name": "Youngduam Rock",
       "name_kr": "용두암",
       "category": "view",
-      "xPct": 48.8,
-      "yPct": 19.2,
-      "hitRadius": 55,
-      "dot": false,
       "note": "A dragon-head-shaped lava rock on the north coast, right at the water's edge — a quick stop, best near sunset.",
       "q": "Yongduam Rock Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/youngduam.jpg"
+      "img": "assets/jeju/photos/youngduam.jpg",
+      "lat": 33.5157583,
+      "lng": 126.5116346
     },
     {
       "id": "woljeong",
       "name": "Woljeong-ri Beach",
       "name_kr": "월정리해변",
       "category": "view",
-      "xPct": 71.2,
-      "yPct": 16.6,
-      "hitRadius": 60,
-      "dot": false,
       "note": "White sand and turquoise water lined with cafés — one of the most photographed beaches on the island.",
       "q": "Woljeong-ri Beach Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/woljeong.jpg"
+      "img": "assets/jeju/photos/woljeong.jpg",
+      "lat": 33.5559739,
+      "lng": 126.7961709
     },
     {
       "id": "hareubang",
       "name": "Dol Hareubang",
       "name_kr": "돌하르방",
       "category": "view",
-      "xPct": 64.7,
-      "yPct": 27.3,
-      "hitRadius": 55,
-      "dot": false,
       "note": "The volcanic-rock guardian statues that are basically Jeju's mascot — originals are scattered around Jeju City.",
       "q": "Dol Hareubang Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/hareubang.jpg"
+      "img": "assets/jeju/photos/hareubang.jpg",
+      "lat": 33.5390489,
+      "lng": 126.6893273
     },
     {
       "id": "manjanggul",
       "name": "Manjanggul Cave",
       "name_kr": "만장굴",
       "category": "view",
-      "xPct": 73.4,
-      "yPct": 24.3,
-      "hitRadius": 50,
-      "dot": false,
       "note": "A huge lava tube you can walk through — one of the longest in the world, cool and echoey year-round.",
       "q": "Manjanggul Cave Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/manjanggul.jpg"
+      "img": "assets/jeju/photos/manjanggul.jpg",
+      "lat": 33.5281972,
+      "lng": 126.7717618
     },
     {
       "id": "seongsan",
       "name": "Seongsan Ilchulbong",
       "name_kr": "성산일출봉",
       "category": "view",
-      "xPct": 89.8,
-      "yPct": 36.3,
-      "hitRadius": 80,
-      "dot": false,
       "note": "The 'Sunrise Peak' tuff cone on the east tip — a UNESCO site and the classic Jeju sunrise hike.",
       "q": "Seongsan Ilchulbong",
       "unverified": false,
-      "img": "assets/jeju/photos/seongsan.jpg"
+      "img": "assets/jeju/photos/seongsan.jpg",
+      "lat": 33.458056,
+      "lng": 126.9425
     },
     {
       "id": "hyeopjae",
       "name": "Hyeopjae Beach",
       "name_kr": "협재해수욕장",
       "category": "view",
-      "xPct": 13.8,
-      "yPct": 45.6,
-      "hitRadius": 45,
-      "dot": false,
       "note": "West-coast beach with a view of Biyangdo island offshore — calmer and less crowded than Woljeong-ri.",
       "q": "Hyeopjae Beach Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/hyeopjae.jpg"
+      "img": "assets/jeju/photos/hyeopjae.jpg",
+      "lat": 33.3942945,
+      "lng": 126.2398813
     },
     {
       "id": "osulloc",
       "name": "Osulloc Tea Museum",
       "name_kr": "오설록",
       "category": "museum",
-      "xPct": 22.4,
-      "yPct": 53.8,
-      "hitRadius": 48,
-      "dot": false,
       "note": "Green-tea fields and a museum/café — the green tea ice cream is the actual reason to go.",
       "q": "Osulloc Tea Museum",
       "unverified": false,
-      "img": "assets/jeju/photos/osulloc.jpg"
+      "img": "assets/jeju/photos/osulloc.jpg",
+      "lat": 33.3059385,
+      "lng": 126.2894355
     },
     {
       "id": "jusangjeolli",
       "name": "Jusangjeolli Cliff",
       "name_kr": "주상절리대",
       "category": "view",
-      "xPct": 30.9,
-      "yPct": 63.6,
-      "hitRadius": 60,
-      "dot": false,
       "note": "Hexagonal basalt columns stacked up by the surf — dramatic in person, especially with waves crashing.",
       "q": "Jusangjeolli Cliff Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/jusangjeolli.jpg"
+      "img": "assets/jeju/photos/jusangjeolli.jpg",
+      "lat": 33.2367938,
+      "lng": 126.4254867
     },
     {
       "id": "cheonjiyeon",
       "name": "Cheonjiyeon Falls",
       "name_kr": "천지연폭포",
       "category": "view",
-      "xPct": 44.7,
-      "yPct": 62.3,
-      "hitRadius": 55,
-      "dot": false,
       "note": "'Sky-connected-to-land' waterfall near Seogwipo — a short, easy walk through forest to reach it, lit up at night.",
       "q": "Cheonjiyeon Falls",
       "unverified": false,
-      "img": "assets/jeju/photos/cheonjiyeon.jpg"
+      "img": "assets/jeju/photos/cheonjiyeon.jpg",
+      "lat": 33.246944,
+      "lng": 126.554417
     },
     {
       "id": "jeongbang",
       "name": "Jeongbang Falls",
       "name_kr": "정방폭포",
       "category": "view",
-      "xPct": 58.5,
-      "yPct": 62.3,
-      "hitRadius": 55,
-      "dot": false,
       "note": "A rare waterfall that drops straight into the ocean, near Cheonjiyeon. New pin on this artwork — best guess at which waterfall this second one is meant to be.",
       "q": "Jeongbang Falls Jeju",
       "unverified": true,
-      "img": "assets/jeju/photos/jeongbang.jpg"
+      "img": "assets/jeju/photos/jeongbang.jpg",
+      "lat": 33.2448567,
+      "lng": 126.5715794
     },
     {
       "id": "artemuseum",
       "name": "Arte Museum",
       "name_kr": "아르떼뮤지엄",
       "category": "museum",
-      "xPct": 27.9,
-      "yPct": 39.2,
-      "hitRadius": 55,
-      "dot": false,
       "note": "An immersive digital-art museum in Aewol — huge projected light/nature installations, one of the most Instagram-friendly stops on the island.",
       "q": "ARTE MUSEUM Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/artemuseum.jpg"
+      "img": "assets/jeju/photos/artemuseum.jpg",
+      "lat": 33.3964708,
+      "lng": 126.3446147
     },
     {
       "id": "colline",
       "name": "Colline Jeju",
       "name_kr": null,
       "category": "cafe",
-      "xPct": 20.7,
-      "yPct": 35.3,
-      "hitRadius": 10,
-      "dot": true,
       "note": "A café on the west coast.",
       "q": "Colline Jeju cafe",
       "unverified": false,
-      "img": "assets/jeju/photos/colline.jpg"
+      "img": "assets/jeju/photos/colline.jpg",
+      "lat": 33.4628728,
+      "lng": 126.3104255
     },
     {
       "id": "comma",
       "name": "Comma",
       "name_kr": null,
       "category": "cafe",
-      "xPct": 15.7,
-      "yPct": 42.2,
-      "hitRadius": 10,
-      "dot": true,
       "note": "A café on the west side of the island.",
       "q": "Comma cafe Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/comma.jpg"
+      "img": "assets/jeju/photos/comma.jpg",
+      "lat": 33.3951682,
+      "lng": 126.2418996
     },
     {
       "id": "haejigae",
       "name": "Haejigae Cafe",
       "name_kr": null,
       "category": "cafe",
-      "xPct": 21.4,
-      "yPct": 33.7,
-      "hitRadius": 10,
-      "dot": true,
       "note": "The name points to a sunset view.",
       "q": "Haejigae cafe Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/haejigae.jpg"
+      "img": "assets/jeju/photos/haejigae.jpg",
+      "lat": 33.4642136,
+      "lng": 126.3089572
     },
     {
       "id": "hallimpark",
       "name": "Hallim Park",
       "name_kr": "한림공원",
       "category": "park",
-      "xPct": 16.5,
-      "yPct": 49.7,
-      "hitRadius": 10,
-      "dot": true,
       "note": "The botanical garden and lava-tube park near Hyeopjae Beach.",
       "q": "Hallim Park Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/hallimpark.jpg"
+      "img": "assets/jeju/photos/hallimpark.jpg",
+      "lat": 33.3895279,
+      "lng": 126.2392884
     },
     {
       "id": "lazypump",
       "name": "Lazy Pump",
       "name_kr": null,
       "category": "cafe",
-      "xPct": 22.7,
-      "yPct": 32.8,
-      "hitRadius": 10,
-      "dot": true,
       "note": "A café on the north coast.",
       "q": "Lazy Pump cafe Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/lazypump.jpg"
+      "img": "assets/jeju/photos/lazypump.jpg",
+      "lat": 33.4660037,
+      "lng": 126.3097954
     },
     {
       "id": "jejudang",
       "name": "Jejudang Bakery Cafe",
       "name_kr": null,
       "category": "cafe",
-      "xPct": 37.4,
-      "yPct": 44.4,
-      "hitRadius": 10,
-      "dot": true,
       "note": "A bakery café.",
       "q": "Jejudang bakery cafe Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/jejudang.jpg"
+      "img": "assets/jeju/photos/jejudang.jpg",
+      "lat": 33.3541964,
+      "lng": 126.3559404
     },
     {
       "id": "slowboat",
       "name": "Slowboat Atelier",
       "name_kr": null,
       "category": "cafe",
-      "xPct": 33.1,
-      "yPct": 29.4,
-      "hitRadius": 10,
-      "dot": true,
       "note": "A café near the north coast.",
       "q": "Slowboat Atelier Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/slowboat.jpg"
+      "img": "assets/jeju/photos/slowboat.jpg",
+      "lat": 33.4900871,
+      "lng": 126.4144874
     },
     {
       "id": "blackranch",
       "name": "Black Ranch",
       "name_kr": null,
       "category": "cafe",
-      "xPct": 38.0,
-      "yPct": 67.2,
-      "hitRadius": 10,
-      "dot": true,
       "note": "A ranch/pasture-style café inland.",
       "q": "Black Ranch Jeju",
       "unverified": false,
-      "img": "assets/jeju/photos/blackranch.jpg"
+      "img": "assets/jeju/photos/blackranch.jpg",
+      "lat": 33.2428299,
+      "lng": 126.4554208
     }
   ]
 }
