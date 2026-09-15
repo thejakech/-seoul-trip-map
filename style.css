@@ -62,12 +62,14 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
 /* On narrow viewports the HUD card's own max-width (calc(100vw - 28px), just below) leaves
    almost no horizontal room next to the region tabs — the two fixed-position elements'
    bounding boxes overlap at the same top:14px, and the tabs (z-index:9) end up rendered
-   right on top of the card's corner. Below the breakpoint, stretch the tabs into their own
-   full-width row (left+right instead of just right) and centered, then push the HUD card
-   and its collapsed-pill twin down below that row entirely — two clearly separate rows
-   instead of one messy stacked corner. */
+   right on top of the card's corner. Below the breakpoint, push the HUD card and its
+   collapsed-pill twin down below the tabs' own row height instead — two clearly separate
+   rows instead of one messy stacked corner. The tabs themselves stay exactly where the base
+   rule above puts them (a compact pill, right-anchored, intrinsic width) — matching v1's own
+   layout — rather than stretching into a full-width centered bar; only their own internal
+   padding/font-size shrink a little for a smaller thumb target. */
 @media (max-width:859px){
-  .regiontabs{padding:3px;left:14px;right:14px;justify-content:center}
+  .regiontabs{padding:3px}
   .regiontabs a{padding:6px 11px;font-size:12px}
 }
 

@@ -204,12 +204,52 @@ Seoul's real-world coordinates, so letting the island drift arbitrarily far from
 would eventually make the "floating island" framing (built around a specific default view) look
 wrong.
 
+## MapLibre's own `load` event isn't guaranteed to fire exactly once
+
+Every region's `map.on("load", function(){ ... })` handler fetches its data files, wires up the
+floating-island clip (Seoul/Busan) and calls `init()` — all inside that one callback, written as
+if it only ever runs once. **It has to guard against running twice anyway.** This was reproduced
+directly while testing the Busan crop: manually re-triggering the handler a second time re-adds
+sources MapLibre already has (`Source "places" already exists`), throws, and the `.catch` meant
+for a genuine fetch failure fires instead — replacing the whole panel with a "failed to load"
+message on Seoul/Jeju, or (worse, on Busan) leaving `setupBusanClip()` half-run: a second batch of
+`<polygon>` elements gets appended to the same `<clipPath>` without clearing the first batch, so
+`clipPolygonEls` (reset to just the new batch) no longer lines up with all the DOM nodes, some
+rings never get `points` set, and the clip commits to a broken/empty shape — which reads as **the
+entire map silently turning into a flat color**, not an error message. Every region's `load`
+handler now sets a `<region>Loaded` flag as its first line and returns immediately if already set,
+and `setupBusanClip()` clears its `<clipPath>`'s previous children before adding new ones — so even
+if `load` really does fire twice on some browser (a mobile tab suspend/resume, a style re-fetch
+retry on a flaky connection — exactly how this looked when it happened on a phone, not just how it
+was reproduced in testing), the second firing is a no-op instead of a silent corruption.
+
+**`updateMapClip()` (Seoul and Busan both) also now refuses to commit to a clip it can't trust.**
+Before computing any point, it checks the canvas container's own `getBoundingClientRect()` isn't
+zero-sized, and after computing every point, that every one of them is finite — bailing out to
+`clip-path:none` (the plain, uncropped, but fully functional map) in either case rather than
+applying a clip built from garbage coordinates. A container can genuinely read as zero-sized for a
+frame or two on some mobile browsers before the viewport settles (Safari's address-bar collapse
+animation is the usual suspect), and `map.project()` on a not-yet-sized camera can return
+coordinates that don't correspond to anything once the container *does* reach its real size — the
+uncropped fallback means that moment reads as "the floating-island look is briefly off," not "the
+whole map disappeared." A `requestAnimationFrame` + a delayed `setTimeout(…, 600)` recheck right
+after `load`, plus listening on the raw `window.resize`/`orientationchange` events (not just
+MapLibre's own "resize", in case a container-size change on some browser doesn't trigger it) all
+give the clip more chances to retry and self-correct once the viewport actually settles.
+
 ## Region tabs and the HUD card live in separate rows
 
 `.regiontabs` (Seoul/Jeju/Busan) is pinned top-right; the HUD card is pinned top-left — on a wide
-viewport there's no conflict. Below the `859px` breakpoint, `.regiontabs` stretches into its own
-full-width centered row instead (see "The HUD card" section's own note on why), and the HUD/its
-collapsed-pill twin get pushed down to `top:62px` so the two rows never overlap.
+viewport there's no conflict. Below the `859px` breakpoint, the tabs **stay exactly where they
+are** — a compact, right-anchored pill at their own intrinsic width, matching v1's own layout —
+and only the HUD/its collapsed-pill twin get pushed down to `top:62px`, so the two rows never
+overlap regardless of how wide the tabs pill itself is.
+
+⚠️ **An earlier version of this fix stretched `.regiontabs` into a full-width centered bar on
+mobile instead of leaving it alone.** That technically also solved the overlap (two rows, neither
+touching), but changed the tabs' whole look on mobile away from v1's compact right-side pill —
+not what was actually wanted. The real fix only needed the vertical push-down; the tabs' own
+position/width never needed to change at all.
 
 ⚠️ **That push-down rule has to be declared *after* the base `.hud`/`.hud-reopen` rules in
 `style.css`, not before them.** An earlier version put the `@media (max-width:859px){ .hud,

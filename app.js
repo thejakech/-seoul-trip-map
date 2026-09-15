@@ -261,14 +261,40 @@ function updateMapClip(){
     canvasLayer.style.clipPath = "none";
     return;
   }
+  /* defensive: a container measured at zero size (seen on some mobile browsers for a frame
+     or two right after load, before the address-bar-collapse viewport settles) makes
+     map.project() return coordinates that don't correspond to anything visible once the
+     container *does* reach its real size — the clip-path would commit to a sliver or an
+     empty shape, reading as "the whole map turned pink." Bail to the unclipped canvas
+     instead; the next real move/resize event (there will be one once the viewport settles)
+     retries this from scratch. */
+  var rect = canvasLayer.getBoundingClientRect();
+  if (!rect.width || !rect.height) {
+    canvasLayer.style.clipPath = "none";
+    return;
+  }
+  var allFinite = true;
   var pts = seoulOutline.map(function(ll){
     var p = map.project(ll);
+    if (!isFinite(p.x) || !isFinite(p.y)) allFinite = false;
     return p.x.toFixed(1) + "px " + p.y.toFixed(1) + "px";
   });
+  if (!allFinite) {
+    canvasLayer.style.clipPath = "none";
+    return;
+  }
   canvasLayer.style.clipPath = "polygon(" + pts.join(",") + ")";
 }
 
+var seoulLoaded = false;
 map.on("load", function(){
+  /* guards against this handler's body running twice — reproduced once in testing on the
+     Busan build (a second call re-adds sources MapLibre already has, throws, and the .catch
+     below replaces the whole panel with an error), and treated here as a real possibility on
+     mobile browsers too (map "load" re-firing after a tab is suspended/resumed, a style
+     re-fetch retry on a flaky connection, etc.), not just a testing artifact. */
+  if (seoulLoaded) return;
+  seoulLoaded = true;
   Promise.all([
     fetch("data/districts.geojson").then(r=>r.json()),
     fetch("data/places.json").then(r=>r.json()),
@@ -282,6 +308,13 @@ map.on("load", function(){
     updateMapClip();
     map.on("move", updateMapClip);
     map.on("resize", updateMapClip);
+    /* belt-and-suspenders for mobile viewport-settling timing (address-bar collapse etc.):
+       the container's final size might not always arrive as a MapLibre "resize" event, so
+       also recheck shortly after load — see busan.js's own version of this same comment. */
+    requestAnimationFrame(updateMapClip);
+    setTimeout(updateMapClip, 600);
+    window.addEventListener("resize", updateMapClip);
+    window.addEventListener("orientationchange", function(){ setTimeout(updateMapClip, 300); });
     init(results[0], results[1], results[3]);
   }).catch(function(err){
     console.error("Failed to load data:", err);

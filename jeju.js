@@ -83,7 +83,15 @@ function fitJeju(duration){
 }
 document.getElementById("btnFit").addEventListener("click", function(){ fitJeju(600); });
 
+var jejuLoaded = false;
 map.on("load", function(){
+  /* guards against this handler's body running twice — reproduced once in testing on the
+     Busan build (a second call re-adds a source MapLibre already has, throws, and the .catch
+     below replaces the whole panel with an error), and treated here as a real possibility on
+     mobile browsers too (map "load" re-firing after a tab is suspended/resumed, a style
+     re-fetch retry on a flaky connection, etc.), not just a testing artifact. */
+  if (jejuLoaded) return;
+  jejuLoaded = true;
   fetch("data/jeju-places.json").then(function(r){ return r.json(); }).then(function(data){
     init(data);
   }).catch(function(err){

@@ -189,6 +189,14 @@ function setupBusanClip(outlines){
   busanOutlines = outlines;
   var svgNS = "http://www.w3.org/2000/svg";
   var clipPathEl = document.getElementById("busanClipPath");
+  /* idempotent on purpose: if this ever runs more than once for any reason (a mobile browser
+     re-firing map's own "load" event has been observed — see the guard on the load handler
+     below), stale <polygon> children from a previous call must not linger. A leftover polygon
+     with no `points` set (because clipPolygonEls got reset but the old DOM node didn't) is
+     exactly the failure mode that was once reproduced in testing: some rings render, some
+     don't, and the mismatch reads as the whole map glitching. */
+  clipPathEl.innerHTML = "";
+  clipPolygonEls = [];
   outlines.forEach(function(){
     var poly = document.createElementNS(svgNS, "polygon");
     clipPathEl.appendChild(poly);
@@ -206,17 +214,45 @@ function updateMapClip(){
     canvasLayer.style.clipPath = "none";
     return;
   }
-  busanOutlines.forEach(function(ring, i){
-    var pts = ring.map(function(ll){
+  /* defensive: a container measured at zero size (seen on some mobile browsers for a frame
+     or two right after load, before the address-bar-collapse viewport settles) makes
+     map.project() return coordinates that don't correspond to anything visible once the
+     container *does* reach its real size — every ring would clip to a sliver or nothing,
+     which reads as "the whole map turned into a blank color." Bail out to the unclipped
+     canvas instead of committing to a broken-looking crop; the next real move/resize event
+     (there will be one once the viewport actually settles) retries this from scratch. */
+  var rect = canvasLayer.getBoundingClientRect();
+  if (!rect.width || !rect.height) {
+    canvasLayer.style.clipPath = "none";
+    return;
+  }
+  var allFinite = true;
+  var ringPts = busanOutlines.map(function(ring){
+    return ring.map(function(ll){
       var p = map.project(ll);
+      if (!isFinite(p.x) || !isFinite(p.y)) allFinite = false;
       return p.x.toFixed(1) + "," + p.y.toFixed(1);
     });
+  });
+  if (!allFinite) {
+    canvasLayer.style.clipPath = "none";
+    return;
+  }
+  ringPts.forEach(function(pts, i){
     clipPolygonEls[i].setAttribute("points", pts.join(" "));
   });
   canvasLayer.style.clipPath = "url(#busanClipPath)";
 }
 
+var busanLoaded = false;
 map.on("load", function(){
+  /* guards against this handler's body running twice — reproduced once in testing (a second
+     call re-adds the "places"/"districts" sources MapLibre already has, throws, and the
+     .catch below replaces the whole panel with an error) and treated here as a real
+     possibility on mobile browsers too (map "load" re-firing after a tab is suspended and
+     resumed, a style re-fetch retry on a flaky connection, etc.), not just a testing artifact. */
+  if (busanLoaded) return;
+  busanLoaded = true;
   Promise.all([
     fetch("data/busan-districts.geojson").then(r=>r.json()),
     fetch("data/busan-places.json").then(r=>r.json()),
@@ -230,6 +266,14 @@ map.on("load", function(){
     updateMapClip();
     map.on("move", updateMapClip);
     map.on("resize", updateMapClip);
+    /* belt-and-suspenders for the mobile address-bar-collapse timing described above: the
+       container's settled size might not arrive as a MapLibre "resize" event at all on every
+       browser, so also recheck shortly after load (rAF once the current frame's layout has
+       committed, then again after Safari's toolbar-collapse animation would have finished). */
+    requestAnimationFrame(updateMapClip);
+    setTimeout(updateMapClip, 600);
+    window.addEventListener("resize", updateMapClip);
+    window.addEventListener("orientationchange", function(){ setTimeout(updateMapClip, 300); });
     init(districtsGeo, data);
   }).catch(function(err){
     console.error("Failed to load data:", err);
