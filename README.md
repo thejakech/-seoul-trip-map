@@ -24,19 +24,26 @@ No build step, no secrets, nothing else to configure.
 ```
 index.html            Seoul page shell, loads MapLibre + app.js
 jeju.html              Jeju page shell, loads jeju.js — no MapLibre, see "Jeju" below
+busan.html             Busan page shell, loads MapLibre + busan.js; its own <style> block
+                       overrides the shared purple-vs-pink palette tokens — see "Busan" below
 style.css              shared by every region
 app.js                 Seoul: map init, filters, district panel, list view, visited-tracking
 jeju.js                Jeju: static-image pins, filters, list view, visited-tracking
+busan.js               Busan: map init (real districts, no hoods), filters, list view
 data/
   districts.geojson    real Seoul gu (district) boundaries, from southkorea/seoul-maps
   places.json           every picked Seoul place: schema below
   seoul-outline.json     Seoul's exact outer boundary — see "floating island" below
   neighborhoods.geojson  real walkable focus-area boundaries — see "Neighborhood zones" below
   jeju-places.json       every picked Jeju place — see "Jeju" below for its (simpler) schema
+  busan-districts.geojson  real Busan gu/gun boundaries — see "Busan" below for how these
+                           were built (unioned from real administrative-dong data, not traced)
+  busan-places.json       every picked Busan place + all 16 district blurbs — see "Busan" below
 assets/
   photos/               Seoul place thumbnails recovered from the v1 artifact — see "Photos" below
   jeju/                 Jeju's island art + water-tile texture + place thumbnails, also
                         recovered from v1 — see "Jeju" below
+  busan/photos/          Busan place thumbnails, from Korea-Trip/busan-pics/ — see "Busan" below
 ```
 
 ## `places.json` schema
@@ -355,6 +362,71 @@ its own shrunk height before that same `sheetTo(0)`), a scrolled-to row can land
 the folded-away rest of the sheet and the jump looks like it silently did nothing. This was an
 actual bug in an earlier version of this feature, not a hypothetical.
 
+## Busan — Seoul's exact engine, real geography, no hand-tracing (`busan.html` / `busan.js`)
+
+Where Jeju deliberately threw out Seoul's whole map engine, Busan reuses it almost line-for-line
+— district-fill/line, place-points + the invisible hit layer, district labels, the 3D-buildings
+and "Streets On" toggles, the preview card, list view, and the panel/sheet drag mechanics are
+copied from `app.js` with only two things actually removed (see below) and everything else
+just repointed at Busan's own data and a purple palette. Bugs already fixed in Seoul's version
+(tap-target sizing, the sticky-bar/animated-transform touch issue, the Jongno-style label
+collision) are already fixed here too, not waiting to be rediscovered.
+
+**Real district boundaries, not v1's hand-traced ones.** v1's own Busan build got its 16 gu/gun
+polygons by manually tracing an outline Jake drew by hand and vectorizing it — real effort, and
+the actual bottleneck that made v1's Busan the most labor-intensive part of that whole artifact.
+This build sources real administrative boundaries instead: `raqoon886/Local_HangJeongDong`'s
+`hangjeongdong_부산광역시.geojson` (205 real 행정동/administrative-dong polygons, each tagged
+with its own `sggnm` — the gu/gun it belongs to), grouped by that tag and unioned per district
+with Shapely (`unary_union`, then a light `simplify(0.0003)` for file size) — the same
+aggregate-real-boundaries technique this repo already used once for Seoul's own
+`neighborhoods.geojson`. **Saha-gu and Seo-gu came out as real `MultiPolygon`s** (small islands/
+inlets genuinely disconnected from the rest of the district) — MapLibre's fill/line layers
+handle that natively, no special-casing needed.
+
+**Every place was geocoded from scratch**, not carried over from v1's illustrated pixel
+coordinates — `busan-places.json`'s 17 places (migrated from v1's `BUSAN_LOCATIONS`, plus its 16
+`BUSAN_DESC` district blurbs) were each looked up via the Google Maps Scraper (Apify), the same
+tool and workflow already used for every Seoul-map addition this session. **Every place's
+assigned district was then cross-checked by real point-in-polygon test against this build's own
+`busan-districts.geojson`** (Shapely `.contains()`), not trusted from Google's own address
+string — this caught nothing wrong here (all 17 matched their expected district exactly, one
+place — Igidae Coastal Trail — landing a hair outside the simplified coastline and resolving to
+the nearest district instead, which was still the right one), but it's the same discipline
+already applied to Seoul's own additions (Jura Optique, Kkokkio) where the address string and
+the real location didn't agree.
+
+**One place, `workingholiday`, is `unverified: true`.** v1 described it as "right on Haeundae
+Beach," but the geocoded result lands in Suyeong-gu (Gwangalli Beach) — a different, adjacent
+beach neighborhood. Either a second branch exists or v1's own description was approximate;
+flagged rather than guessed at.
+
+**All 17 photos came from `Korea-Trip/busan-pics/`** (already-sourced real photos, not
+extracted from v1 this time — unlike Jeju, v1's Busan build never got as far as embedding
+per-place thumbnails), center-cropped to the same 300×300 convention as every other photo in
+this repo.
+
+**What got dropped versus Seoul, deliberately, not by oversight:**
+- **No neighborhoods/hoods layer.** v1's own Busan build was explicitly "base map only for
+  now" and never had one either — nothing here has walkable focus-areas researched the way
+  Seoul's Ikseon-dong/Itaewon/etc. do yet.
+- **No "floating island" clip-path crop.** Seoul's `#seaBackground` + clip-path trick needs a
+  single clean outer ring (`seoul-outline.json`); the union of Busan's 16 districts is a real
+  `MultiPolygon` with genuine open-water gaps between disconnected pieces (Yeongdo is a true
+  island; Gangseo is a river delta) — a single CSS `clip-path: polygon(...)` can't represent
+  that, and a proper multi-shape SVG `clipPath` felt like too much machinery for a purely
+  decorative crop on this pass. The map just shows real base tiles beyond the district fills
+  instead of being masked to a silhouette — worth revisiting later with an SVG clipPath if the
+  cropped look is wanted, not a limitation of the underlying data.
+- **No north/south list-view split.** Seoul's "North of the Han" / "South of the Han" grouping
+  is specific to that river actually bisecting the city in a way locals navigate by; Busan has
+  no equivalent natural two-way split, so its list view is one flat list in v1's own
+  `BUSAN_LAYOUT` district order instead.
+
+**Own `localStorage` keys** (`busan-map:*`), same reasoning as Jeju's — three regions' worth of
+visited-checklist and category-filter state, never colliding, even though today nothing could
+run more than one region at once (separate pages, separate JS realms).
+
 ## Photos
 
 `assets/photos/` holds real place thumbnails recovered from the old v1 artifact — it had every
@@ -376,9 +448,9 @@ want to wire them into `neighborhoods[hid]` later.
 
 ## Scope
 
-Seoul (`index.html`), Jeju (`jeju.html`), Busan (planned, not built yet). A top-right region
-switcher (`.regiontabs` — plain links between pages, not a client-side tab swap) sits on every
-page; a region with no page yet renders `.disabled`.
+Seoul (`index.html`), Jeju (`jeju.html`), Busan (`busan.html`) — all three built now. A top-right
+region switcher (`.regiontabs` — plain links between pages, not a client-side tab swap) sits on
+every page.
 
 ## Jeju — a static illustrated island, not a real map (`jeju.html` / `jeju.js`)
 

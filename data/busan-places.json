@@ -1,0 +1,345 @@
+{
+  "meta": {
+    "generated": "2026-09-14",
+    "source": "migrated from v1 artifact (BUSAN_LOCATIONS/BUSAN_DESC); geocoded via Google Maps Scraper (Apify); district boundaries from raqoon886/Local_HangJeongDong (administrative-dong, unioned per gu with Shapely) rather than v1's own hand-traced polygons"
+  },
+  "districts": {
+    "saha": {
+      "name": "Saha-gu",
+      "name_kr": "사하구",
+      "blurb": "The southwest, globally known for the colourful hillside maze of Gamcheon Culture Village looking out over the harbour."
+    },
+    "gijang": {
+      "name": "Gijang-gun",
+      "name_kr": "기장군",
+      "blurb": "Busan's only rural county, on the northeastern coast -- quiet fishing villages and the seaside Haedong Yonggungsa Temple."
+    },
+    "gangseo": {
+      "name": "Gangseo-gu",
+      "name_kr": "강서구",
+      "blurb": "Busan's largest district by area, spread across the Nakdong River delta -- wetlands, farmland, the Noksan industrial complex, and Gimhae International Airport."
+    },
+    "geumjeong": {
+      "name": "Geumjeong-gu",
+      "name_kr": "금정구",
+      "blurb": "Up in the northern mountains: Pusan National University's lively student strip, the historic Beomeosa Temple, and the Geumjeong Mountain Fortress."
+    },
+    "haeundae": {
+      "name": "Haeundae-gu",
+      "name_kr": "해운대구",
+      "blurb": "Busan's premier tourism and luxury hotspot -- Korea's most famous beach, the high-rises of Marine City, and the convention-and-shopping mass of Centum City."
+    },
+    "buk": {
+      "name": "Buk-gu",
+      "name_kr": "북구",
+      "blurb": "A densely populated residential area against the northern ridges, along the lower Nakdong River."
+    },
+    "sasang": {
+      "name": "Sasang-gu",
+      "name_kr": "사상구",
+      "blurb": "The western transit and industrial gateway -- riverside green space at Samnak Eco Park along the Nakdong."
+    },
+    "busanjin": {
+      "name": "Busanjin-gu",
+      "name_kr": "부산진구",
+      "blurb": "Busan's bustling commercial core. Contains Seomyeon -- the massive central intersection of shopping streets, underground arcades and nightlife -- and the trendy cafe neighbourhood of Jeonpo-dong."
+    },
+    "dongnae": {
+      "name": "Dongnae-gu",
+      "name_kr": "동래구",
+      "blurb": "A historic residential area with traditional roots -- hot-spring spas at Oncheon-dong, and the region's Joseon-era administrative seat."
+    },
+    "yeonje": {
+      "name": "Yeonje-gu",
+      "name_kr": "연제구",
+      "blurb": "The administrative heart -- Busan Metropolitan City Hall is here -- blending quiet residential streets with busy civic and commercial avenues."
+    },
+    "nam": {
+      "name": "Nam-gu",
+      "name_kr": "남구",
+      "blurb": "A university and residential zone (Pukyong and Kyungsung universities) with youthful energy that spills toward the coast at Igidae."
+    },
+    "yeongdo": {
+      "name": "Yeongdo-gu",
+      "name_kr": "영도구",
+      "blurb": "An island district reaching south into the sea. Dramatic coastal cliffs at Taejongdae, maritime history, and the colourful seaside alleys of Huinnyeoul Culture Village."
+    },
+    "suyeong": {
+      "name": "Suyeong-gu",
+      "name_kr": "수영구",
+      "blurb": "Home to Gwangalli Beach and the Gwangan Bridge. Shoreline cafe and pub culture, and big night festivals and drone light shows."
+    },
+    "seo": {
+      "name": "Seo-gu",
+      "name_kr": "서구",
+      "blurb": "A coastal residential and medical hub west of the old centre. Songdo Beach with its ocean cable car, and rugged seaside walking trails."
+    },
+    "jung": {
+      "name": "Jung-gu",
+      "name_kr": "중구",
+      "blurb": "The historic old downtown by the harbour. Compact but packed with landmarks -- BIFF Square, Jagalchi Fish Market, Gukje Market and Yongdusan Park."
+    },
+    "dong": {
+      "name": "Dong-gu",
+      "name_kr": "동구",
+      "blurb": "The city's historic gateway, centred on Busan Station. Steep hillside neighbourhoods, winding staircases, and old-meets-new urban regeneration."
+    }
+  },
+  "places": [
+    {
+      "id": "beomeosa",
+      "name": "Beomeosa Temple",
+      "name_kr": "범어사",
+      "district": "geumjeong",
+      "category": "temple",
+      "lat": 35.2839899,
+      "lng": 129.0687639,
+      "hours": null,
+      "note": "One of Korea's principal Zen temples, on the wooded slopes of Geumjeongsan in the far north of the city. A 7th-century founding with halls tucked among the pines; pairs naturally with a Geumjeongsan hike.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Beomeosa Temple Busan",
+      "img": "assets/busan/photos/beomeosa.jpg"
+    },
+    {
+      "id": "biffsquare",
+      "name": "BIFF Square",
+      "name_kr": "비프광장",
+      "district": "jung",
+      "category": "landmark",
+      "lat": 35.098243,
+      "lng": 129.029212,
+      "hours": null,
+      "note": "The street-food heart of the Nampo district, named for the Busan International Film Festival. Seed-hotteok pancakes, tteokbokki and gimbap; the trendy Gwangbok shopping street runs right around the corner.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "BIFF Square Nampo Busan",
+      "img": "assets/busan/photos/biffsquare.jpg"
+    },
+    {
+      "id": "duffcafe",
+      "name": "Duff Cafe",
+      "name_kr": null,
+      "district": "saha",
+      "category": "cafe",
+      "lat": 35.0962779,
+      "lng": 129.009235,
+      "hours": null,
+      "note": "A 'fever dream from a children's nightmare' cafe in the middle of Gamcheon Culture Village -- a rooftop view over the pastel houses, aggressive ducks to feed downstairs, and a banana-milk coffee. A fun sightseeing pit stop (honourable mention, 60/100, in one cafe ranking).",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Duff Cafe Gamcheon Busan",
+      "img": "assets/busan/photos/duffcafe.jpg"
+    },
+    {
+      "id": "gamcheon",
+      "name": "Gamcheon Culture Village",
+      "name_kr": "감천문화마을",
+      "district": "saha",
+      "category": "landmark",
+      "lat": 35.0973935,
+      "lng": 129.0105921,
+      "hours": null,
+      "note": "A former Korean-War refugee settlement transformed in 2009 into a hillside labyrinth of pastel houses, murals and hidden street art -- the 'Santorini of Korea.' Free; steep alleys, cafes and viewpoints. Lose an afternoon here.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Gamcheon Culture Village Busan",
+      "img": "assets/busan/photos/gamcheon.jpg"
+    },
+    {
+      "id": "gukje",
+      "name": "Gukje Market",
+      "name_kr": "국제시장",
+      "district": "jung",
+      "category": "market",
+      "lat": 35.1013575,
+      "lng": 129.0281978,
+      "hours": null,
+      "note": "A sprawling traditional market beside BIFF Square in Nampo -- clothes, tools, imported goods and street food, grown out of post-war informal trading.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Gukje Market Busan",
+      "img": "assets/busan/photos/gukje.jpg"
+    },
+    {
+      "id": "haedong",
+      "name": "Haedong Yonggungsa Temple",
+      "name_kr": "해동 용궁사",
+      "district": "gijang",
+      "category": "temple",
+      "lat": 35.1884543,
+      "lng": 129.2231109,
+      "hours": null,
+      "note": "A rare Korean temple built right on the sea, on the northeastern coast near Gijang. Pass the 12 zodiac statues at the entrance and descend the steps to golden shrines on the cliffs; go early. Free entry -- a taxi or Uber is the easiest way there.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Haedong Yonggungsa Temple Busan",
+      "img": "assets/busan/photos/haedong.jpg"
+    },
+    {
+      "id": "haeundae",
+      "name": "Haeundae Beach",
+      "name_kr": "해운대해수욕장",
+      "district": "haeundae",
+      "category": "view",
+      "lat": 35.1586975,
+      "lng": 129.1603842,
+      "hours": null,
+      "note": "Busan's most famous stretch of sand -- soft, white, wide, with a wall of high-rises and hotels behind it. Swimming, seaside walks, lively nights. Free. Also the base for the Sky Capsule and Blue Line Park.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Haeundae Beach Busan",
+      "img": "assets/busan/photos/haeundae.jpg"
+    },
+    {
+      "id": "huinnyeoul",
+      "name": "Huinnyeoul Culture Village",
+      "name_kr": "흰여울문화마을",
+      "district": "yeongdo",
+      "category": "view",
+      "lat": 35.0782798,
+      "lng": 129.0453198,
+      "hours": null,
+      "note": "A cliffside village on Yeongdo island -- whitewashed lanes strung along the coast with cozy cafes looking straight out to sea. Quieter and more local-feeling than Gamcheon.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Huinnyeoul Culture Village Yeongdo Busan",
+      "img": "assets/busan/photos/huinnyeoul.jpg"
+    },
+    {
+      "id": "igidae",
+      "name": "Igidae Coastal Trail",
+      "name_kr": "이기대 해안산책로",
+      "district": "nam",
+      "category": "view",
+      "lat": 35.1180695,
+      "lng": 129.1278512,
+      "hours": null,
+      "note": "A cliff-edge coastal walk in Nam-gu on wooden decks and a suspension bridge, looking across the water to the Gwangan Bridge and the Haeundae skyline.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Igidae Coastal Trail Busan",
+      "img": "assets/busan/photos/igidae.jpg"
+    },
+    {
+      "id": "jagalchi",
+      "name": "Jagalchi Fish Market",
+      "name_kr": "자갈치시장",
+      "district": "jung",
+      "category": "market",
+      "lat": 35.0966339,
+      "lng": 129.0307965,
+      "hours": null,
+      "note": "South Korea's largest seafood market, on the Nampo waterfront -- run for decades by its women vendors. Choose your catch from the tanks on the ground floor and take it upstairs to be cooked: sashimi, grilled fish, giant octopus.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Jagalchi Fish Market Busan",
+      "img": "assets/busan/photos/jagalchi.jpg"
+    },
+    {
+      "id": "lotte",
+      "name": "Lotte Department Store -- Busan Main",
+      "name_kr": "롯데백화점 부산본점",
+      "district": "busanjin",
+      "category": "shop",
+      "lat": 35.1564378,
+      "lng": 129.0556096,
+      "hours": null,
+      "note": "The flagship Lotte Department Store in Seomyeon -- Busan's downtown, and the transit hub where the two main subway lines cross. All-rounder base area: budget-to-mid hotels, endless restaurants and shopping.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Lotte Department Store Busan Main Seomyeon",
+      "img": "assets/busan/photos/lotte.jpg"
+    },
+    {
+      "id": "naive",
+      "name": "Naive Brewers",
+      "name_kr": null,
+      "district": "busanjin",
+      "category": "cafe",
+      "lat": 35.1531466,
+      "lng": 129.0675958,
+      "hours": null,
+      "note": "A cafe near Jeonpo Cafe Street. The latte arrives with a scoop of ice cream on top that reads as a marshmallow; a travelling duo scored it 76/100, praising the coffee and the not-too-on-the-nose hipster decor. Very small stools.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Naive Brewers cafe Busan",
+      "img": "assets/busan/photos/naive.jpg"
+    },
+    {
+      "id": "samgwangsa",
+      "name": "Samgwangsa Temple",
+      "name_kr": "삼광사",
+      "district": "busanjin",
+      "category": "temple",
+      "lat": 35.1754288,
+      "lng": 129.0433882,
+      "hours": null,
+      "note": "A large temple on the western hillside of Busanjin, spectacular during the May lantern festival for Buddha's Birthday when tens of thousands of lanterns fill the courtyards.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Samgwangsa Temple Busan",
+      "img": "assets/busan/photos/samgwangsa.jpg"
+    },
+    {
+      "id": "songdocc",
+      "name": "Songdo Bay Cable Car",
+      "name_kr": "송도해상케이블카",
+      "district": "seo",
+      "category": "view",
+      "lat": 35.0763876,
+      "lng": 129.0236199,
+      "hours": null,
+      "note": "The Busan Air Cruise -- a sea cable car gliding from Songdo Bay Station to Amnam Park, standard or glass-floor 'crystal' cabin (~15-20 min). Pair it with the Songdo Cloud Trails, a cliffside skywalk over the surf.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Songdo Marine Cable Car Busan",
+      "img": "assets/busan/photos/songdocc.jpg"
+    },
+    {
+      "id": "suan",
+      "name": "Suan Coffee",
+      "name_kr": null,
+      "district": "dongnae",
+      "category": "cafe",
+      "lat": 35.1998827,
+      "lng": 129.0867853,
+      "hours": null,
+      "note": "A striking modern cafe -- 'looks like a spaceship' -- in a quiet residential area by the canal. Cream-cheese-foam coffee, brown-butter pecan shortbread, jazz on the speakers. Scored 78.5/100 in one cafe ranking; 'an adult space.'",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Suan Coffee Busan",
+      "img": "assets/busan/photos/suan.jpg"
+    },
+    {
+      "id": "tide",
+      "name": "Tide",
+      "name_kr": null,
+      "district": "haeundae",
+      "category": "cafe",
+      "lat": 35.157617,
+      "lng": 129.1729163,
+      "hours": null,
+      "note": "A coffee bar built around watching the tide roll in -- everyone sits at the bar. Homemade vanilla-bean iced latte, a rosemary lemonade, an Earl-Grey-fudge 'tea grey' pastry. Vibes rated a flat 10/10.",
+      "unverified": false,
+      "sourced_from_video": false,
+      "geocode_query": "Tide coffee bar Busan",
+      "img": "assets/busan/photos/tide.jpg"
+    },
+    {
+      "id": "workingholiday",
+      "name": "Working Holiday",
+      "name_kr": null,
+      "district": "suyeong",
+      "category": "cafe",
+      "lat": 35.1547583,
+      "lng": 129.1197477,
+      "hours": null,
+      "note": "A cafe right on Haeundae Beach -- a standout croissant and 'the best pasta I've had in Korea' per one review, though the latte 'tastes like melted ice cream.' Herman Miller tables, an IKEA couch, Noguchi-style lamps. Geocoded address is actually Gwangalli (Suyeong-gu), not Haeundae-gu -- v1's own description called it Haeundae Beach; either a different branch exists or the original description was approximate. Confirm before routing.",
+      "unverified": true,
+      "sourced_from_video": false,
+      "geocode_query": "Working Holiday cafe Haeundae Busan",
+      "img": "assets/busan/photos/workingholiday.jpg"
+    }
+  ]
+}

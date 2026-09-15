@@ -3,28 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Seoul Trip Map</title>
+<title>Busan Trip Map</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css">
 <link rel="stylesheet" href="style.css">
+<!-- Busan-only palette override: the shared "map art" tokens (land tints, seam, labels,
+     background gradient) get swapped for the purple family that matches v1's own standalone
+     "Busan by District" sample -- everything else (UI chrome: --surface, --ink, --accent...)
+     stays exactly what style.css already defines, so the app still feels like one system. -->
+<style>
+  :root{
+    --land-a:#EDE4F6; --land-b:#E0D2F0; --land-c:#F3ECFA; --land-d:#D8C6EC; --land-e:#E6DAF4;
+    --seam:#FFFFFF;
+    --district-label:#4A3B63; --district-label-halo:rgba(255,255,255,.85);
+    --bg-grad-1:#EFE7F9; --bg-grad-2:#DCC9F0; --bg-grad-3:#C6A9E6;
+    --watermark-color:#9B7BC6;
+  }
+</style>
 </head>
 <body>
   <div id="seaBackground" aria-hidden="true">
-    <div class="seoul-watermark">SEOUL</div>
+    <div class="seoul-watermark">BUSAN</div>
   </div>
   <div id="map"></div>
 
   <nav class="regiontabs" aria-label="Choose a region">
-    <a href="index.html" class="on">Seoul</a>
+    <a href="index.html">Seoul</a>
     <a href="jeju.html">Jeju</a>
-    <a href="busan.html">Busan</a>
+    <a href="busan.html" class="on">Busan</a>
   </nav>
 
   <header class="hud" id="hud">
     <div class="card" id="hudCard">
       <button id="hudClose" class="hud-close" aria-label="Collapse">&times;</button>
       <div class="brand">
-        <h1>Seoul <span>by District</span></h1>
-        <p class="sub">Jake + sister · Sep–Oct 2026</p>
+        <h1>Busan <span>by District</span></h1>
+        <p class="sub">Jake + sister · Oct 2026</p>
       </div>
       <div class="hud-row">
         <div class="progress" title="Places checked off">
@@ -37,10 +50,9 @@
         <button id="btnList" class="txtbtn">List view</button>
       </div>
     </div>
-    <!-- detached from the card, own free-floating swipeable row — matches v1 (see style.css .catbar) -->
     <div class="catbar" id="catbar"></div>
   </header>
-  <button id="hudReopen" class="hud-reopen" hidden>Seoul <span>▾</span></button>
+  <button id="hudReopen" class="hud-reopen" hidden>Busan <span>▾</span></button>
 
   <aside id="panel" class="panel" aria-live="polite">
     <div class="grab"></div>
@@ -49,6 +61,6 @@
   </aside>
 
   <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
-  <script src="app.js"></script>
+  <script src="busan.js"></script>
 </body>
 </html>
