@@ -224,18 +224,31 @@ retry on a flaky connection — exactly how this looked when it happened on a ph
 was reproduced in testing), the second firing is a no-op instead of a silent corruption.
 
 **`updateMapClip()` (Seoul and Busan both) also now refuses to commit to a clip it can't trust.**
-Before computing any point, it checks the canvas container's own `getBoundingClientRect()` isn't
-zero-sized, and after computing every point, that every one of them is finite — bailing out to
-`clip-path:none` (the plain, uncropped, but fully functional map) in either case rather than
-applying a clip built from garbage coordinates. A container can genuinely read as zero-sized for a
-frame or two on some mobile browsers before the viewport settles (Safari's address-bar collapse
-animation is the usual suspect), and `map.project()` on a not-yet-sized camera can return
-coordinates that don't correspond to anything once the container *does* reach its real size — the
-uncropped fallback means that moment reads as "the floating-island look is briefly off," not "the
-whole map disappeared." A `requestAnimationFrame` + a delayed `setTimeout(…, 600)` recheck right
-after `load`, plus listening on the raw `window.resize`/`orientationchange` events (not just
-MapLibre's own "resize", in case a container-size change on some browser doesn't trigger it) all
-give the clip more chances to retry and self-correct once the viewport actually settles.
+Before computing any point, it checks that the map's own **`<canvas>`** element (via
+`map.getCanvas().getBoundingClientRect()`) isn't zero-sized, and after computing every point, that
+every one of them is finite — bailing out to `clip-path:none` (the plain, uncropped, but fully
+functional map) in either case rather than applying a clip built from garbage coordinates.
+
+⚠️ **The first version of this check measured the wrong element and broke the crop everywhere,
+not just in the rare case it was meant to catch.** It read `.maplibregl-canvas-container` (the div
+the clip-path is actually applied to) instead of the `<canvas>` inside it — and that container's
+own `getBoundingClientRect()` reliably comes back **zero-height even once the map is fully loaded
+and rendering correctly** (confirmed in testing on both a desktop browser and against the real
+deployed site: the container measured `0×0` while its own child canvas measured the full real
+size). MapLibre apparently doesn't give that wrapping div an explicit box — it's laid out via
+absolute positioning + `inset:0` rather than a real width/height — so treating its own rect as an
+"is the map ready" signal was wrong from the start, not just occasionally stale. The fallback
+guard, meant to catch a genuine one-in-a-while zero-size moment, was instead permanently true, so
+the crop's own gradient/watermark background never showed at all: the map just always rendered
+uncropped. Checking `map.getCanvas()`'s own rect instead — confirmed to report real pixel
+dimensions in every test, including the exact case where the container read zero — fixed it
+without weakening the actual safety net (a truly-unrendered canvas, e.g. a frame before layout
+settles, still reads as zero either way).
+
+A `requestAnimationFrame` + a delayed `setTimeout(…, 600)` recheck right after `load`, plus
+listening on the raw `window.resize`/`orientationchange` events (not just MapLibre's own "resize",
+in case a container-size change on some browser doesn't trigger it) all give the clip more chances
+to retry and self-correct if it ever does need the fallback.
 
 ## Region tabs and the HUD card live in separate rows
 

@@ -214,15 +214,19 @@ function updateMapClip(){
     canvasLayer.style.clipPath = "none";
     return;
   }
-  /* defensive: a container measured at zero size (seen on some mobile browsers for a frame
-     or two right after load, before the address-bar-collapse viewport settles) makes
-     map.project() return coordinates that don't correspond to anything visible once the
-     container *does* reach its real size — every ring would clip to a sliver or nothing,
-     which reads as "the whole map turned into a blank color." Bail out to the unclipped
-     canvas instead of committing to a broken-looking crop; the next real move/resize event
-     (there will be one once the viewport actually settles) retries this from scratch. */
-  var rect = canvasLayer.getBoundingClientRect();
-  if (!rect.width || !rect.height) {
+  /* defensive: bail out to the unclipped canvas if the map's own <canvas> element (NOT the
+     wrapping .maplibregl-canvas-container div — that div's own getBoundingClientRect() was
+     tried first and turned out to read 0×0 in testing even while the canvas inside it was
+     rendering fine at its real size, apparently because the container relies on absolute
+     positioning + inset:0 rather than an explicit box, so its own rect isn't a reliable
+     "is the map ready" signal) isn't sized yet. A genuinely-zero canvas (a frame or two right
+     after construction, before layout settles) makes map.project() return coordinates that
+     won't correspond to anything visible once it *does* reach its real size — every ring
+     would clip to a sliver or nothing, reading as "the whole map turned into a blank color."
+     The next real move/resize event (there will be one once the viewport settles) retries
+     this fresh. */
+  var canvasRect = map.getCanvas().getBoundingClientRect();
+  if (!canvasRect.width || !canvasRect.height) {
     canvasLayer.style.clipPath = "none";
     return;
   }
