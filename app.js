@@ -609,6 +609,16 @@ function init(districtsGeo, data, hoodsGeo){
 
   map.on("click", "district-fill", function(e){ selectDistrict(e.features[0].properties.id); });
 
+  /* The "fly to this pin + drop its popup" action, factored out so a list row's place name can
+     trigger the exact same map response a pin tap does (goToPlace below), not a re-derived copy. */
+  function flyToPlace(p){
+    map.flyTo({center:[p.lng, p.lat], zoom: Math.max(map.getZoom(), 15), duration:700});
+    new maplibregl.Popup({closeButton:false, offset:12})
+      .setLngLat([p.lng, p.lat])
+      .setHTML("<b>"+p.name+"</b><br><span style='color:#888'>"+catLabel(p.category)+"</span>")
+      .addTo(map);
+  }
+
   /* bound to place-points-hit (the invisible, larger circle), not the visible place-points
      dot — see that layer's own comment above. Pressing a pin now does three things: flies the
      map to it, drops the usual popup, AND pops up a small preview card for just that place
@@ -618,13 +628,20 @@ function init(districtsGeo, data, hoodsGeo){
     var id = e.features[0].properties.id;
     var p = placesById[id];
     if (!p) return;
-    map.flyTo({center:[p.lng, p.lat], zoom: Math.max(map.getZoom(), 15), duration:700});
-    new maplibregl.Popup({closeButton:false, offset:12})
-      .setLngLat([p.lng, p.lat])
-      .setHTML("<b>"+p.name+"</b><br><span style='color:#888'>"+catLabel(p.category)+"</span>")
-      .addTo(map);
+    flyToPlace(p);
     previewPlace(id);
   });
+
+  /* Same response as tapping the pin, callable by id — wired to a list row's place-name button
+     (see listRow()/wireList()/wirePlacePreview()) so pressing the name does what pressing its
+     dot on the map does, not just a dead label next to the photo's Naver-Map link. */
+  function goToPlace(id){
+    var p = placesById[id];
+    if (!p) return;
+    flyToPlace(p);
+    previewPlace(id);
+  }
+  window.__goToPlace = goToPlace; // used by list-view place-name clicks
 
   ["district-fill","place-points-hit"].forEach(function(l){
     map.on("mouseenter", l, function(){ map.getCanvas().style.cursor = "pointer"; });
@@ -842,6 +859,17 @@ function bindFavButtons(){
   });
 }
 
+/* A list row's place name — same "fly to the pin + drop its popup" response a map tap gives,
+   just reachable from the list too. Global-query like bindFavButtons() since it's called after
+   both the full list and the single-place preview render. */
+function bindPlaceNameButtons(){
+  document.querySelectorAll(".lr-name").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      if (window.__goToPlace) window.__goToPlace(btn.getAttribute("data-pid"));
+    });
+  });
+}
+
 function updateProgress(){
   if (!DATA) return;
   var total = DATA.places.length;
@@ -947,7 +975,7 @@ function listRow(p){
     + "</div>"
     + "<a class='lr-photo' href='"+naverUrl(p)+"' target='_blank' rel='noopener' aria-label='"+p.name+" on Naver Map'>"+photoHTML(p)+"</a>"
     + "<div class='lr-main'>"
-      + "<div class='lr-top'><span class='lr-name'>"+p.name+" <span class='lr-kr'>"+(p.name_kr||"")+"</span></span></div>"
+      + "<div class='lr-top'><button type='button' class='lr-name' data-pid='"+p.id+"'>"+p.name+" <span class='lr-kr'>"+(p.name_kr||"")+"</span></button></div>"
       + "<span class='chiptype lr-cat'><i class='cdot' style=\"background:"+catColor(p.category)+"\"></i>"+catLabel(p.category)+"</span>"
       + "<div class='lr-meta'>"+(p.hours||"")+"</div>"
       + "<div class='lr-links'>"
@@ -1047,6 +1075,7 @@ function wirePlacePreview(id){
   if (backBtn) backBtn.addEventListener("click", closePanelFully);
   panelBody.querySelectorAll("input[type=checkbox]").forEach(function(cb){ cb.addEventListener("change", onToggle); });
   bindFavButtons();
+  bindPlaceNameButtons();
   var more = panelBody.querySelector(".preview-more");
   if (more) more.addEventListener("click", function(){ openFullListAt(id); });
 }
@@ -1121,4 +1150,5 @@ function wireList(){
   if (lcb){ wireCatbar(lcb); syncCatbar(lcb); }
   panelBody.querySelectorAll("input[type=checkbox]").forEach(function(cb){ cb.addEventListener("change", onToggle); });
   bindFavButtons();
+  bindPlaceNameButtons();
 }

@@ -295,7 +295,8 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 .lr-photo .ph{display:block;width:100%;height:100%;border-radius:7px}
 .lr-photo img,.pc-photo img{display:block;width:100%;height:100%;object-fit:cover;background:var(--surface-2)}
 .lr-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px}
-.lr-name{font:600 13.5px var(--sans);color:var(--ink)}
+.lr-name{font:600 13.5px var(--sans);color:var(--ink);background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer}
+.lr-name:hover,.lr-name:focus-visible{text-decoration:underline}
 .lr-kr{font-weight:400;font-size:11px;color:var(--ink-soft)}
 .lr-meta{margin-top:3px;font:400 11.5px var(--sans);color:var(--ink-soft)}
 .lr-links{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
