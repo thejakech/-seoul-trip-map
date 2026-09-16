@@ -67,7 +67,8 @@ assets/
       "note": "free text, sourcing/rationale",
       "unverified": false,
       "sourced_from_video": false,
-      "geocode_query": "아라리오뮤지엄 인 스페이스"
+      "geocode_query": "아라리오뮤지엄 인 스페이스",
+      "naver_url": "https://map.naver.com/p/entry/place/35457581"
     }
   ]
 }
@@ -91,6 +92,16 @@ assets/
   independently confirmed as real/findable — shows a **video** flag. A district where *every* place has
   this flag set gets its own **video** badge in the list view (see `counts()` in `app.js`).
 - `lat`/`lng` are `null` when geocoding failed — see below.
+- `naver_url` is optional — the exact `map.naver.com/p/entry/place/<id>` deep link for that place,
+  captured via the Naver Map Search Results Scraper (Apify actor `delicious_zebu/naver-map-search-results-scraper`,
+  reachable through the `apify-google-maps` MCP connection). `naverUrl(p)` in `app.js` (and `jeju.js`/
+  `busan.js`) uses it when present; a place without it falls back to the old
+  `map.naver.com/p/search/<name>` link, which is a plain name search and often doesn't land on the
+  right result — see "Adding a new place" below for how a search-matched place graduates to an exact
+  link. Populated for 67 of 106 Seoul places as of 2026-09-16; the rest either had no confident
+  match (ambiguous chain names, English-only brand searches Naver's local search doesn't rank well)
+  or are the same name-collision cases already flagged elsewhere in this file (Jura Optique,
+  Gyeongbokgung) — those still need a by-hand Naver Map lookup.
 
 `districts.geojson`'s per-feature `properties` additionally carry a `"tint": 0-4` — which of the five
 pastel land colors (`--land-a` … `--land-e` in `style.css`) that district is filled with on the map.
@@ -118,11 +129,19 @@ just another guess.
 
 If a *new* place ever needs coordinates:
 
-1. Look the place up on **Naver Map** or **Kakao Map** (both linked from `note` when a query hints at it).
+1. Look the place up on **Naver Map** or **Kakao Map** (both linked from `note` when a query hints at it) —
+   or run the same `delicious_zebu/naver-map-search-results-scraper` actor used for `naver_url` below;
+   it returns `Latitude`/`Longitude` alongside the place URL in one pass.
 2. Right-click the pin → copy coordinates, or read them out of the share URL.
 3. Add `"lat"` / `"lng"` to that place's entry in `data/places.json` — no code changes needed, it
    picks it up on next page load. Anything still missing them shows a **`NO PIN YET`** tag in its
    district panel.
+4. While there, grab the pin's own `map.naver.com/p/entry/place/<id>` URL into `"naver_url"` too —
+   same trip, and it's the difference between the app's Naver link landing exactly on the place versus
+   a name search that may not (see `naver_url` in the schema above). **Verify the candidate's name
+   actually matches** before trusting it — a keyword search can return a same-brand different branch,
+   or an unrelated business that just happens to be nearby (this is the exact failure mode the
+   Kkokkio/Jura Optique coordinate fix above already ran into once).
 
 ## Adding a new place
 

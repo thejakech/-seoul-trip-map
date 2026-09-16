@@ -328,7 +328,8 @@
       "unverified": false,
       "geocode_query": "청계천",
       "sourced_from_video": true,
-      "img": "assets/photos/cheonggyecheon.jpg"
+      "img": "assets/photos/cheonggyecheon.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13491093"
     },
     {
       "id": "arario",
@@ -344,7 +345,8 @@
       "unverified": false,
       "geocode_query": "아라리오뮤지엄 인 스페이스",
       "sourced_from_video": false,
-      "img": "assets/photos/arario.jpg"
+      "img": "assets/photos/arario.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/35457581"
     },
     {
       "id": "cheongsudang",
@@ -360,7 +362,8 @@
       "unverified": false,
       "geocode_query": "청수당 익선동",
       "sourced_from_video": false,
-      "img": "assets/photos/cheongsudang.jpg"
+      "img": "assets/photos/cheongsudang.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1262377225"
     },
     {
       "id": "naksan",
@@ -376,7 +379,8 @@
       "unverified": false,
       "geocode_query": "낙산공원",
       "sourced_from_video": true,
-      "img": "assets/photos/naksan.jpg"
+      "img": "assets/photos/naksan.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13299765"
     },
     {
       "id": "changdeokgung",
@@ -392,7 +396,8 @@
       "unverified": false,
       "geocode_query": "창덕궁",
       "sourced_from_video": false,
-      "img": "assets/photos/changdeokgung.jpg"
+      "img": "assets/photos/changdeokgung.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/12261493"
     },
     {
       "id": "ssamziegil",
@@ -408,7 +413,8 @@
       "unverified": false,
       "geocode_query": "쌈지길",
       "sourced_from_video": false,
-      "img": "assets/photos/ssamziegil.jpg"
+      "img": "assets/photos/ssamziegil.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/11859069"
     },
     {
       "id": "jogyesa",
@@ -424,7 +430,8 @@
       "unverified": false,
       "geocode_query": "조계사",
       "sourced_from_video": false,
-      "img": "assets/photos/jogyesa.jpg"
+      "img": "assets/photos/jogyesa.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/18666826"
     },
     {
       "id": "iksunbanjoo",
@@ -440,7 +447,8 @@
       "unverified": false,
       "geocode_query": "익선반주",
       "sourced_from_video": false,
-      "img": "assets/photos/iksunbanjoo.jpg"
+      "img": "assets/photos/iksunbanjoo.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/303349806"
     },
     {
       "id": "ikseonsalt",
@@ -456,7 +464,8 @@
       "unverified": true,
       "geocode_query": "익선동 소금빵",
       "sourced_from_video": true,
-      "img": "assets/photos/ikseonsalt.jpg"
+      "img": "assets/photos/ikseonsalt.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1869147927"
     },
     {
       "id": "ikseonvintage",
@@ -488,7 +497,8 @@
       "unverified": false,
       "geocode_query": "종삼육 익선동",
       "sourced_from_video": true,
-      "img": "assets/photos/ikseonkbbq.jpg"
+      "img": "assets/photos/ikseonkbbq.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1782749461"
     },
     {
       "id": "kkokkio",
@@ -520,7 +530,8 @@
       "unverified": false,
       "geocode_query": "Achrolism 안국",
       "sourced_from_video": false,
-      "img": "assets/photos/achrolism.jpg"
+      "img": "assets/photos/achrolism.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1515782097"
     },
     {
       "id": "rainreport",
@@ -536,7 +547,8 @@
       "unverified": false,
       "geocode_query": "레인리포트 안국",
       "sourced_from_video": false,
-      "img": "assets/photos/rainreport.jpg"
+      "img": "assets/photos/rainreport.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2077529202"
     },
     {
       "id": "museumhead",
@@ -552,7 +564,8 @@
       "unverified": true,
       "geocode_query": "뮤지엄헤드",
       "sourced_from_video": false,
-      "img": "assets/photos/museumhead.jpg"
+      "img": "assets/photos/museumhead.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1555016088"
     },
     {
       "id": "gyeongbokgung",
@@ -600,7 +613,8 @@
       "unverified": false,
       "geocode_query": "카페 어니언 안국",
       "sourced_from_video": true,
-      "img": "assets/photos/cafeonion.jpg"
+      "img": "assets/photos/cafeonion.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1240190178"
     },
     {
       "id": "gwangjang",
@@ -616,7 +630,8 @@
       "unverified": false,
       "geocode_query": "광장시장",
       "sourced_from_video": true,
-      "img": "assets/photos/gwangjang.jpg"
+      "img": "assets/photos/gwangjang.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1993928504"
     },
     {
       "id": "dongmyo",
@@ -632,7 +647,8 @@
       "unverified": false,
       "geocode_query": "동묘앞 벼룩시장",
       "sourced_from_video": true,
-      "img": "assets/photos/dongmyo.jpg"
+      "img": "assets/photos/dongmyo.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/21362186"
     },
     {
       "id": "ddp",
@@ -648,7 +664,8 @@
       "unverified": false,
       "geocode_query": "동대문디자인플라자",
       "sourced_from_video": true,
-      "img": "assets/photos/ddp.jpg"
+      "img": "assets/photos/ddp.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1885307908"
     },
     {
       "id": "myeongdongmkt",
@@ -680,7 +697,8 @@
       "unverified": false,
       "geocode_query": "남대문시장",
       "sourced_from_video": true,
-      "img": "assets/photos/namdaemun.jpg"
+      "img": "assets/photos/namdaemun.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13304144"
     },
     {
       "id": "oliveyoung",
@@ -696,7 +714,8 @@
       "unverified": false,
       "geocode_query": "올리브영 명동타운점",
       "sourced_from_video": false,
-      "img": "assets/photos/oliveyoung.jpg"
+      "img": "assets/photos/oliveyoung.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2074057351"
     },
     {
       "id": "vands",
@@ -728,7 +747,8 @@
       "unverified": false,
       "geocode_query": "재미로 만화의거리",
       "sourced_from_video": false,
-      "img": "assets/photos/jaemiro.jpg"
+      "img": "assets/photos/jaemiro.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/38296630"
     },
     {
       "id": "purr",
@@ -760,7 +780,8 @@
       "unverified": false,
       "geocode_query": "Backdon 을지로",
       "sourced_from_video": true,
-      "img": "assets/photos/euljirokbbq.jpg"
+      "img": "assets/photos/euljirokbbq.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1668794074"
     },
     {
       "id": "hwanghak",
@@ -776,7 +797,8 @@
       "unverified": false,
       "geocode_query": "황학동 벼룩시장",
       "sourced_from_video": false,
-      "img": "assets/photos/hwanghak.jpg"
+      "img": "assets/photos/hwanghak.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13491744"
     },
     {
       "id": "natmuseum",
@@ -792,7 +814,8 @@
       "unverified": false,
       "geocode_query": "국립중앙박물관",
       "sourced_from_video": false,
-      "img": "assets/photos/natmuseum.jpg"
+      "img": "assets/photos/natmuseum.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/11620570"
     },
     {
       "id": "leeum",
@@ -808,7 +831,8 @@
       "unverified": false,
       "geocode_query": "Leeum Museum of Art",
       "sourced_from_video": false,
-      "img": "assets/photos/leeum.jpg"
+      "img": "assets/photos/leeum.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/11582919"
     },
     {
       "id": "fountain",
@@ -824,7 +848,8 @@
       "unverified": true,
       "geocode_query": "이태원 파운틴",
       "sourced_from_video": false,
-      "img": "assets/photos/fountain.jpg"
+      "img": "assets/photos/fountain.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/38259594"
     },
     {
       "id": "hillseuropa",
@@ -856,7 +881,8 @@
       "unverified": false,
       "geocode_query": "프랑 이태원",
       "sourced_from_video": false,
-      "img": "assets/photos/franc.jpg"
+      "img": "assets/photos/franc.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2093672883"
     },
     {
       "id": "barou",
@@ -904,7 +930,8 @@
       "unverified": false,
       "geocode_query": "이태원 앤틱가구거리",
       "sourced_from_video": false,
-      "img": "assets/photos/itaewonantique.jpg"
+      "img": "assets/photos/itaewonantique.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/35658687"
     },
     {
       "id": "hbcmarket",
@@ -920,7 +947,8 @@
       "unverified": false,
       "geocode_query": "해방촌 시장",
       "sourced_from_video": true,
-      "img": "assets/photos/hbcmarket.jpg"
+      "img": "assets/photos/hbcmarket.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/21856732"
     },
     {
       "id": "hbcsamgyeopsal",
@@ -960,7 +988,7 @@
       "name_kr": "232",
       "district": "yongsan",
       "neighborhood": "hannam",
-      "category": "cafe",
+      "category": "night",
       "lat": 37.53822,
       "lng": 127.0074,
       "hours": "check Naver",
@@ -968,7 +996,8 @@
       "unverified": false,
       "geocode_query": "232 한남동",
       "sourced_from_video": true,
-      "img": "assets/photos/cafe232.jpg"
+      "img": "assets/photos/cafe232.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/38642149"
     },
     {
       "id": "cactuscurry",
@@ -984,7 +1013,8 @@
       "unverified": false,
       "geocode_query": "Cactus Curry Club 서울",
       "sourced_from_video": true,
-      "img": "assets/photos/cactuscurry.jpg"
+      "img": "assets/photos/cactuscurry.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1905419748"
     },
     {
       "id": "tacodomingo",
@@ -1016,7 +1046,8 @@
       "unverified": false,
       "geocode_query": "진관사",
       "sourced_from_video": true,
-      "img": "assets/photos/jingwansa.jpg"
+      "img": "assets/photos/jingwansa.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/12768095"
     },
     {
       "id": "hongjecheon",
@@ -1032,7 +1063,8 @@
       "unverified": false,
       "geocode_query": "홍제천 인공폭포",
       "sourced_from_video": true,
-      "img": "assets/photos/hongjecheon.jpg"
+      "img": "assets/photos/hongjecheon.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1430069445"
     },
     {
       "id": "hongdaetteok",
@@ -1064,7 +1096,8 @@
       "unverified": false,
       "geocode_query": "망원시장",
       "sourced_from_video": true,
-      "img": "assets/photos/mangwonmarket.jpg"
+      "img": "assets/photos/mangwonmarket.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13305251"
     },
     {
       "id": "seoulforest",
@@ -1080,7 +1113,8 @@
       "unverified": false,
       "geocode_query": "서울숲",
       "sourced_from_video": true,
-      "img": "assets/photos/seoulforest.jpg"
+      "img": "assets/photos/seoulforest.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/11636039"
     },
     {
       "id": "hausnowhere",
@@ -1096,7 +1130,8 @@
       "unverified": false,
       "geocode_query": "하우스 노웨어 성수",
       "sourced_from_video": false,
-      "img": "assets/photos/hausnowhere.jpg"
+      "img": "assets/photos/hausnowhere.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2084983689"
     },
     {
       "id": "margiela",
@@ -1128,7 +1163,8 @@
       "unverified": false,
       "geocode_query": "포인트 오브 뷰 성수",
       "sourced_from_video": false,
-      "img": "assets/photos/pointofview.jpg"
+      "img": "assets/photos/pointofview.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1160844669"
     },
     {
       "id": "seongsudanish",
@@ -1144,7 +1180,8 @@
       "unverified": false,
       "geocode_query": "Cafe Stakke 성수",
       "sourced_from_video": true,
-      "img": "assets/photos/seongsudanish.jpg"
+      "img": "assets/photos/seongsudanish.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2015419758"
     },
     {
       "id": "ttukseompark",
@@ -1160,7 +1197,8 @@
       "unverified": false,
       "geocode_query": "뚝섬한강공원",
       "sourced_from_video": false,
-      "img": "assets/photos/ttukseompark.jpg"
+      "img": "assets/photos/ttukseompark.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13473842"
     },
     {
       "id": "gyeongdong",
@@ -1176,7 +1214,8 @@
       "unverified": false,
       "geocode_query": "경동시장",
       "sourced_from_video": true,
-      "img": "assets/photos/gyeongdong.jpg"
+      "img": "assets/photos/gyeongdong.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13304423"
     },
     {
       "id": "seoulfolk",
@@ -1192,7 +1231,8 @@
       "unverified": false,
       "geocode_query": "서울풍물시장",
       "sourced_from_video": true,
-      "img": "assets/photos/seoulfolk.jpg"
+      "img": "assets/photos/seoulfolk.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/12827607"
     },
     {
       "id": "kondae",
@@ -1208,7 +1248,8 @@
       "unverified": false,
       "geocode_query": "건대입구 서울",
       "sourced_from_video": true,
-      "img": "assets/photos/kondae.jpg"
+      "img": "assets/photos/kondae.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/20536606"
     },
     {
       "id": "mullaeduck",
@@ -1224,7 +1265,8 @@
       "unverified": false,
       "geocode_query": "미나리밭 오리사냥 문래",
       "sourced_from_video": true,
-      "img": "assets/photos/mullaeduck.jpg"
+      "img": "assets/photos/mullaeduck.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1901174201"
     },
     {
       "id": "mullaebar",
@@ -1240,7 +1282,8 @@
       "unverified": false,
       "geocode_query": "해방음 문래",
       "sourced_from_video": true,
-      "img": "assets/photos/mullaebar.jpg"
+      "img": "assets/photos/mullaebar.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2097495755"
     },
     {
       "id": "boramae",
@@ -1256,7 +1299,8 @@
       "unverified": false,
       "geocode_query": "보라매공원",
       "sourced_from_video": true,
-      "img": "assets/photos/boramae.jpg"
+      "img": "assets/photos/boramae.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/11622412"
     },
     {
       "id": "noryangjin",
@@ -1272,7 +1316,8 @@
       "unverified": false,
       "geocode_query": "노량진수산시장",
       "sourced_from_video": true,
-      "img": "assets/photos/noryangjin.jpg"
+      "img": "assets/photos/noryangjin.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1986510504"
     },
     {
       "id": "botanicpark",
@@ -1288,7 +1333,8 @@
       "unverified": false,
       "geocode_query": "서울식물원",
       "sourced_from_video": false,
-      "img": "assets/photos/botanicpark.jpg"
+      "img": "assets/photos/botanicpark.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1842033528"
     },
     {
       "id": "garosugil",
@@ -1304,7 +1350,8 @@
       "unverified": false,
       "geocode_query": "가로수길",
       "sourced_from_video": false,
-      "img": "assets/photos/garosugil.jpg"
+      "img": "assets/photos/garosugil.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13491811"
     },
     {
       "id": "hausdosan",
@@ -1320,7 +1367,8 @@
       "unverified": false,
       "geocode_query": "하우스 도산",
       "sourced_from_video": false,
-      "img": "assets/photos/hausdosan.jpg"
+      "img": "assets/photos/hausdosan.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1092340716"
     },
     {
       "id": "gangnamthrift",
@@ -1336,7 +1384,8 @@
       "unverified": true,
       "geocode_query": "Gangnam vintage",
       "sourced_from_video": false,
-      "img": "assets/photos/gangnamthrift.jpg"
+      "img": "assets/photos/gangnamthrift.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2043973916"
     },
     {
       "id": "starfield",
@@ -1352,7 +1401,8 @@
       "unverified": true,
       "geocode_query": "별마당 도서관 서울",
       "sourced_from_video": false,
-      "img": "assets/photos/starfield.jpg"
+      "img": "assets/photos/starfield.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/214665616"
     },
     {
       "id": "bongeunsa",
@@ -1368,7 +1418,8 @@
       "unverified": false,
       "geocode_query": "봉은사",
       "sourced_from_video": false,
-      "img": "assets/photos/bongeunsa.jpg"
+      "img": "assets/photos/bongeunsa.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/11664007"
     },
     {
       "id": "banpo",
@@ -1384,7 +1435,8 @@
       "unverified": false,
       "geocode_query": "반포대교 달빛무지개분수",
       "sourced_from_video": true,
-      "img": "assets/photos/banpo.jpg"
+      "img": "assets/photos/banpo.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13543876"
     },
     {
       "id": "roothongdae",
@@ -1432,7 +1484,8 @@
       "unverified": false,
       "sourced_from_video": false,
       "geocode_query": "MUSINSA EMPTY Seongsu",
-      "img": "assets/photos/musinsaempty.jpg"
+      "img": "assets/photos/musinsaempty.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1745323187"
     },
     {
       "id": "coor",
@@ -1464,7 +1517,8 @@
       "unverified": false,
       "sourced_from_video": false,
       "geocode_query": "TOM GREYHOUND SEONGSU",
-      "img": "assets/photos/tomgreyhound.jpg"
+      "img": "assets/photos/tomgreyhound.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1423743527"
     },
     {
       "id": "omnipeople",
@@ -1496,7 +1550,8 @@
       "unverified": false,
       "sourced_from_video": false,
       "geocode_query": "WOOYOUNGMI Itaewon Flagship",
-      "img": "assets/photos/wooyoungmi.jpg"
+      "img": "assets/photos/wooyoungmi.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/2075896907"
     },
     {
       "id": "juunj",
@@ -1528,7 +1583,8 @@
       "unverified": false,
       "sourced_from_video": false,
       "geocode_query": "Seoul Hall of Urbanism & Architecture",
-      "img": "assets/photos/seoulhallarch.jpg"
+      "img": "assets/photos/seoulhallarch.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1870358472"
     },
     {
       "id": "saeraul",
@@ -1560,7 +1616,8 @@
       "unverified": false,
       "geocode_query": "올림픽공원",
       "sourced_from_video": false,
-      "img": "assets/photos/olympicpark.png"
+      "img": "assets/photos/olympicpark.png",
+      "naver_url": "https://map.naver.com/p/entry/place/12268494"
     },
     {
       "id": "seokchonlake",
@@ -1576,7 +1633,8 @@
       "unverified": false,
       "geocode_query": "석촌호수",
       "sourced_from_video": false,
-      "img": "assets/photos/seokchonlake.jpg"
+      "img": "assets/photos/seokchonlake.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/13491520"
     },
     {
       "id": "lottetower",
@@ -1592,7 +1650,8 @@
       "unverified": false,
       "geocode_query": "롯데월드타워",
       "sourced_from_video": false,
-      "img": "assets/photos/lottetower.webp"
+      "img": "assets/photos/lottetower.webp",
+      "naver_url": "https://map.naver.com/p/entry/place/303218356"
     },
     {
       "id": "songnidangil",
@@ -1608,7 +1667,8 @@
       "unverified": true,
       "geocode_query": "송리단길",
       "sourced_from_video": false,
-      "img": "assets/photos/songnidangil.jpg"
+      "img": "assets/photos/songnidangil.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1586516490"
     },
     {
       "id": "mibbedong",
@@ -1640,7 +1700,8 @@
       "unverified": false,
       "geocode_query": "그램딜 성수동",
       "sourced_from_video": false,
-      "img": "assets/photos/gramdeal.webp"
+      "img": "assets/photos/gramdeal.webp",
+      "naver_url": "https://map.naver.com/p/entry/place/1525467360"
     },
     {
       "id": "ikseonchwihyang",
@@ -1688,7 +1749,8 @@
       "unverified": false,
       "geocode_query": "고투몰 강남터미널지하쇼핑몰",
       "sourced_from_video": false,
-      "img": "assets/photos/gotomall.webp"
+      "img": "assets/photos/gotomall.webp",
+      "naver_url": "https://map.naver.com/p/entry/place/36740720"
     },
     {
       "id": "supreme",
@@ -1880,7 +1942,8 @@
       "unverified": false,
       "geocode_query": "더현대 서울",
       "sourced_from_video": false,
-      "img": "assets/photos/hyundaimall.jpg"
+      "img": "assets/photos/hyundaimall.jpg",
+      "naver_url": "https://map.naver.com/p/entry/place/1386302181"
     },
     {
       "id": "musinsaemptyapgujeong",
@@ -1928,7 +1991,8 @@
       "unverified": false,
       "geocode_query": "London Bagel Museum Anguk Seoul",
       "sourced_from_video": false,
-      "img": "assets/photos/londonbagelmuseum.webp"
+      "img": "assets/photos/londonbagelmuseum.webp",
+      "naver_url": "https://map.naver.com/p/entry/place/1466975947"
     },
     {
       "id": "geumgeum",
@@ -1944,7 +2008,8 @@
       "unverified": false,
       "geocode_query": "금금 서울",
       "sourced_from_video": false,
-      "img": "assets/photos/geumgeum.webp"
+      "img": "assets/photos/geumgeum.webp",
+      "naver_url": "https://map.naver.com/p/entry/place/1818902068"
     },
     {
       "id": "hyodochicken",
@@ -1992,7 +2057,8 @@
       "unverified": true,
       "geocode_query": "치킨인더키친 서울",
       "sourced_from_video": false,
-      "img": "assets/photos/chickeninthekitchen.webp"
+      "img": "assets/photos/chickeninthekitchen.webp",
+      "naver_url": "https://map.naver.com/p/entry/place/20753227"
     },
     {
       "id": "breaksilence",
@@ -2008,7 +2074,8 @@
       "unverified": false,
       "geocode_query": "침묵을깨다 성수",
       "sourced_from_video": false,
-      "img": "assets/photos/breaksilence.webp"
+      "img": "assets/photos/breaksilence.webp",
+      "naver_url": "https://map.naver.com/p/entry/place/1053160252"
     }
   ]
 }

@@ -54,7 +54,7 @@ var DATA = null, placesById = {}, listOpen = false;
 /* Naver/Kakao search links prefer the place's own curated query (q) over its name — v1's
    JEJU_LOCATIONS entries each carry a search string tuned to actually find the right result
    (e.g. "Hallasan National Park" rather than the bare word "Hallasan"). */
-function naverUrl(p){ return "https://map.naver.com/p/search/" + encodeURIComponent(p.q || p.name_kr || p.name); }
+function naverUrl(p){ return p.naver_url || ("https://map.naver.com/p/search/" + encodeURIComponent(p.q || p.name_kr || p.name)); }
 function kakaoUrl(p){ return "https://map.kakao.com/?q=" + encodeURIComponent(p.q || p.name_kr || p.name); }
 
 function photoHTML(p){

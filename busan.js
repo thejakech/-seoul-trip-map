@@ -68,7 +68,7 @@ function catOn(t){ return !catFilterActive() || !!state.catSel[foldCat(t)]; }
 var DATA = null, placesById = {}, placesByDistrict = {}, DISTRICT = {}, DISTRICT_FEATURE_ID = {};
 var listOpen = false;
 
-function naverUrl(p){ return "https://map.naver.com/p/search/" + encodeURIComponent(p.name_kr || p.name); }
+function naverUrl(p){ return p.naver_url || ("https://map.naver.com/p/search/" + encodeURIComponent(p.name_kr || p.name)); }
 function kakaoUrl(p){ return "https://map.kakao.com/?q=" + encodeURIComponent(p.name_kr || p.name); }
 
 /* ---------- map ---------- */

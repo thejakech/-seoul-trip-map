@@ -110,7 +110,11 @@ var listOpen = false;
 /* ---------- map/popup helpers with no API key: plain search links, not Google Maps
    (Google Maps directions/search are weak for small Korean venues — Naver/Kakao are the
    real on-the-ground tools, per the trip research this app is built from) ---------- */
-function naverUrl(p){ return "https://map.naver.com/p/search/" + encodeURIComponent(p.name_kr || p.name); }
+/* Prefer the exact pinned place page (p.naver_url, a real map.naver.com/p/entry/place/<id> link
+   captured per-place via the Naver Map scraper) over a name search — a search for an ambiguous
+   or branch-heavy name often doesn't land on the right result, or any result at all. Falls back
+   to the old search-by-name link for any place that hasn't been resolved to an exact URL yet. */
+function naverUrl(p){ return p.naver_url || ("https://map.naver.com/p/search/" + encodeURIComponent(p.name_kr || p.name)); }
 function kakaoUrl(p){ return "https://map.kakao.com/?q=" + encodeURIComponent(p.name_kr || p.name); }
 
 /* ---------- map ---------- */
