@@ -56,14 +56,46 @@ var HOOD_LABEL_POINT = {
 var GRANDMA_HOME = [127.116450, 37.513407];
 
 /* ---------- persisted state ---------- */
-var LS = {visited:"seoul-map:visited", cats:"seoul-map:cats"};
-var visited = {}, state = {catSel:{}, allOff:false}; // allOff: the "All types"/"None" toggle — not persisted, always starts showing everything
+var LS = {visited:"seoul-map:visited", cats:"seoul-map:cats", favorites:"seoul-map:favorites"};
+var visited = {}, favorites = {}, state = {catSel:{}, allOff:false, favOnly:false}; // allOff/favOnly: not persisted, always start showing everything
 try { visited = JSON.parse(localStorage.getItem(LS.visited) || "{}") || {}; } catch(e) {}
 try { state.catSel = JSON.parse(localStorage.getItem(LS.cats) || "{}") || {}; } catch(e) {}
+try { favorites = JSON.parse(localStorage.getItem(LS.favorites) || "{}") || {}; } catch(e) {}
 function saveVisited(){ try{ localStorage.setItem(LS.visited, JSON.stringify(visited)); }catch(e){} }
 function saveCats(){ try{ localStorage.setItem(LS.cats, JSON.stringify(state.catSel)); }catch(e){} }
+function saveFavorites(){ try{ localStorage.setItem(LS.favorites, JSON.stringify(favorites)); }catch(e){} }
 function catFilterActive(){ for (var k in state.catSel) if (state.catSel[k]) return true; return false; }
+function anyFilterActive(){ return catFilterActive() || !!state.favOnly; }
 function catOn(t){ return !catFilterActive() || !!state.catSel[foldCat(t)]; }
+/* combines the category filter with the favorites-only toggle — the one thing that should
+   gate whether a place shows up anywhere: the map, a district panel, or the list view */
+function placeVisible(p){ return catOn(p.category) && (!state.favOnly || !!favorites[p.id]); }
+/* small red star/outline color used both for the map-pin highlight (paint expression below)
+   and the favorite-button glyph (style.css --fav) — kept as one JS constant since MapLibre
+   paint expressions can't read a CSS custom property directly. */
+var FAV_COLOR = "#d6293c";
+/* Builds the "places" GeoJSON source data from scratch, reading current favorite state.
+   Shared by init() (first load) and refreshFavData() (after a star toggle) so the two never
+   drift out of sync with each other. */
+function buildPointsGeo(data){
+  return {
+    type:"FeatureCollection",
+    features: data.places.filter(function(p){ return p.lat && p.lng; }).map(function(p){
+      return {type:"Feature",
+              properties:{id:p.id, category:p.category, categoryFold:foldCat(p.category), favorite: !!favorites[p.id]},
+              geometry:{type:"Point", coordinates:[p.lng, p.lat]}};
+    })
+  };
+}
+/* Re-derives the places source's data from the current `favorites` object and pushes it to
+   the map — this is what actually moves a red ring on/off a pin, since `favorite` is a plain
+   GeoJSON property (not feature-state) so the same value can also drive applyCatFilter()'s
+   favorites-only filter without a second code path. */
+function refreshFavData(){
+  if (!DATA) return;
+  var src = map.getSource("places");
+  if (src) src.setData(buildPointsGeo(DATA));
+}
 
 /* ---------- data (populated after fetch) ---------- */
 var DATA = null;              // raw places.json contents
@@ -227,6 +259,19 @@ document.getElementById("btnDeclutter").addEventListener("click", function(){
   isDeclutter = !isDeclutter;
   this.setAttribute("aria-pressed", String(!isDeclutter)); // pressed = "Streets On" active
   applyDeclutter();
+});
+
+/* ---------- "Favorites" map/list filter toggle ----------
+   Not persisted on purpose (matches allOff's own reasoning) — it's a lens on top of the
+   (persisted) favorites themselves, not part of what should survive a refresh. Guarded with
+   getLayer() because, unlike the catbar's own filter wiring, this button lives in the static
+   HUD markup and is clickable the instant the page loads, before init() has necessarily
+   finished adding the "place-points" layer. */
+document.getElementById("btnFav").addEventListener("click", function(){
+  state.favOnly = !state.favOnly;
+  this.setAttribute("aria-pressed", String(state.favOnly));
+  if (map.getLayer("place-points")) applyCatFilter();
+  if (listOpen) { document.getElementById("panelBody").innerHTML = renderList(); wireList(); }
 });
 
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
@@ -427,13 +472,7 @@ function init(districtsGeo, data, hoodsGeo){
     }
   });
 
-  var pointsGeo = {
-    type:"FeatureCollection",
-    features: data.places.filter(p=>p.lat && p.lng).map(function(p){
-      return {type:"Feature", properties:{id:p.id, category:p.category, categoryFold:foldCat(p.category)},
-              geometry:{type:"Point", coordinates:[p.lng, p.lat]}};
-    })
-  };
+  var pointsGeo = buildPointsGeo(data);
   map.addSource("places", {type:"geojson", data: pointsGeo});
   map.addLayer({
     id:"place-points", type:"circle", source:"places",
@@ -446,7 +485,12 @@ function init(districtsGeo, data, hoodsGeo){
         "food", CAT.food.color, "cafe", CAT.cafe.color, "market", CAT.market.color,
         "museum", CAT.museum.color, "park", CAT.park.color, "view", CAT.view.color,
         "shop", CAT.shop.color, "night", CAT.night.color, "#999"],
-      "circle-stroke-width":1.5, "circle-stroke-color":"#fff"
+      /* favorited places get a thicker red ring instead of the plain white one — driven by a
+         `favorite` property on the feature (kept in sync with the `favorites` object by
+         refreshFavData(), called from toggleFavorite() below) rather than feature-state, so
+         the exact same property can double as a filter condition in applyCatFilter(). */
+      "circle-stroke-width": ["case", ["==", ["get","favorite"], true], 3, 1.5],
+      "circle-stroke-color": ["case", ["==", ["get","favorite"], true], FAV_COLOR, "#fff"]
     }
   });
   /* ---------- invisible, larger tap target for place-points ----------
@@ -665,11 +709,14 @@ function applyCatFilter(){
      larger tap target live, and tapping empty-looking map space could reveal a hidden pin. */
   if (state.allOff){ map.setFilter("place-points", false); map.setFilter("place-points-hit", false); return; }
   var active = CAT_ORDER.filter(function(k){ return !!state.catSel[k]; });
-  var f = active.length ? ["in", ["get","categoryFold"], ["literal", active]] : null;
+  var parts = [];
+  if (active.length) parts.push(["in", ["get","categoryFold"], ["literal", active]]);
+  if (state.favOnly) parts.push(["==", ["get","favorite"], true]);
+  var f = parts.length === 0 ? null : (parts.length === 1 ? parts[0] : ["all"].concat(parts));
   map.setFilter("place-points", f);
   map.setFilter("place-points-hit", f);
 }
-function visPlaces(id){ return (DISTRICT[id].places || []).filter(function(p){ return catOn(p.category); }); }
+function visPlaces(id){ return (DISTRICT[id].places || []).filter(placeVisible); }
 function counts(id){
   var pl = DISTRICT[id].places || [];
   var v = 0, pk = 0;
@@ -714,6 +761,7 @@ function openDistrict(id){
   document.getElementById("panelBody").innerHTML = html;
   openPanelSheet();
   bindVisitCheckboxes();
+  bindFavButtons();
 }
 
 function photoHTML(p){
@@ -722,6 +770,10 @@ function photoHTML(p){
     : "<span class='ph' style='background:"+catColor(p.category)+"22'></span>";
 }
 
+function favBtnHTML(p){
+  var on = !!favorites[p.id];
+  return "<button class='favbtn"+(on?" on":"")+"' data-id='"+p.id+"' type='button' aria-pressed='"+on+"' aria-label='"+(on?"Remove from":"Add to")+" favorites' title='Favorite'>&#9733;</button>";
+}
 function placeCardHTML(p){
   var flags = "";
   if (!p.lat) flags += "<span class='pflag' style='color:#9a6bc4;border-color:#9a6bc4'>NO PIN YET</span> ";
@@ -739,7 +791,9 @@ function placeCardHTML(p){
     + "<a class='maplink' href='"+naverUrl(p)+"' target='_blank' rel='noopener'>Naver</a> "
     + "<a class='maplink' href='"+kakaoUrl(p)+"' target='_blank' rel='noopener'>Kakao</a> "
     + flags
-    + "</div></div></div>";
+    + "</div></div>"
+    + favBtnHTML(p)
+    + "</div>";
 }
 
 function onToggle(e){
@@ -755,6 +809,37 @@ function onToggle(e){
 }
 function bindVisitCheckboxes(){
   document.querySelectorAll(".vischk").forEach(function(cb){ cb.addEventListener("change", onToggle); });
+}
+
+/* ---------- favorites: a star per place, independent of the visited checkbox ----------
+   Persisted the same way `visited` is (see LS.favorites above) so it survives a refresh.
+   Toggling one updates three things at once: the map pin's red ring (refreshFavData), every
+   matching star button currently in the DOM (a place can appear in both a district panel and
+   the list at once — not true today, but cheap to handle correctly), and — only when the
+   favorites-only filter is actually on — the currently open view, since un-favoriting a place
+   while that filter is active should make its row/card disappear immediately rather than wait
+   for the next re-render. */
+function toggleFavorite(id){
+  favorites[id] = !favorites[id];
+  saveFavorites();
+  refreshFavData();
+  document.querySelectorAll('.favbtn[data-id="'+id+'"]').forEach(function(btn){
+    var on = !!favorites[id];
+    btn.classList.toggle("on", on);
+    btn.setAttribute("aria-pressed", String(on));
+    btn.setAttribute("aria-label", (on?"Remove from":"Add to")+" favorites");
+  });
+  if (!state.favOnly) return;
+  if (listOpen) { document.getElementById("panelBody").innerHTML = renderList(); wireList(); }
+  else if (selectedDistrictFeature) { openDistrict(selectedDistrictFeature.properties.id); }
+}
+function bindFavButtons(){
+  document.querySelectorAll(".favbtn").forEach(function(btn){
+    btn.addEventListener("click", function(e){
+      e.preventDefault(); e.stopPropagation();
+      toggleFavorite(btn.getAttribute("data-id"));
+    });
+  });
 }
 
 function updateProgress(){
@@ -867,11 +952,13 @@ function listRow(p){
       +   "<a class='maplink' href='"+kakaoUrl(p)+"' target='_blank' rel='noopener'>Kakao</a>"
       +   (p.unverified ? "<span class='verify'>check name/hours</span>" : "")
       + "</div>"
-    + "</div></div>";
+    + "</div>"
+    + favBtnHTML(p)
+    + "</div>";
 }
 
 function listGroup(label, ids){
-  var filt = catFilterActive();
+  var filt = anyFilterActive();
   var withP = ids.filter(function(id){
     if (!(DISTRICT[id].places || []).length) return false;
     return filt ? visPlaces(id).length > 0 : true;
@@ -920,13 +1007,16 @@ function listGroup(label, ids){
 }
 
 function renderList(){
-  var filt = catFilterActive(), np=0, nd=0, vnp=0;
+  var filt = anyFilterActive(), np=0, nd=0, vnp=0;
   ALL_IDS.forEach(function(id){ var n=(DISTRICT[id].places||[]).length; if (n){ np+=n; nd++; vnp+=visPlaces(id).length; } });
   var buk = ALL_IDS.filter(function(id){ return DISTRICT[id].side==="buk"; });
   var nam = ALL_IDS.filter(function(id){ return DISTRICT[id].side==="nam"; });
+  var clearHint = state.favOnly && !catFilterActive() ? "tap ★ Favorites again to clear."
+    : state.favOnly ? "tap a chip again, \"All types\", or ★ Favorites to clear."
+    : "tap a chip again or \"All types\" to clear.";
   return "<div class='p-bar'><button data-back>&lsaquo; Map</button><span class='spacer'></span><button data-close aria-label='Close'>&times;</button></div>"
     + "<h2 class='list-h'>Every place by district</h2>"
-    + "<p class='list-sub'>"+(filt ? "<strong>"+vnp+"</strong> of "+np+" places match — tap a chip again or \"All types\" to clear." : np+" places across "+nd+" districts. Tap a district to open it; tick places off as you go.")+"</p>"
+    + "<p class='list-sub'>"+(filt ? "<strong>"+vnp+"</strong> of "+np+" places match — "+clearHint : np+" places across "+nd+" districts. Tap a district to open it; tick places off as you go.")+"</p>"
     + "<div class='list-tools'><button class='txtbtn' data-expand='1'>Expand all</button><button class='txtbtn' data-expand='0'>Collapse all</button></div>"
     + "<div class='catbar list-catbar' role='group' aria-label='Filter places by type'>"+catbarHTML()+"</div>"
     + listGroup("North of the Han", buk) + listGroup("South of the Han", nam);
@@ -957,6 +1047,7 @@ function wirePlacePreview(id){
   var backBtn = panelBody.querySelector("[data-back]");
   if (backBtn) backBtn.addEventListener("click", closePanelFully);
   panelBody.querySelectorAll("input[type=checkbox]").forEach(function(cb){ cb.addEventListener("change", onToggle); });
+  bindFavButtons();
   var more = panelBody.querySelector(".preview-more");
   if (more) more.addEventListener("click", function(){ openFullListAt(id); });
 }
@@ -1030,4 +1121,5 @@ function wireList(){
   var lcb = panelBody.querySelector(".list-catbar");
   if (lcb){ wireCatbar(lcb); syncCatbar(lcb); }
   panelBody.querySelectorAll("input[type=checkbox]").forEach(function(cb){ cb.addEventListener("change", onToggle); });
+  bindFavButtons();
 }

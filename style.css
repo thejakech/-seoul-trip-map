@@ -8,6 +8,7 @@
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --surface:#f7f7f3; --surface-2:#ececE4; --ink:#1b1e22; --ink-soft:#5d636b; --ink-faint:#9198a0;
   --hairline:#dcdcd4; --accent:#2b5fae; --accent-tint:#dce6f3; --visited:#3b7a66; --focus:#c23e2a;
+  --fav:#d6293c;
   --food:#e0707f; --cafe:#d9a24f; --market:#c9ae3a; --museum:#7c8fd0; --park:#5fae82;
   --view:#4fa0c9; --shop:#c072a8; --temple:#3fae9b; --landmark:#d68a55; --night:#9a6bc4;
   /* ---- map art tokens: pinned to a deep rose/wine palette ALWAYS — deliberately NOT
@@ -108,6 +109,7 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
   font:600 12.5px var(--sans);color:var(--ink);cursor:pointer}
 .chip-btn:hover{border-color:var(--accent)}
 .chip-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip-btn.fav-toggle[aria-pressed="true"]{background:var(--fav);border-color:var(--fav)}
 /* v1-style plain text links (not pill buttons) for navigation actions, as opposed to the
    3D/No-streets chip-buttons which are binary on/off toggles */
 .txtbtn{background:none;border:0;padding:6px 2px;font:600 13px var(--sans);color:var(--accent);cursor:pointer}
@@ -187,7 +189,7 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
    visually distinct from the place cards listed below it, matching v1's .focusbox */
 .hood-focus{padding:10px 12px;background:var(--surface-2);border-radius:9px;margin-bottom:10px}
 .hood-blurb{margin:6px 0 0;font-size:13px;line-height:1.55;color:var(--ink)}
-.pcard{display:grid;grid-template-columns:20px 44px 1fr;gap:8px;padding:10px 0;border-top:1px dashed var(--hairline)}
+.pcard{display:grid;grid-template-columns:20px 44px 1fr auto;gap:8px;padding:10px 0;border-top:1px dashed var(--hairline)}
 .hood-block .pcard:first-of-type{border-top:none}
 .pcard input{margin-top:3px}
 .pcard.done .pname{color:var(--ink-faint);text-decoration:line-through}
@@ -203,6 +205,17 @@ html,body{margin:0;height:100%;font-family:var(--sans);color:var(--ink);backgrou
 .also{margin-top:16px;padding:10px 12px;background:var(--surface-2);border-radius:9px;font-size:12px;
   line-height:1.7;color:var(--ink-soft)}
 .also b{color:var(--ink)}
+
+/* ---- favorite star: one glyph, colored to show state (filled gray = not favorited, filled
+   red = favorited) rather than swapping outline/filled glyphs — matches the map pin's own
+   on/off signal being a color change (a white vs. red ring), not a shape change. Sits in its
+   own trailing grid column on both .pcard and .lr (see their grid-template-columns above) so
+   it reads as a persistent action in the same spot every row, not an inline addition that
+   shifts other content around. */
+.favbtn{align-self:center;background:none;border:0;padding:2px 4px;font-size:19px;line-height:1;
+  color:var(--hairline);cursor:pointer}
+.favbtn:hover{color:var(--fav)}
+.favbtn.on{color:var(--fav)}
 
 /* ---- shared category-chip glyph used inside place cards/rows ---- */
 .chiptype{display:inline-flex;align-items:center;gap:5px;font:500 11px var(--sans);color:var(--ink-soft);margin-top:6px}
@@ -271,7 +284,7 @@ details.list-d[open] .list-caret{transform:rotate(90deg)}
 .list-key::before{content:"\2605\00a0";font-size:10px}
 .list-dbody{padding:0 0 4px}
 
-.lr{display:grid;grid-template-columns:24px 40px 1fr;gap:10px;padding:9px 0;border-top:1px dashed var(--hairline);align-items:start}
+.lr{display:grid;grid-template-columns:24px 40px 1fr auto;gap:10px;padding:9px 0;border-top:1px dashed var(--hairline);align-items:start}
 .list-dbody > .lr:first-child{border-top:0}
 .lr-chk{display:flex;align-items:flex-start;padding-top:3px}
 .lr-chk input{width:15px;height:15px;accent-color:var(--visited);cursor:pointer}

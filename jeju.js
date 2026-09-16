@@ -120,12 +120,16 @@ function init(data){
   map.addLayer({
     id:"place-points", type:"circle", source:"places",
     paint:{
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 2.5, 11, 4, 14, 6, 17, 8],
+      /* Jeju has only 20 places spread across a whole island, not a dense cluster like
+         Seoul's Ikseon-dong or Itaewon — none of Seoul's small-at-low-zoom-to-avoid-overlap
+         reasoning applies here, so these are deliberately much bigger and more visible at
+         every zoom instead of matching app.js's tiny 2.5px starting radius. */
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 6, 10, 8, 12, 10, 14, 13, 17, 16],
       "circle-color": ["match", ["get","categoryFold"],
         "food", CAT.food.color, "cafe", CAT.cafe.color, "market", CAT.market.color,
         "museum", CAT.museum.color, "park", CAT.park.color, "view", CAT.view.color,
         "shop", CAT.shop.color, "night", CAT.night.color, "#999"],
-      "circle-stroke-width":1.5, "circle-stroke-color":"#fff"
+      "circle-stroke-width":2.5, "circle-stroke-color":"#fff"
     }
   });
   /* invisible, larger tap target — same rationale as app.js/busan.js: the visible dot
@@ -133,7 +137,7 @@ function init(data){
   map.addLayer({
     id:"place-points-hit", type:"circle", source:"places",
     paint:{
-      "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 11, 11, 13, 14, 15, 17, 17],
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 13, 10, 15, 12, 17, 14, 19, 17, 22],
       "circle-opacity": 0, "circle-stroke-width": 0
     }
   });
