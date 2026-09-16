@@ -1560,7 +1560,7 @@
       "unverified": false,
       "geocode_query": "올림픽공원",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/olympicpark.png"
     },
     {
       "id": "seokchonlake",
@@ -1576,7 +1576,7 @@
       "unverified": false,
       "geocode_query": "석촌호수",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/seokchonlake.jpg"
     },
     {
       "id": "lottetower",
@@ -1592,7 +1592,7 @@
       "unverified": false,
       "geocode_query": "롯데월드타워",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/lottetower.webp"
     },
     {
       "id": "songnidangil",
@@ -1608,7 +1608,7 @@
       "unverified": true,
       "geocode_query": "송리단길",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/songnidangil.jpg"
     },
     {
       "id": "mibbedong",
@@ -1624,7 +1624,7 @@
       "unverified": false,
       "geocode_query": "Mibbedong salmon noodle Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/mibbedong.jpg"
     },
     {
       "id": "gramdeal",
@@ -1640,7 +1640,7 @@
       "unverified": false,
       "geocode_query": "그램딜 성수동",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/gramdeal.webp"
     },
     {
       "id": "ikseonchwihyang",
@@ -1672,7 +1672,7 @@
       "unverified": false,
       "geocode_query": "Vin Prime Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/vinprime.webp"
     },
     {
       "id": "gotomall",
@@ -1688,7 +1688,7 @@
       "unverified": false,
       "geocode_query": "고투몰 강남터미널지하쇼핑몰",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/gotomall.webp"
     },
     {
       "id": "supreme",
@@ -1704,7 +1704,7 @@
       "unverified": false,
       "geocode_query": "Supreme Dosan Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/supreme.webp"
     },
     {
       "id": "bape",
@@ -1720,7 +1720,7 @@
       "unverified": false,
       "geocode_query": "A Bathing Ape Bape Dosan Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/bape.webp"
     },
     {
       "id": "chromehearts",
@@ -1736,7 +1736,7 @@
       "unverified": false,
       "geocode_query": "Chrome Hearts Cheongdam Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/chromehearts.webp"
     },
     {
       "id": "onitsukatiger",
@@ -1752,7 +1752,7 @@
       "unverified": false,
       "geocode_query": "Onitsuka Tiger Garosugil Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/onitsukatiger.webp"
     },
     {
       "id": "stussy",
@@ -1768,7 +1768,7 @@
       "unverified": false,
       "geocode_query": "Stussy Seoul store",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/stussy.webp"
     },
     {
       "id": "sevenout",
@@ -1784,7 +1784,7 @@
       "unverified": false,
       "geocode_query": "7OUT Seoul store",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/sevenout.webp"
     },
     {
       "id": "santamonicavintage",
@@ -1800,7 +1800,7 @@
       "unverified": false,
       "geocode_query": "Santa Monica Vintage Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/santamonicavintage.webp"
     },
     {
       "id": "balbalvintage",
@@ -1848,7 +1848,7 @@
       "unverified": false,
       "geocode_query": "Olive Young Central Gangnam Town Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/oliveyounggangnam.jpg"
     },
     {
       "id": "nyunyuhouse",
@@ -1864,7 +1864,55 @@
       "unverified": false,
       "geocode_query": "Nyunyu House Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/nyunyuhouse.webp"
+    },
+    {
+      "id": "hyundaimall",
+      "name": "The Hyundai Seoul",
+      "name_kr": "더현대 서울",
+      "district": "yeongdeungpo",
+      "neighborhood": null,
+      "category": "shop",
+      "lat": 37.5259638,
+      "lng": 126.9284184,
+      "hours": "10:30-20:00 (varies by day/floor)",
+      "note": "Yeouido's flagship department store/mall, famous for its huge indoor atrium (real trees, a waterfall, a skylight ceiling) and a ground-floor Louis Vuitton anchor. On Jake's pick list.",
+      "unverified": false,
+      "geocode_query": "더현대 서울",
+      "sourced_from_video": false,
+      "img": "assets/photos/hyundaimall.jpg"
+    },
+    {
+      "id": "musinsaemptyapgujeong",
+      "name": "Musinsa Empty Apgujeong",
+      "name_kr": "무신사 엠프티 압구정",
+      "district": "gangnam",
+      "neighborhood": "sinsa",
+      "category": "shop",
+      "lat": 37.5278596,
+      "lng": 127.0362455,
+      "hours": "Check on Naver",
+      "note": "Musinsa's Apgujeong concept store (basement level, Eonju-ro), distinct from the existing Seongsu branch (musinsaempty).",
+      "unverified": false,
+      "geocode_query": "Musinsa Empty Apgujeong Seoul",
+      "sourced_from_video": false,
+      "img": "assets/photos/musinsaemptyapgujeong.webp"
+    },
+    {
+      "id": "obscura",
+      "name": "Obscura",
+      "name_kr": null,
+      "district": "seongbuk",
+      "neighborhood": null,
+      "category": "museum",
+      "lat": 37.5923147,
+      "lng": 126.9921276,
+      "hours": "Check on Naver",
+      "note": "Small gallery/studio space, on Jake's pick list as an Apgujeong spot. ⚠️ Geocoded to a single-story converted building on Seongbuk-ro 23-gil, Seongbuk-gu -- not Apgujeong/Gangnam-gu. The name matched exactly but the neighborhood didn't; confirm on Naver whether this is the right branch/location before routing a day around it.",
+      "unverified": true,
+      "geocode_query": "Obscura Apgujeong Seoul gallery",
+      "sourced_from_video": false,
+      "img": "assets/photos/obscura.webp"
     }
   ]
 }
