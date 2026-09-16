@@ -1656,7 +1656,7 @@
       "unverified": false,
       "geocode_query": "Ikseon Chwihyang pasta Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/ikseonchwihyang.webp"
     },
     {
       "id": "vinprime",
@@ -1816,7 +1816,7 @@
       "unverified": false,
       "geocode_query": "발발 빈티지 Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/balbalvintage.webp"
     },
     {
       "id": "nudake",
@@ -1832,7 +1832,7 @@
       "unverified": false,
       "geocode_query": "Nudake Dosan Park Seoul",
       "sourced_from_video": false,
-      "img": null
+      "img": "assets/photos/nudake.webp"
     },
     {
       "id": "oliveyounggangnam",
@@ -1913,6 +1913,86 @@
       "geocode_query": "Obscura Apgujeong Seoul gallery",
       "sourced_from_video": false,
       "img": "assets/photos/obscura.webp"
+    },
+    {
+      "id": "londonbagelmuseum",
+      "name": "London Bagel Museum — Anguk",
+      "name_kr": "런던베이글뮤지엄",
+      "district": "jongno",
+      "neighborhood": "bukchon",
+      "category": "food",
+      "lat": 37.5791826,
+      "lng": 126.986152,
+      "hours": "Check on Naver (long lines, arrive early)",
+      "note": "Seoul's famously-queued bagel shop, original Anguk/Bukchon branch (20 Bukchon-ro 4-gil) -- huge case of flavored bagels, cream cheeses and sandwiches. On Jake's pick list.",
+      "unverified": false,
+      "geocode_query": "London Bagel Museum Anguk Seoul",
+      "sourced_from_video": false,
+      "img": "assets/photos/londonbagelmuseum.webp"
+    },
+    {
+      "id": "geumgeum",
+      "name": "Geumgeum",
+      "name_kr": "금금",
+      "district": "seongdong",
+      "neighborhood": "seongsu",
+      "category": "food",
+      "lat": 37.539829,
+      "lng": 127.0566577,
+      "hours": "Check on Naver",
+      "note": "Seongsu-dong restaurant known for perilla-oil noodles topped with a raw egg yolk, alongside char siu-style pork. On Jake's pick list.",
+      "unverified": false,
+      "geocode_query": "금금 서울",
+      "sourced_from_video": false,
+      "img": "assets/photos/geumgeum.webp"
+    },
+    {
+      "id": "hyodochicken",
+      "name": "Hyodo Chicken",
+      "name_kr": "효도치킨",
+      "district": "dongdaemun",
+      "neighborhood": null,
+      "category": "food",
+      "lat": 37.5618644,
+      "lng": 127.0662431,
+      "hours": "Check on Naver",
+      "note": "Premium fried chicken from the team behind two-Michelin-star Mingles -- gochujang-glaze and other avant-garde flavors. Previously flagged in the research corpus as a Banpo Fountain pairing (order and bring to the show), not a Banpo-area storefront. ⚠️ Only findable branch (Janghanpyeong, Dongdaemun-gu) is well away from Banpo/Seocho-gu -- likely delivery-focused rather than a destination storefront; confirm before routing a day around it.",
+      "unverified": true,
+      "geocode_query": "효도치킨",
+      "sourced_from_video": false,
+      "img": "assets/photos/hyodochicken.webp"
+    },
+    {
+      "id": "myeongdongkyoja",
+      "name": "Myeongdong Kyoja",
+      "name_kr": "명동교자",
+      "district": "jung",
+      "neighborhood": "myeongdong",
+      "category": "food",
+      "lat": 37.5610151,
+      "lng": 126.9860829,
+      "hours": "Check on Naver (usually a wait)",
+      "note": "Famous knife-cut noodle (kalguksu) and mandu institution just off Myeongdong's main strip -- a Seoul classic. On Jake's pick list.",
+      "unverified": false,
+      "geocode_query": "Myeongdong Kyoja Seoul",
+      "sourced_from_video": false,
+      "img": "assets/photos/myeongdongkyoja.webp"
+    },
+    {
+      "id": "chickeninthekitchen",
+      "name": "Chicken In The Kitchen",
+      "name_kr": "치킨인더키친",
+      "district": "mapo",
+      "neighborhood": null,
+      "category": "food",
+      "lat": 37.5551682,
+      "lng": 126.9292079,
+      "hours": "Check on Naver",
+      "note": "Fried chicken spot near Yeonnam-dong/Hongdae (Wausan-ro). On Jake's pick list. ⚠️ A second branch exists near Gyeongbokgung/Jahamun-ro (Jongno-gu) -- this pin is the Mapo-gu one; confirm which was meant.",
+      "unverified": true,
+      "geocode_query": "치킨인더키친 서울",
+      "sourced_from_video": false,
+      "img": "assets/photos/chickeninthekitchen.webp"
     }
   ]
 }
