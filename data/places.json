@@ -1993,6 +1993,22 @@
       "geocode_query": "치킨인더키친 서울",
       "sourced_from_video": false,
       "img": "assets/photos/chickeninthekitchen.webp"
+    },
+    {
+      "id": "breaksilence",
+      "name": "Break Silence",
+      "name_kr": "침묵을깨다 (브레이크 사일런스)",
+      "district": "seongdong",
+      "neighborhood": "seongsu",
+      "category": "night",
+      "lat": 37.5457812,
+      "lng": 127.0600722,
+      "hours": "Check on Naver",
+      "note": "A highly popular, low-key loft-style music bar and vintage concept shop in Seongsu-dong -- cozy, hidden hangout spinning everything from hip-hop and indie to electronic. Beyond cocktails and vinyl, there's a retail section for browsing vintage streetwear and, on Sundays, custom silk-screen T-shirt printing. 👉 Go on a Sunday -- that's when they have DJs.",
+      "unverified": false,
+      "geocode_query": "침묵을깨다 성수",
+      "sourced_from_video": false,
+      "img": "assets/photos/breaksilence.webp"
     }
   ]
 }
