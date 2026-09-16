@@ -261,19 +261,6 @@ document.getElementById("btnDeclutter").addEventListener("click", function(){
   applyDeclutter();
 });
 
-/* ---------- "Favorites" map/list filter toggle ----------
-   Not persisted on purpose (matches allOff's own reasoning) — it's a lens on top of the
-   (persisted) favorites themselves, not part of what should survive a refresh. Guarded with
-   getLayer() because, unlike the catbar's own filter wiring, this button lives in the static
-   HUD markup and is clickable the instant the page loads, before init() has necessarily
-   finished adding the "place-points" layer. */
-document.getElementById("btnFav").addEventListener("click", function(){
-  state.favOnly = !state.favOnly;
-  this.setAttribute("aria-pressed", String(state.favOnly));
-  if (map.getLayer("place-points")) applyCatFilter();
-  if (listOpen) { document.getElementById("panelBody").innerHTML = renderList(); wireList(); }
-});
-
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
 /* ---------- "floating island" crop, take 2 ----------
@@ -664,11 +651,17 @@ function init(districtsGeo, data, hoodsGeo){
    a two-state toggle on top of that: tap "All types" to hide every place-point on the map at
    once (it relabels itself "None"); tap again ("None") to go back to showing everything and
    clear any individual category selections too, for a clean binary state. ---------- */
+/* Favorites lives in this same chip row now, styled and clicked exactly like a category chip
+   (Restaurant, Nightlife, ...) rather than as a separate HUD button — the one difference is
+   what it filters on (state.favOnly, not state.catSel), handled below in syncCatbar/wireCatbar
+   via the sentinel data-cat="__fav__" rather than a real category key. */
+var FAV_CAT_KEY = "__fav__";
 function catbarHTML(){
   var h = '<button class="catchip all" data-cat="">All types</button>';
   CAT_ORDER.forEach(function(k){
     h += '<button class="catchip" data-cat="'+k+'"><i style="background:'+CAT[k].color+'"></i>'+CAT[k].label+'</button>';
   });
+  h += '<button class="catchip fav" data-cat="'+FAV_CAT_KEY+'"><i style="background:'+FAV_COLOR+'"></i>&#9733; Favorites</button>';
   return h;
 }
 function syncCatbar(container){
@@ -676,7 +669,13 @@ function syncCatbar(container){
   var active = catFilterActive();
   container.querySelectorAll(".catchip[data-cat]").forEach(function(ch){
     var k = ch.getAttribute("data-cat");
-    if (k){
+    if (k === FAV_CAT_KEY){
+      var favSel = !!state.favOnly;
+      ch.classList.toggle("on", favSel);
+      ch.classList.toggle("off", (active || state.allOff) && !favSel);
+      ch.style.borderColor = favSel ? FAV_COLOR : "";
+      ch.style.color = favSel ? FAV_COLOR : "";
+    } else if (k){
       var sel = !!state.catSel[k];
       ch.classList.toggle("on", sel);
       ch.classList.toggle("off", (active || state.allOff) && !sel);
@@ -694,7 +693,8 @@ function wireCatbar(container){
     ch.addEventListener("click", function(e){
       e.stopPropagation();
       var k = ch.getAttribute("data-cat");
-      if (!k) { state.allOff = !state.allOff; state.catSel = {}; }
+      if (k === FAV_CAT_KEY) { state.favOnly = !state.favOnly; }
+      else if (!k) { state.allOff = !state.allOff; state.catSel = {}; }
       else { state.allOff = false; state.catSel[k] = !state.catSel[k]; if (!state.catSel[k]) delete state.catSel[k]; }
       saveCats();
       document.querySelectorAll(".catbar").forEach(syncCatbar);
@@ -941,7 +941,10 @@ document.getElementById("btnList").addEventListener("click", function(){
 function listRow(p){
   var done = !!visited[p.id];
   return "<div class='lr"+(done?" done":"")+"' id='card-"+p.id+"'>"
-    + "<label class='lr-chk'><input type='checkbox' data-pid='"+p.id+"'"+(done?" checked":"")+"></label>"
+    + "<div class='lr-chk'>"
+    +   "<input type='checkbox' data-pid='"+p.id+"'"+(done?" checked":"")+">"
+    +   favBtnHTML(p)
+    + "</div>"
     + "<a class='lr-photo' href='"+naverUrl(p)+"' target='_blank' rel='noopener' aria-label='"+p.name+" on Naver Map'>"+photoHTML(p)+"</a>"
     + "<div class='lr-main'>"
       + "<div class='lr-top'><span class='lr-name'>"+p.name+" <span class='lr-kr'>"+(p.name_kr||"")+"</span></span></div>"
@@ -953,7 +956,6 @@ function listRow(p){
       +   (p.unverified ? "<span class='verify'>check name/hours</span>" : "")
       + "</div>"
     + "</div>"
-    + favBtnHTML(p)
     + "</div>";
 }
 
@@ -1011,12 +1013,9 @@ function renderList(){
   ALL_IDS.forEach(function(id){ var n=(DISTRICT[id].places||[]).length; if (n){ np+=n; nd++; vnp+=visPlaces(id).length; } });
   var buk = ALL_IDS.filter(function(id){ return DISTRICT[id].side==="buk"; });
   var nam = ALL_IDS.filter(function(id){ return DISTRICT[id].side==="nam"; });
-  var clearHint = state.favOnly && !catFilterActive() ? "tap ★ Favorites again to clear."
-    : state.favOnly ? "tap a chip again, \"All types\", or ★ Favorites to clear."
-    : "tap a chip again or \"All types\" to clear.";
   return "<div class='p-bar'><button data-back>&lsaquo; Map</button><span class='spacer'></span><button data-close aria-label='Close'>&times;</button></div>"
     + "<h2 class='list-h'>Every place by district</h2>"
-    + "<p class='list-sub'>"+(filt ? "<strong>"+vnp+"</strong> of "+np+" places match — "+clearHint : np+" places across "+nd+" districts. Tap a district to open it; tick places off as you go.")+"</p>"
+    + "<p class='list-sub'>"+(filt ? "<strong>"+vnp+"</strong> of "+np+" places match — tap a highlighted chip again to clear." : np+" places across "+nd+" districts. Tap a district to open it; tick places off as you go.")+"</p>"
     + "<div class='list-tools'><button class='txtbtn' data-expand='1'>Expand all</button><button class='txtbtn' data-expand='0'>Collapse all</button></div>"
     + "<div class='catbar list-catbar' role='group' aria-label='Filter places by type'>"+catbarHTML()+"</div>"
     + listGroup("North of the Han", buk) + listGroup("South of the Han", nam);
