@@ -432,6 +432,22 @@ function init(districtsGeo, data){
     map.on("mouseleave", l, function(){ map.getCanvas().style.cursor = ""; });
   });
 
+  /* Where they're actually sleeping in Busan -- same fixed-marker treatment as grandma's place
+     on the Seoul map (see app.js), kept OUTSIDE the places/category system so it always shows
+     regardless of category filters and never appears in list view or a district's place cards. */
+  var hotelEl = document.createElement("div");
+  hotelEl.textContent = "🏠";
+  hotelEl.style.fontSize = "28px";
+  hotelEl.style.lineHeight = "1";
+  hotelEl.style.cursor = "pointer";
+  hotelEl.setAttribute("role", "img");
+  hotelEl.setAttribute("aria-label", "Y Collection by UH Flat Osiria");
+  new maplibregl.Marker({element: hotelEl, anchor:"bottom"})
+    .setLngLat([129.2151630, 35.1885845])
+    .setPopup(new maplibregl.Popup({closeButton:false, offset:20})
+      .setHTML("<b>🏠 Y Collection by UH Flat Osiria</b><br><span style='color:#888'>Matier, Osiria Switchen Matier -- 17 Dongbusan-gwangwang 7-ro, Gijang-gun</span>"))
+    .addTo(map);
+
   window.__selectDistrict = selectDistrict;
 
   document.querySelectorAll(".catbar").forEach(function(bar){

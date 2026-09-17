@@ -156,6 +156,28 @@ function init(data){
   map.on("mouseenter", "place-points-hit", function(){ map.getCanvas().style.cursor = "pointer"; });
   map.on("mouseleave", "place-points-hit", function(){ map.getCanvas().style.cursor = ""; });
 
+  /* Where they're actually sleeping in Jeju -- same fixed-marker treatment as grandma's place
+     on the Seoul map (see app.js), kept OUTSIDE the places/category system so it always shows
+     regardless of category filters and never appears in list view or a district's place cards.
+     Two markers: the trip moves between them partway through the Jeju stretch. */
+  [
+    {lngLat:[126.4486336, 33.4590759], label:"Jeju Navy Hotel", sub:"해안마을서2길 19, Jeju-si"},
+    {lngLat:[126.3945474, 33.2732873], label:"Seogwipo Hotel", sub:"319 Sangye-ro, Yerae-dong, Seogwipo-si"}
+  ].forEach(function(h){
+    var hotelEl = document.createElement("div");
+    hotelEl.textContent = "🏠";
+    hotelEl.style.fontSize = "28px";
+    hotelEl.style.lineHeight = "1";
+    hotelEl.style.cursor = "pointer";
+    hotelEl.setAttribute("role", "img");
+    hotelEl.setAttribute("aria-label", h.label);
+    new maplibregl.Marker({element: hotelEl, anchor:"bottom"})
+      .setLngLat(h.lngLat)
+      .setPopup(new maplibregl.Popup({closeButton:false, offset:20})
+        .setHTML("<b>🏠 "+h.label+"</b><br><span style='color:#888'>"+h.sub+"</span>"))
+      .addTo(map);
+  });
+
   applyCatFilter();
   document.querySelectorAll(".catbar").forEach(function(bar){
     bar.innerHTML = catbarHTML();
